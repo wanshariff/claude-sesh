@@ -1,0 +1,4 @@
+node_modules/
+*.figma.json
+auth*.json
+test/out/

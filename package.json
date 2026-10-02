@@ -1,0 +1,20 @@
+{
+  "name": "web2figma",
+  "version": "0.1.0",
+  "description": "Capture a live website or web app and import it into Figma as editable layers.",
+  "license": "MIT",
+  "private": true,
+  "bin": {
+    "web2figma": "capture/cli.js"
+  },
+  "scripts": {
+    "capture": "node capture/cli.js",
+    "test": "node test/run.js"
+  },
+  "dependencies": {
+    "playwright": "1.56.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

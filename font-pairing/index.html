@@ -53,8 +53,27 @@ kbd{font-family:var(--ui-mono); font-size:11px; border:1px solid var(--line); bo
 .checks li{display:grid; grid-template-columns:18px minmax(0,1fr); gap:6px; font-size:12.5px; align-items:start}
 .checks .dot{width:9px; height:9px; border-radius:50%; margin-top:5px}
 .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.bad{background:var(--bad)}
-.adobe{font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:8px}
+.adobe{font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:8px; margin:0}
 .adobe p{margin:0}
+.b{font-weight:600}
+.mono-ui{font-family:var(--ui-mono); font-size:11.5px}
+.lib{display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:13px}
+.lib small{color:var(--muted); font-size:12px}
+.state{font-size:11px; font-family:var(--ui-mono); padding:2px 8px; border-radius:999px; background:var(--chip); color:var(--muted)}
+.state.on{color:var(--ok)}
+.state.err{color:var(--bad)}
+.kitrow{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:6px}
+.kitrow .btn{padding:7px 12px}
+.status{min-height:1em}
+.status.err{color:var(--bad)} .status.ok{color:var(--ok)}
+.seg button:disabled{opacity:.45; cursor:not-allowed}
+.afams{display:flex; flex-direction:column; gap:6px; border-top:1px solid var(--line); padding-top:10px}
+.afam{display:grid; grid-template-columns:minmax(0,1fr) 150px; gap:8px; align-items:center; font-size:12.5px}
+.afam .nm{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.afam select{padding:4px 6px; font-size:12px}
+.afams .head{display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--muted)}
+.linkbtn{all:unset; cursor:pointer; color:var(--accent); font-size:12px}
+.linkbtn:focus-visible{outline:2px solid var(--accent)}
 .saved{display:flex; flex-direction:column; gap:6px}
 .saved button{all:unset; cursor:pointer; padding:7px 9px; border:1px solid var(--line); border-radius:7px; font-size:12.5px; display:flex; justify-content:space-between; gap:8px}
 .saved button:focus-visible{outline:2px solid var(--accent)}
@@ -168,21 +187,25 @@ kbd{font-family:var(--ui-mono); font-size:11px; border:1px solid var(--line); bo
     <div class="brand"><h1>Pairwise</h1><span>font pairing lab</span></div>
 
     <section class="box" aria-labelledby="src-l">
-      <div class="lbl" id="src-l">Font source</div>
-      <div class="seg" role="group" aria-label="Font source">
-        <button id="src-google" aria-pressed="true">Google Fonts</button>
-        <button id="src-adobe" aria-pressed="false">Adobe Fonts</button>
-      </div>
-      <div class="adobe" id="adobe-panel" hidden>
-        <p>Adobe Fonts serve through a Web Project tied to a Creative Cloud account. Pairwise loads the project's kit and lists only the families inside it.</p>
-        <label class="lbl" for="kit">Web Project ID</label>
-        <input type="text" id="kit" placeholder="e.g. abc1def" disabled>
-        <p><strong>Not connected in this prototype.</strong> The preview sandbox blocks use.typekit.net, so Google Fonts stays active below.</p>
-      </div>
+      <div class="lbl" id="src-l">Libraries</div>
+      <div class="lib"><span><span class="b">Google Fonts</span><br><small id="g-count"></small></span><span class="state on">Connected</span></div>
+      <div class="lib"><span><span class="b">Adobe Fonts</span><br><small id="a-count">Web Project not connected</small></span><span class="state" id="a-state">Off</span></div>
+      <form class="adobe" id="adobe-form">
+        <label class="lbl" for="kit">Adobe Web Project ID</label>
+        <div class="kitrow"><input type="text" id="kit" placeholder="e.g. xkm4pfz" autocomplete="off" spellcheck="false"><button class="btn" id="kit-go" type="submit">Connect</button></div>
+        <p>Find it in Adobe Fonts → My Web Projects. It's the code in <span class="mono-ui">use.typekit.net/<b>xkm4pfz</b>.css</span>. Pairwise lists every family in the project.</p>
+        <p class="status" id="kit-status" aria-live="polite"></p>
+      </form>
+      <div class="afams" id="afams" hidden></div>
     </section>
 
     <section class="box" aria-labelledby="gen-l">
       <div class="lbl" id="gen-l">Generate</div>
+      <div class="seg" role="group" aria-label="Draw fonts from" id="pools">
+        <button data-pool="all" aria-pressed="true">All libraries</button>
+        <button data-pool="google" aria-pressed="false">Google</button>
+        <button data-pool="adobe" aria-pressed="false" disabled>Adobe</button>
+      </div>
       <div class="seg" role="group" aria-label="Pairing strategy" id="modes">
         <button data-mode="contrast" aria-pressed="true">Contrast</button>
         <button data-mode="harmony" aria-pressed="false">Harmony</button>
@@ -414,7 +437,38 @@ const FONTS = [
   {n:'Space Mono',c:'mono',s:'mono',w:[400,700],t:0},
   {n:'DM Mono',c:'mono',s:'mono',w:[400,500],t:0},
 ];
-const BY = Object.fromEntries(FONTS.map(f=>[f.n,f]));
+FONTS.forEach(f=>f.src='google');
+const GOOGLE_COUNT = FONTS.length;
+let BY = {};
+const reindex = () => { BY = Object.fromEntries(FONTS.map(f=>[f.n,f])); };
+reindex();
+
+// Adobe kits expose CSS family names (e.g. "proxima-nova") with no classification.
+// Known families get tagged from this table; unknown ones are guessed from the name and can be re-tagged by hand.
+const ADOBE_KNOWN = {
+  'proxima-nova':['sans','geometric',1], 'futura-pt':['sans','geometric',1], 'sofia-pro':['sans','geometric',1], 'europa':['sans','geometric',1],
+  'brandon-grotesque':['sans','geometric',1], 'museo-sans':['sans','geometric',1], 'neue-haas-grotesk-text':['sans','neo-grotesque',1],
+  'neue-haas-grotesk-display':['sans','neo-grotesque',0], 'aktiv-grotesk':['sans','neo-grotesque',1], 'nimbus-sans':['sans','neo-grotesque',1],
+  'acumin-pro':['sans','neo-grotesque',1], 'trade-gothic-next':['sans','grotesque',1], 'franklin-gothic-urw':['sans','grotesque',1],
+  'myriad-pro':['sans','humanist',1], 'source-sans-pro':['sans','humanist',1], 'freight-sans-pro':['sans','humanist',1], 'ff-meta-web-pro':['sans','humanist',1],
+  'freight-text-pro':['serif','transitional',1], 'freight-display-pro':['serif','didone',0], 'freight-big-pro':['serif','didone',0],
+  'minion-pro':['serif','oldstyle',1], 'adobe-garamond-pro':['serif','oldstyle',1], 'garamond-premier-pro':['serif','oldstyle',1],
+  'adobe-jenson-pro':['serif','oldstyle',1], 'adobe-caslon-pro':['serif','transitional',1], 'mrs-eaves':['serif','transitional',1],
+  'ivypresto-display':['serif','didone',0], 'ivymode':['sans','humanist',0], 'p22-mackinac-pro':['serif','soft',1],
+  'chaparral-pro':['slab','slab',1], 'museo-slab':['slab','slab',1], 'bebas-neue':['display','condensed',0], 'rift':['display','condensed',0],
+  'source-code-pro':['mono','mono',0], 'input-mono':['mono','mono',0], 'courier-prime':['mono','mono',0]
+};
+function classify(name){
+  const k = ADOBE_KNOWN[name];
+  if(k) return {c:k[0], s:k[1], t:k[2], known:true};
+  const n = name.toLowerCase();
+  if(/mono|code|courier/.test(n)) return {c:'mono', s:'mono', t:0};
+  if(/slab/.test(n)) return {c:'slab', s:'slab', t:1};
+  if(/condensed|compressed|narrow/.test(n)) return {c:'display', s:'condensed', t:0};
+  if(/serif|garamond|caslon|baskerville|bodoni|didot|roman|text|book/.test(n) && !/sans/.test(n)) return {c:'serif', s:/bodoni|didot|display/.test(n)?'didone':'transitional', t:/display/.test(n)?0:1};
+  if(/display|poster|headline/.test(n)) return {c:'sans', s:'grotesque', t:0};
+  return {c:'sans', s:'grotesque', t:1};
+}
 const FALLBACK = {serif:"Georgia, 'Times New Roman', serif", sans:"system-ui, -apple-system, 'Segoe UI', sans-serif", display:"Impact, system-ui, sans-serif", slab:"Rockwell, Georgia, serif", mono:"ui-monospace, Menlo, Consolas, monospace"};
 const NOTES = {
   didone:'high stroke contrast that reads as premium at large sizes',
@@ -455,7 +509,7 @@ const MODES = {
   ]
 };
 
-const state = {display:'Fraunces', body:'Figtree', mono:'JetBrains Mono', mode:'contrast', base:16, ratio:1.25, hw:600, track:-0.01, lh:1.55, surface:'paper', filter:'all', locks:{display:false, body:false, mono:false}};
+const state = {display:'Fraunces', body:'Figtree', mono:'JetBrains Mono', mode:'contrast', pool:'all', kit:null, base:16, ratio:1.25, hw:600, track:-0.01, lh:1.55, surface:'paper', filter:'all', locks:{display:false, body:false, mono:false}};
 const loaded = new Set();
 const $ = id => document.getElementById(id);
 const pick = arr => arr[Math.floor(Math.random()*arr.length)];
@@ -464,7 +518,7 @@ const closest = (ws, target) => ws.reduce((a,b)=>Math.abs(b-target)<Math.abs(a-t
 const familyParam = f => `family=${f.n.replace(/ /g,'+')}:wght@${f.w.join(';')}`;
 
 function loadFont(f){
-  if(loaded.has(f.n)) return;
+  if(f.src==='adobe' || loaded.has(f.n)) return; // Adobe faces arrive with the kit stylesheet
   loaded.add(f.n);
   const l = document.createElement('link');
   l.rel = 'stylesheet';
@@ -481,8 +535,8 @@ function buildRoles(){
     wrap.className = 'role';
     const pool = r.k==='mono' ? FONTS.filter(f=>f.c==='mono') : FONTS.filter(f=>f.c!=='mono' && (r.k==='display' || f.t));
     const groups = {};
-    pool.forEach(f=>(groups[f.c] ||= []).push(f));
-    const opts = Object.entries(groups).map(([c,fs])=>`<optgroup label="${c[0].toUpperCase()+c.slice(1)}">${fs.map(f=>`<option>${f.n}</option>`).join('')}</optgroup>`).join('');
+    pool.forEach(f=>(groups[`${f.src==='adobe'?'Adobe':'Google'} · ${f.c[0].toUpperCase()+f.c.slice(1)}`] ||= []).push(f));
+    const opts = Object.entries(groups).map(([g,fs])=>`<optgroup label="${g}">${fs.map(f=>`<option>${f.n}</option>`).join('')}</optgroup>`).join('');
     wrap.innerHTML = `<label class="lbl" for="sel-${r.k}">${r.label} <em id="tag-${r.k}"></em></label>
       <select id="sel-${r.k}">${opts}</select>
       <button class="lock" id="lock-${r.k}" aria-pressed="false" aria-label="Lock ${r.label} font" title="Lock ${r.label} font">${LOCK_SVG}</button>`;
@@ -493,18 +547,21 @@ function buildRoles(){
 }
 const defaultWeight = f => closest(f.w, f.c==='display' ? 800 : f.c==='serif' ? 500 : 700);
 
+const inPool = f => state.pool==='all' || f.src===state.pool;
 function generate(){
   const rules = MODES[state.mode];
-  for(let tries=0; tries<40; tries++){
+  for(let tries=0; tries<60; tries++){
     const [dOk, bOk] = pick(rules);
+    // after 30 misses, widen to all libraries (a small Adobe kit may not cover every strategy)
+    const ok = tries<30 ? inPool : () => true;
     let d = state.locks.display ? BY[state.display] : null;
     let b = state.locks.body ? BY[state.body] : null;
-    if(!d){ const p = FONTS.filter(f=>dOk(f) && (!b || f.n!==b.n)); if(!p.length) continue; d = pick(p); }
-    if(!b){ const p = FONTS.filter(f=>bOk(f) && f.n!==d.n && !(state.mode==='harmony' && f.s===d.s)); if(!p.length) continue; b = pick(p); }
+    if(!d){ const p = FONTS.filter(f=>ok(f) && dOk(f) && (!b || f.n!==b.n)); if(!p.length) continue; d = pick(p); }
+    if(!b){ const p = FONTS.filter(f=>ok(f) && bOk(f) && f.n!==d.n && !(state.mode==='harmony' && f.s===d.s)); if(!p.length) continue; b = pick(p); }
     if(d.n===b.n) continue;
     if(!state.locks.display){ state.display = d.n; state.hw = defaultWeight(d); }
     if(!state.locks.body) state.body = b.n;
-    if(!state.locks.mono) state.mono = pick(FONTS.filter(f=>f.c==='mono')).n;
+    if(!state.locks.mono){ const monos = FONTS.filter(f=>f.c==='mono'); state.mono = pick(monos.filter(inPool).length ? monos.filter(inPool) : monos).n; }
     return render();
   }
   render();
@@ -531,7 +588,7 @@ function sizes(){
 function render(){
   const d = BY[state.display], b = BY[state.body], m = BY[state.mono];
   [d,b,m].forEach(loadFont);
-  ROLES.forEach(r=>{ $('sel-'+r.k).value = state[r.k]; const f = BY[state[r.k]]; $('tag-'+r.k).textContent = `${f.c} · ${f.s}`; });
+  ROLES.forEach(r=>{ $('sel-'+r.k).value = state[r.k]; const f = BY[state[r.k]]; $('tag-'+r.k).textContent = `${f.src==='adobe'?'adobe · ':''}${f.c} · ${f.s}`; });
 
   // heading weight options follow the display font's real weights
   if(!d.w.includes(state.hw)) state.hw = closest(d.w, state.hw);
@@ -564,9 +621,14 @@ function render(){
   $('why').textContent = a.why;
   $('checks').innerHTML = a.checks.map(([k,t])=>`<li><span class="dot ${k}" aria-label="${k}"></span><span>${t}</span></li>`).join('');
 
-  const fam = [d,b,m].filter((f,i,arr)=>arr.findIndex(x=>x.n===f.n)===i).map(familyParam).join('&');
+  const used = [d,b,m].filter((f,i,arr)=>arr.findIndex(x=>x.n===f.n)===i);
+  const gFam = used.filter(f=>f.src==='google').map(familyParam).join('&');
+  const links = [
+    gFam && `<link href="https://fonts.googleapis.com/css2?${gFam}&display=swap" rel="stylesheet">`,
+    used.some(f=>f.src==='adobe') && `<!-- Adobe Fonts Web Project ${state.kit} -->\n<link href="https://use.typekit.net/${state.kit}.css" rel="stylesheet">`
+  ].filter(Boolean).join('\n');
   $('css').textContent =
-`<link href="https://fonts.googleapis.com/css2?${fam}&display=swap" rel="stylesheet">
+`${links}
 
 :root {
   --font-display: ${stack(d)};
@@ -598,14 +660,17 @@ function renderSaved(){
   list.forEach(p=>{
     const btn = document.createElement('button');
     btn.innerHTML = `<span>${p.display} / ${p.body}</span><small>${p.mode}</small>`;
-    btn.addEventListener('click', ()=>{ Object.assign(state, p, {locks:state.locks}); syncControls(); render(); });
+    btn.addEventListener('click', ()=>{
+      if(![p.display, p.body, p.mono].every(n=>BY[n])){ setKitStatus(`That pairing uses Adobe fonts from project ${p.kit || 'another project'}. Connect it first.`, 'err'); return; }
+      Object.assign(state, p, {locks:state.locks, kit:state.kit, pool:state.pool}); syncControls(); render();
+    });
     box.appendChild(btn);
   });
 }
 $('save').addEventListener('click', ()=>{
-  const {display, body, mono, mode, base, ratio, hw, track, lh} = state;
+  const {display, body, mono, mode, base, ratio, hw, track, lh, kit} = state;
   const list = readSaved().filter(p=>!(p.display===display && p.body===body && p.mono===mono));
-  list.unshift({display, body, mono, mode, base, ratio, hw, track, lh});
+  list.unshift({display, body, mono, mode, base, ratio, hw, track, lh, kit});
   writeSaved(list.slice(0,8));
   renderSaved();
 });
@@ -630,8 +695,97 @@ $('ratio').addEventListener('change', e=>{ state.ratio = +e.target.value; render
 $('hw').addEventListener('change', e=>{ state.hw = +e.target.value; render(); });
 $('track').addEventListener('input', e=>{ state.track = +e.target.value; render(); });
 $('lh').addEventListener('input', e=>{ state.lh = +e.target.value; render(); });
-$('src-google').addEventListener('click', ()=>{ $('src-google').setAttribute('aria-pressed',true); $('src-adobe').setAttribute('aria-pressed',false); $('adobe-panel').hidden = true; });
-$('src-adobe').addEventListener('click', ()=>{ $('src-adobe').setAttribute('aria-pressed',true); $('src-google').setAttribute('aria-pressed',false); $('adobe-panel').hidden = false; });
+$('pools').addEventListener('click', e=>{ const b = e.target.closest('button'); if(!b || b.disabled) return; state.pool = b.dataset.pool; setPressed('pools','pool',state.pool); generate(); });
+
+// ---- Adobe Fonts Web Project ----
+const KIT_KEY = 'pairwise.kit';
+const familyName = ff => ff.family.replace(/^["']|["']$/g,'');
+function setKitStatus(msg, kind){ const s = $('kit-status'); s.textContent = msg; s.className = 'status' + (kind ? ' '+kind : ''); }
+
+function connectKit(id){
+  id = id.trim().toLowerCase();
+  if(!/^[a-z0-9]{5,10}$/.test(id)){ setKitStatus('Project IDs are 5–10 letters and numbers, like xkm4pfz.', 'err'); return; }
+  disconnectKit(true);
+  setKitStatus('Loading project…');
+  const before = new Set([...document.fonts].map(familyName));
+  const link = document.createElement('link');
+  link.rel = 'stylesheet'; link.id = 'adobe-kit';
+  link.href = `https://use.typekit.net/${id}.css`;
+  let settled = false;
+  const fail = msg => { if(settled) return; settled = true; link.remove(); $('a-state').textContent = 'Error'; $('a-state').className = 'state err'; setKitStatus(msg, 'err'); };
+  const timer = setTimeout(()=>fail('Adobe didn\'t respond. If you\'re viewing Pairwise inside Claude, its preview blocks Adobe\'s font server. Open the hosted page instead.'), 8000);
+  link.onerror = () => { clearTimeout(timer); fail(`Couldn't load project ${id}. Check the ID, or if you're viewing inside Claude, open the hosted page instead.`); };
+  link.onload = () => {
+    clearTimeout(timer);
+    if(settled) return; settled = true;
+    // Kit @font-face rules show up in document.fonts once the stylesheet applies
+    const faces = {};
+    [...document.fonts].forEach(ff=>{
+      const n = familyName(ff);
+      if(before.has(n) || BY[n]) return;
+      const w = String(ff.weight).split(' ').map(Number);
+      (faces[n] ||= new Set()).add(w[0]);
+      if(w[1]) for(let x=w[0]+100; x<=w[1]; x+=100) faces[n].add(x);
+    });
+    const names = Object.keys(faces);
+    if(!names.length){ link.remove(); fail(`Project ${id} loaded but has no web fonts. Add families to it in Adobe Fonts, then reconnect.`); return; }
+    names.forEach(n=>FONTS.push({n, ...classify(n), w:[...faces[n]].sort((a,b)=>a-b), src:'adobe'}));
+    reindex();
+    state.kit = id;
+    try{ localStorage.setItem(KIT_KEY, id); }catch(e){}
+    $('a-state').textContent = 'Connected'; $('a-state').className = 'state on';
+    $('a-count').textContent = `Project ${id} · ${names.length} ${names.length===1?'family':'families'}`;
+    $('pools').querySelector('[data-pool="adobe"]').disabled = false;
+    setKitStatus(`Added ${names.length} Adobe ${names.length===1?'family':'families'}. Check the categories below so the generator pairs them correctly.`, 'ok');
+    renderAdobeList();
+    buildRoles(); syncLocks(); render();
+  };
+  document.head.appendChild(link);
+}
+
+function disconnectKit(quiet){
+  document.getElementById('adobe-kit')?.remove();
+  const had = FONTS.some(f=>f.src==='adobe');
+  FONTS.splice(GOOGLE_COUNT);
+  reindex();
+  state.kit = null;
+  $('afams').hidden = true;
+  $('a-state').textContent = 'Off'; $('a-state').className = 'state';
+  $('a-count').textContent = 'Web Project not connected';
+  $('pools').querySelector('[data-pool="adobe"]').disabled = true;
+  if(state.pool==='adobe'){ state.pool = 'all'; setPressed('pools','pool','all'); }
+  if(quiet && !had) return;
+  // swap any Adobe selections back to Google defaults
+  if(!BY[state.display]){ state.display = 'Fraunces'; state.hw = defaultWeight(BY.Fraunces); }
+  if(!BY[state.body]) state.body = 'Figtree';
+  if(!BY[state.mono]) state.mono = 'JetBrains Mono';
+  if(!quiet){ try{ localStorage.removeItem(KIT_KEY); }catch(e){} setKitStatus('Disconnected.'); }
+  buildRoles(); syncLocks(); render();
+}
+
+const CATS = [['sans','geometric'],['sans','grotesque'],['sans','neo-grotesque'],['sans','humanist'],['serif','didone'],['serif','transitional'],['serif','oldstyle'],['serif','soft'],['slab','slab'],['display','condensed'],['display','wide'],['display','expressive'],['mono','mono']];
+function renderAdobeList(){
+  const box = $('afams');
+  const fams = FONTS.filter(f=>f.src==='adobe');
+  box.hidden = false;
+  box.innerHTML = `<div class="head"><span>In this project</span><button class="linkbtn" type="button" id="kit-off">Disconnect</button></div>`;
+  fams.forEach((f,i)=>{
+    const row = document.createElement('div');
+    row.className = 'afam';
+    row.innerHTML = `<span class="nm" style="font-family:'${f.n}', ${FALLBACK[f.c]}" title="${f.n} · weights ${f.w.join(', ')}">${f.n}</span>
+      <select id="acat-${i}" aria-label="Category for ${f.n}">${CATS.map(([c,s])=>`<option value="${c}|${s}" ${f.c===c&&f.s===s?'selected':''}>${c==='sans'||c==='serif'?c+' · '+s:s}</option>`).join('')}</select>`;
+    box.appendChild(row);
+    row.querySelector('select').addEventListener('change', e=>{
+      const [c,s] = e.target.value.split('|');
+      f.c = c; f.s = s; f.t = c==='display'||c==='mono'||s==='didone' ? 0 : 1;
+      buildRoles(); syncLocks(); render();
+    });
+  });
+  $('kit-off').addEventListener('click', ()=>disconnectKit(false));
+}
+function syncLocks(){ ROLES.forEach(r=>$('lock-'+r.k).setAttribute('aria-pressed', state.locks[r.k])); }
+
+$('adobe-form').addEventListener('submit', e=>{ e.preventDefault(); connectKit($('kit').value); });
 $('copy').addEventListener('click', ()=>{
   const txt = $('css').textContent;
   const done = () => { $('copied').textContent = 'Copied to clipboard'; setTimeout(()=>$('copied').textContent='', 2000); };
@@ -646,7 +800,9 @@ document.addEventListener('keydown', e=>{
 
 buildRoles();
 state.hw = defaultWeight(BY[state.display]);
+$('g-count').textContent = `${GOOGLE_COUNT} curated families`;
 syncControls();
 render();
 renderSaved();
+try{ const k = localStorage.getItem(KIT_KEY); if(k){ $('kit').value = k; connectKit(k); } }catch(e){}
 </script>

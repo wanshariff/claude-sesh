@@ -2245,8 +2245,12 @@ function renderColor(){
 
 // ---- markdown spec ----
 let COLOR_CHECKS = [];
-// Downloads are blocked inside Claude's artifact viewer; they work on GitHub Pages or locally.
-const CAN_DOWNLOAD = !/claude/i.test(location.hostname);
+// Inside Claude's viewer, files are offered through the downloads capability (the viewer confirms).
+// Elsewhere (GitHub Pages, a local file) a normal browser download works.
+let DL = null, CAN_DOWNLOAD = !window.claude;
+if(window.claude && window.claude.use){
+  window.claude.use('downloads').then(ns=>{ DL = ns; CAN_DOWNLOAD = !!ns; renderExport(); }, ()=>{});
+}
 const mdMark = k => ({ok:'✅', warn:'⚠️', bad:'❌'}[k] || '•');
 const mdText = h => String(h).replace(/<[^>]+>/g,'');
 function buildMarkdown(cssText){
@@ -2827,12 +2831,23 @@ function syncLocks(){ ROLES.forEach(r=>$('lock-'+r.k).setAttribute('aria-pressed
 $('adobe-form').addEventListener('submit', e=>{ e.preventDefault(); connectKit($('kit').value); });
 $('md-opts').addEventListener('input', renderExport);
 $('md-opts').addEventListener('change', renderExport);
-$('dl').addEventListener('click', ()=>{
+$('dl').addEventListener('click', async ()=>{
   const slug = ($('md-name').value.trim() || 'design').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'design';
-  const url = URL.createObjectURL(new Blob([$('css').textContent], {type:'text/markdown'}));
-  const a = document.createElement('a'); a.href = url; a.download = `${slug}-design-spec.md`; document.body.append(a); a.click(); a.remove();
+  const filename = `${slug}-design-spec.md`, text = $('css').textContent;
+  const note = msg => { $('copied').textContent = msg; setTimeout(()=>$('copied').textContent='', 3000); };
+  if(DL){
+    try{ await DL.save({filename, data:text}); note(`Saved ${filename}`); }
+    catch(e){
+      if(e && e.code==='declined') note('Download cancelled.');
+      else if(e && e.code==='rate_limited') note('A save prompt is already open.');
+      else { $('dl').hidden = true; note('Downloads aren\'t available here. Use Copy markdown instead.'); }
+    }
+    return;
+  }
+  const url = URL.createObjectURL(new Blob([text], {type:'text/markdown'}));
+  const a = document.createElement('a'); a.href = url; a.download = filename; document.body.append(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url), 1000);
-  $('copied').textContent = `Saved ${slug}-design-spec.md`; setTimeout(()=>$('copied').textContent='', 2500);
+  note(`Saved ${filename}`);
 });
 $('copy').addEventListener('click', ()=>{
   const txt = $('css').textContent;

@@ -131,7 +131,7 @@ kbd{font-family:var(--ui-mono); font-size:11px; border:1px solid var(--line); bo
 .gcard .row{justify-content:space-between}
 
 /* rail tabs + color controls */
-.tabs{display:grid; grid-template-columns:1fr 1fr; background:var(--chip); border-radius:9px; padding:3px; gap:3px}
+.tabs{display:grid; grid-template-columns:repeat(3,1fr); background:var(--chip); border-radius:9px; padding:3px; gap:3px}
 .tabs button{border:0; background:transparent; color:var(--muted); font:inherit; font-weight:500; padding:8px; border-radius:7px; cursor:pointer}
 .tabs button[aria-selected="true"]{background:var(--panel); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.12)}
 .tabs button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
@@ -232,6 +232,184 @@ input[aria-invalid="true"]{border-color:var(--bad)}
 .export pre{margin:0; font-family:var(--ui-mono); font-size:12px; background:var(--chip); border-radius:8px; padding:12px; overflow-x:auto; white-space:pre; max-height:220px}
 .toastmsg{font-size:12px; color:var(--ok); min-height:1em}
 @media (prefers-reduced-motion:no-preference){ .pv{transition:background-color .25s, color .25s} }
+/* ---------- UI styles ----------
+   Each style restyles the same preview components. Colors come from tokens JS derives from the palette;
+   "canvas" styles put the previews on a shared backdrop (blur, extrusion and glass need something behind them). */
+.stage{--pv-accent3:#F2C12E; --pv-on-accent2:#FFFFFF; --hard:#111111; --el1:#1E2024; --el2:#25282D; --canvas:transparent; --hdr:var(--muted)}
+.grid{position:relative; isolation:isolate}
+.stage[data-canvas="1"] .grid{padding:20px; border-radius:18px; background:var(--canvas)}
+.stage[data-canvas="1"] .frame > header{color:var(--hdr)}
+@media (max-width:560px){ .stage[data-canvas="1"] .grid{padding:12px} }
+@media (prefers-reduced-motion:no-preference){ .pv .pbtn{transition:transform .15s, box-shadow .15s, background-color .2s} }
+
+/* Swiss: grid, flush-left, no ornament */
+[data-style="swiss"] .pv{border:0; border-radius:0; border-top:4px solid var(--pv-fg)}
+[data-style="swiss"] .pv h1,[data-style="swiss"] .pv h2{letter-spacing:-0.035em; line-height:.98}
+[data-style="swiss"] .pv .eyebrow{color:var(--pv-accent); text-transform:none; letter-spacing:0; font-family:var(--f-body); font-weight:var(--bw)}
+[data-style="swiss"] .pbtn,[data-style="swiss"] .kpi,[data-style="swiss"] .field .in,[data-style="swiss"] .toast,[data-style="swiss"] .alert,[data-style="swiss"] .code,[data-style="swiss"] .phone,[data-style="swiss"] .gcard,[data-style="swiss"] .pill,[data-style="swiss"] .badges span,[data-style="swiss"] .check i,[data-style="swiss"] .article .avatar{border-radius:0}
+[data-style="swiss"] .pbtn.fill{background:var(--pv-fg); border-color:var(--pv-fg); color:var(--pv-bg)}
+[data-style="swiss"] .kpi{background:transparent; border-top:1px solid var(--pv-fg); padding-inline:0}
+[data-style="swiss"] .alert{border:0; border-top:2px solid var(--a-icon); background:transparent; border-radius:0}
+[data-style="swiss"] .gcard{background:var(--pv-accent)!important}
+[data-style="swiss"] .article blockquote{border-left-color:var(--pv-accent); border-left-width:6px}
+
+/* Dark UI: depth from lighter elevation layers, not shadows */
+[data-style="dark"] .pv{background:var(--el1); border-color:transparent}
+[data-style="dark"] .kpi,[data-style="dark"] .toast,[data-style="dark"] .code,[data-style="dark"] .phone,[data-style="dark"] .alert{background:var(--el2); border-color:transparent}
+[data-style="dark"] .field .in{background:var(--el2); border-color:transparent}
+[data-style="dark"] .pbtn:not(.fill){border-color:var(--pv-line)}
+
+/* Flat 2.0: solid fills, one subtle shadow as the affordance */
+[data-style="flat"] .pv{border-color:transparent; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,.06)}
+[data-style="flat"] .pbtn{border-radius:6px}
+[data-style="flat"] .pbtn.fill{box-shadow:0 2px 0 var(--pv-accent-deep)}
+[data-style="flat"] .pbtn:not(.fill){border-color:var(--pv-line); box-shadow:0 2px 0 var(--pv-line)}
+[data-style="flat"] .kpi{background:var(--pv-accent-soft); border-radius:6px}
+[data-style="flat"] .toast,[data-style="flat"] .alert{border:0; border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,.08)}
+[data-style="flat"] .field .in{border:0; border-bottom:2px solid var(--pv-line); border-radius:4px}
+[data-style="flat"] .gcard{background:var(--pv-accent)!important; border-radius:8px}
+
+/* Bauhaus: primaries, thick rules, geometry */
+[data-style="bauhaus"] .pv{border:3px solid var(--pv-fg); border-radius:0; position:relative}
+[data-style="bauhaus"] .pv > *{position:relative; z-index:1}
+[data-style="bauhaus"] .pv::before{content:""; position:absolute; width:120px; height:120px; border-radius:50%; background:var(--pv-accent2); right:-44px; bottom:-44px}
+[data-style="bauhaus"] .pv::after{content:""; position:absolute; width:56px; height:56px; background:var(--pv-accent3); left:0; bottom:0; clip-path:polygon(0 0,0 100%,100% 100%)}
+[data-style="bauhaus"] .pv h1,[data-style="bauhaus"] .pv h2,[data-style="bauhaus"] .pv h3{text-transform:uppercase; letter-spacing:0}
+[data-style="bauhaus"] .pbtn{border-radius:0; border:3px solid var(--pv-fg); text-transform:uppercase; letter-spacing:.06em}
+[data-style="bauhaus"] .pbtn.fill{background:var(--pv-accent); color:var(--pv-on-accent); border-color:var(--pv-fg)}
+[data-style="bauhaus"] .pbtn:not(.fill){background:var(--pv-accent3); color:#111111}
+[data-style="bauhaus"] .kpi,[data-style="bauhaus"] .toast,[data-style="bauhaus"] .alert,[data-style="bauhaus"] .code,[data-style="bauhaus"] .field .in,[data-style="bauhaus"] .phone{border-radius:0; border:3px solid var(--pv-fg)}
+[data-style="bauhaus"] .article blockquote{border-left:10px solid var(--pv-accent2)}
+[data-style="bauhaus"] .article .avatar{background:var(--pv-accent)}
+[data-style="bauhaus"] .gcard{border-radius:0; border:3px solid var(--pv-fg); background:var(--pv-accent2)!important; color:var(--pv-on-accent2)!important}
+[data-style="bauhaus"] .pill,[data-style="bauhaus"] .badges span{border-radius:0; border-width:2px}
+
+/* Skeuomorphism: light, texture, bevels */
+[data-style="skeuo"] .pv{border:1px solid rgba(0,0,0,.28); border-radius:12px; background:linear-gradient(180deg, var(--pv-hi), var(--pv-bg) 45%); box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 3px 8px rgba(0,0,0,.25)}
+[data-style="skeuo"] .pv h1,[data-style="skeuo"] .pv h2,[data-style="skeuo"] .pv h3{text-shadow:0 1px 0 var(--pv-emboss)}
+[data-style="skeuo"] .pbtn{border-radius:8px; background:linear-gradient(180deg, var(--pv-hi), var(--pv-card)); border:1px solid rgba(0,0,0,.35); box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 2px rgba(0,0,0,.3)}
+[data-style="skeuo"] .pbtn.fill{background:linear-gradient(180deg, var(--pv-accent-hi) 0%, var(--pv-accent) 52%, var(--pv-accent-deep) 100%); border-color:var(--pv-accent-deep); text-shadow:0 -1px 0 rgba(0,0,0,.3); box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 2px 3px rgba(0,0,0,.35)}
+[data-style="skeuo"] .field .in,[data-style="skeuo"] .code{box-shadow:inset 0 2px 4px rgba(0,0,0,.2); border:1px solid rgba(0,0,0,.3)}
+[data-style="skeuo"] .kpi,[data-style="skeuo"] .toast,[data-style="skeuo"] .alert{border:1px solid rgba(0,0,0,.2); background-image:linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,0)); box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 1px 3px rgba(0,0,0,.2)}
+[data-style="skeuo"] .phone{background:repeating-linear-gradient(90deg, rgba(255,255,255,.07) 0 1px, rgba(0,0,0,.04) 1px 2px), linear-gradient(180deg, var(--pv-hi), var(--pv-card)); border:1px solid rgba(0,0,0,.3); box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 6px 14px rgba(0,0,0,.3)}
+[data-style="skeuo"] .gcard{outline:2px dashed rgba(255,255,255,.45); outline-offset:-9px; box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 6px 14px rgba(0,0,0,.35)}
+
+/* Neumorphism: extruded from one surface by paired light/dark shadows */
+[data-style="neu"] .pv{border:0; border-radius:22px; box-shadow:9px 9px 18px var(--neu-d), -9px -9px 18px var(--neu-l)}
+[data-style="neu"] .pbtn,[data-style="neu"] .pbtn.fill{border:0; border-radius:14px; background:var(--pv-bg); color:var(--pv-fg); box-shadow:5px 5px 10px var(--neu-d), -5px -5px 10px var(--neu-l)}
+[data-style="neu"] .pbtn.fill{color:var(--pv-accent-text)}
+[data-style="neu"] .pbtn:active{box-shadow:inset 4px 4px 8px var(--neu-d), inset -4px -4px 8px var(--neu-l)}
+[data-style="neu"] .kpi,[data-style="neu"] .toast,[data-style="neu"] .alert,[data-style="neu"] .phone{background:var(--pv-bg); border:0; border-radius:16px; box-shadow:6px 6px 12px var(--neu-d), -6px -6px 12px var(--neu-l)}
+[data-style="neu"] .alert{color:var(--pv-fg)}
+[data-style="neu"] .field .in,[data-style="neu"] .code{background:var(--pv-bg); border:0; border-radius:12px; box-shadow:inset 4px 4px 8px var(--neu-d), inset -4px -4px 8px var(--neu-l)}
+[data-style="neu"] .gcard{border-radius:18px; box-shadow:6px 6px 12px var(--neu-d), -6px -6px 12px var(--neu-l)}
+[data-style="neu"] .tbl th,[data-style="neu"] .tbl td,[data-style="neu"] .nav,[data-style="neu"] .list div{border-color:transparent}
+
+/* Glassmorphism: frosted panels over vivid shapes */
+[data-style="glass"] .pv{background:color-mix(in srgb, var(--pv-bg) 45%, transparent); -webkit-backdrop-filter:blur(20px) saturate(1.6); backdrop-filter:blur(20px) saturate(1.6); border:1px solid rgba(255,255,255,.5); border-radius:20px; box-shadow:0 8px 32px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.5)}
+[data-style="glass"] .kpi,[data-style="glass"] .toast,[data-style="glass"] .alert,[data-style="glass"] .code,[data-style="glass"] .phone,[data-style="glass"] .field .in{background:color-mix(in srgb, var(--pv-bg) 35%, transparent); border:1px solid rgba(255,255,255,.4); border-radius:14px}
+[data-style="glass"] .pbtn{border-radius:12px}
+[data-style="glass"] .pbtn:not(.fill){background:rgba(255,255,255,.25); border-color:rgba(255,255,255,.6)}
+[data-style="glass"] .gcard{border-radius:18px; border:1px solid rgba(255,255,255,.35)}
+
+/* Claymorphism: puffy, matte, inner + outer shadows */
+[data-style="clay"] .pv{border:0; border-radius:32px; box-shadow:16px 18px 36px var(--clay-d), inset -8px -8px 16px var(--clay-in-d), inset 8px 8px 16px var(--clay-in-l)}
+[data-style="clay"] .pbtn{border:0; border-radius:999px; box-shadow:6px 8px 16px var(--clay-d), inset -4px -4px 8px rgba(0,0,0,.15), inset 4px 4px 8px rgba(255,255,255,.45)}
+[data-style="clay"] .pbtn:not(.fill){background:var(--pv-accent2); color:var(--pv-on-accent2)}
+[data-style="clay"] .kpi,[data-style="clay"] .toast,[data-style="clay"] .alert,[data-style="clay"] .phone,[data-style="clay"] .code{border:0; border-radius:24px; box-shadow:8px 10px 20px var(--clay-d), inset -5px -5px 10px var(--clay-in-d), inset 5px 5px 10px var(--clay-in-l)}
+[data-style="clay"] .kpi:nth-child(1){background:var(--tone-1)} [data-style="clay"] .kpi:nth-child(2){background:var(--tone-2)} [data-style="clay"] .kpi:nth-child(3){background:var(--tone-3)}
+[data-style="clay"] .field .in{border:0; border-radius:16px; box-shadow:inset 4px 4px 8px var(--clay-in-d), inset -4px -4px 8px var(--clay-in-l)}
+[data-style="clay"] .gcard{border-radius:28px; box-shadow:12px 14px 28px var(--clay-d), inset -6px -6px 14px rgba(0,0,0,.18), inset 6px 6px 14px rgba(255,255,255,.3)}
+[data-style="clay"] .pill,[data-style="clay"] .badges span{border-radius:999px}
+
+/* Neo-Brutalism: hard edges, hard shadows, loud fills */
+[data-style="brutal"] .pv{border:3px solid var(--hard); border-radius:0; box-shadow:6px 6px 0 var(--hard)}
+[data-style="brutal"] .pv h1,[data-style="brutal"] .pv h2,[data-style="brutal"] .pv h3{text-transform:uppercase; letter-spacing:-0.02em}
+[data-style="brutal"] .pbtn{border:3px solid var(--hard); border-radius:0; box-shadow:4px 4px 0 var(--hard); text-transform:uppercase}
+[data-style="brutal"] .pbtn:not(.fill){background:var(--pv-accent3); color:#111111}
+[data-style="brutal"] .pbtn:hover{transform:translate(2px,2px); box-shadow:2px 2px 0 var(--hard)}
+[data-style="brutal"] .kpi,[data-style="brutal"] .toast,[data-style="brutal"] .alert,[data-style="brutal"] .code,[data-style="brutal"] .phone,[data-style="brutal"] .field .in{border:3px solid var(--hard); border-radius:0; box-shadow:4px 4px 0 var(--hard)}
+[data-style="brutal"] .kpi:nth-child(1){background:var(--tone-1)} [data-style="brutal"] .kpi:nth-child(2){background:var(--tone-2)} [data-style="brutal"] .kpi:nth-child(3){background:var(--tone-3)}
+[data-style="brutal"] .gcard{border-radius:0; border:3px solid var(--hard); box-shadow:6px 6px 0 var(--hard); background:var(--pv-accent)!important; color:var(--pv-on-accent)!important}
+[data-style="brutal"] .tbl th,[data-style="brutal"] .tbl td{border-bottom:2px solid var(--hard)}
+[data-style="brutal"] .pill,[data-style="brutal"] .badges span{border-radius:0; border:2px solid var(--hard)}
+[data-style="brutal"] .article .avatar{border-radius:0; border:3px solid var(--hard)}
+
+/* Aurora: drifting mesh gradient behind clean translucent panels */
+[data-style="aurora"] .grid{overflow:hidden}
+[data-style="aurora"] .grid::before{content:""; position:absolute; inset:-60px; z-index:-1; background:var(--aurora); filter:blur(48px) saturate(1.2)}
+@media (prefers-reduced-motion:no-preference){ [data-style="aurora"] .grid::before{animation:aurora 22s ease-in-out infinite alternate} }
+@keyframes aurora{ from{transform:translate3d(0,0,0) scale(1)} to{transform:translate3d(-4%,3%,0) scale(1.12)} }
+[data-style="aurora"] .pv{background:color-mix(in srgb, var(--pv-bg) 72%, transparent); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border:1px solid color-mix(in srgb, var(--pv-fg) 12%, transparent); border-radius:20px}
+[data-style="aurora"] .kpi,[data-style="aurora"] .toast,[data-style="aurora"] .alert,[data-style="aurora"] .code,[data-style="aurora"] .phone{border-radius:14px}
+[data-style="aurora"] .pbtn{border-radius:999px}
+
+/* Cyberpunk HUD: neon on black, brackets, scanlines */
+[data-style="cyber"] .pv{position:relative; border:1px solid var(--pv-line); border-radius:0; background-repeat:no-repeat; background:
+  linear-gradient(var(--pv-accent),var(--pv-accent)) 0 0/18px 2px no-repeat, linear-gradient(var(--pv-accent),var(--pv-accent)) 0 0/2px 18px no-repeat,
+  linear-gradient(var(--pv-accent),var(--pv-accent)) 100% 0/18px 2px no-repeat, linear-gradient(var(--pv-accent),var(--pv-accent)) 100% 0/2px 18px no-repeat,
+  linear-gradient(var(--pv-accent),var(--pv-accent)) 0 100%/18px 2px no-repeat, linear-gradient(var(--pv-accent),var(--pv-accent)) 0 100%/2px 18px no-repeat,
+  linear-gradient(var(--pv-accent),var(--pv-accent)) 100% 100%/18px 2px no-repeat, linear-gradient(var(--pv-accent),var(--pv-accent)) 100% 100%/2px 18px no-repeat, var(--pv-bg)}
+[data-style="cyber"] .pv::after{content:""; position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 3px)}
+[data-style="cyber"] .pv h1,[data-style="cyber"] .pv h2,[data-style="cyber"] .pv h3{text-transform:uppercase; letter-spacing:.03em; text-shadow:0 0 14px var(--glow)}
+[data-style="cyber"] .pv .eyebrow{color:var(--pv-accent2)}
+[data-style="cyber"] .pbtn{border-radius:0; font-family:var(--f-mono); text-transform:uppercase; letter-spacing:.12em; background:transparent; border:1px solid var(--pv-accent); color:var(--pv-accent); box-shadow:0 0 12px var(--glow), inset 0 0 10px var(--glow)}
+[data-style="cyber"] .pbtn.fill{background:var(--pv-accent); color:var(--pv-bg)}
+[data-style="cyber"] .kpi,[data-style="cyber"] .toast,[data-style="cyber"] .alert,[data-style="cyber"] .code,[data-style="cyber"] .phone,[data-style="cyber"] .field .in{border-radius:0; border:1px solid var(--pv-line); background:var(--pv-card)}
+[data-style="cyber"] .kpi .v{color:var(--pv-accent); text-shadow:0 0 12px var(--glow)}
+[data-style="cyber"] .gcard{border-radius:0; border:1px solid var(--pv-accent); box-shadow:0 0 18px var(--glow)}
+[data-style="cyber"] .pill,[data-style="cyber"] .badges span{border-radius:0; font-family:var(--f-mono); text-transform:uppercase}
+@media (prefers-reduced-motion:no-preference){ [data-style="cyber"] .pv h1:hover,[data-style="cyber"] .pv h2:hover{animation:glitch .45s steps(2,end) 2} }
+@keyframes glitch{ 0%,100%{text-shadow:2px 0 var(--pv-accent2), -2px 0 var(--pv-accent); transform:none} 30%{text-shadow:-3px 1px var(--pv-accent2), 3px -1px var(--pv-accent); transform:translateX(1px)} 60%{clip-path:inset(12% 0 38% 0); transform:translateX(-2px)} 80%{clip-path:none} }
+
+/* Material 3: tonal surfaces, pill buttons, elevation */
+[data-style="material"] .pv{border:0; border-radius:16px; box-shadow:0 1px 2px rgba(0,0,0,.3), 0 1px 3px 1px rgba(0,0,0,.15)}
+[data-style="material"] .pbtn{border-radius:999px; padding:.65em 1.5em; letter-spacing:.01em}
+[data-style="material"] .pbtn:not(.fill){border-color:var(--pv-muted); color:var(--pv-accent-text)}
+[data-style="material"] .pbtn.fill:hover{box-shadow:0 1px 2px rgba(0,0,0,.3), 0 1px 3px 1px rgba(0,0,0,.15)}
+[data-style="material"] .kpi,[data-style="material"] .alert{border:0; border-radius:12px}
+[data-style="material"] .field .in{border:0; border-bottom:1px solid var(--pv-muted); border-radius:4px 4px 0 0}
+[data-style="material"] .field.err .in{border-bottom:2px solid var(--pv-danger)}
+[data-style="material"] .toast{background:var(--pv-fg); color:var(--pv-bg); border:0; border-radius:4px; box-shadow:0 3px 5px rgba(0,0,0,.2)}
+[data-style="material"] .toast .muted{color:inherit; opacity:.8}
+[data-style="material"] .toast .b{color:inherit!important}
+[data-style="material"] .gcard,[data-style="material"] .phone{border-radius:28px; border:0; box-shadow:0 4px 8px 3px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.3)}
+
+/* Bento: everything is a rounded cell on one grid */
+[data-style="bento"] .grid{grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px}
+[data-style="bento"] .frame{grid-column:span 2}
+[data-style="bento"] .frame.wide{grid-column:1/-1}
+[data-style="bento"] .frame > header{display:none}
+@media (max-width:1180px){ [data-style="bento"] .grid{grid-template-columns:repeat(2,minmax(0,1fr))} [data-style="bento"] .frame{grid-column:span 1} }
+@media (max-width:760px){ [data-style="bento"] .frame{grid-column:1/-1} }
+[data-style="bento"] .pv{border:0; border-radius:24px; background:var(--pv-card)}
+[data-style="bento"] .kpi,[data-style="bento"] .toast,[data-style="bento"] .alert,[data-style="bento"] .code,[data-style="bento"] .phone{border:0; border-radius:18px; background:var(--pv-bg)}
+[data-style="bento"] .pbtn,[data-style="bento"] .field .in{border-radius:12px}
+[data-style="bento"] .gcard{border-radius:20px}
+
+/* Spatial: translucent panels floating in a room, gaze highlights */
+[data-style="spatial"] .pv{background:color-mix(in srgb, var(--pv-bg) 48%, transparent); -webkit-backdrop-filter:blur(28px) saturate(1.3); backdrop-filter:blur(28px) saturate(1.3); border:1px solid rgba(255,255,255,.18); border-radius:30px; box-shadow:0 24px 60px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.18)}
+[data-style="spatial"] .pbtn{border-radius:999px; border:0; background:rgba(255,255,255,.14); color:var(--pv-fg)}
+[data-style="spatial"] .pbtn.fill{background:rgba(255,255,255,.9); color:#1c1c1e}
+[data-style="spatial"] .pbtn:hover{transform:scale(1.04); box-shadow:0 0 0 4px rgba(255,255,255,.18), 0 10px 24px rgba(0,0,0,.3)}
+[data-style="spatial"] .kpi,[data-style="spatial"] .toast,[data-style="spatial"] .alert,[data-style="spatial"] .code,[data-style="spatial"] .phone,[data-style="spatial"] .field .in{background:rgba(255,255,255,.08); border:0; border-radius:18px}
+[data-style="spatial"] .kpi:hover,[data-style="spatial"] .toast:hover{background:rgba(255,255,255,.14)}
+[data-style="spatial"] .gcard{border-radius:24px; box-shadow:0 20px 40px rgba(0,0,0,.35)}
+
+/* style picker (chrome) */
+.sgroups{display:flex; flex-direction:column; gap:12px}
+.sgroup{display:flex; flex-direction:column; gap:6px}
+.sgroup h4{margin:0; font-size:11px; color:var(--muted); font-weight:500}
+.sgrid{display:grid; grid-template-columns:1fr 1fr; gap:6px}
+.sgrid button{font:inherit; font-size:12.5px; text-align:left; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--panel); color:var(--ink); cursor:pointer}
+.sgrid button[aria-pressed="true"]{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
+.sgrid button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.sty-name{margin:0; font-size:16px; font-weight:600}
+.sty-meta{margin:0; display:grid; grid-template-columns:72px minmax(0,1fr); gap:6px 10px; font-size:12.5px}
+.sty-meta dt{color:var(--muted)} .sty-meta dd{margin:0}
+.toolbar .qs{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.toolbar select{width:auto}
+.seg button:disabled{opacity:.45; cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -242,10 +420,27 @@ input[aria-invalid="true"]{border-color:var(--bad)}
     <div class="tabs" role="tablist" aria-label="Tool">
       <button role="tab" id="tab-type" aria-selected="true" data-tab="type">Type</button>
       <button role="tab" id="tab-color" aria-selected="false" data-tab="color">Color</button>
+      <button role="tab" id="tab-style" aria-selected="false" data-tab="style">Style</button>
     </div>
+
+    <section class="box" data-tab="style" aria-labelledby="sty-l" hidden>
+      <div class="lbl" id="sty-l">UI style</div>
+      <div class="sgroups" id="sgroups"></div>
+    </section>
+
+    <section class="box" data-tab="style" aria-labelledby="styd-l" hidden>
+      <div class="lbl" id="styd-l">About this style</div>
+      <h3 class="sty-name" id="sty-name"></h3>
+      <p class="why" id="sty-desc"></p>
+      <dl class="sty-meta"><dt>Best for</dt><dd id="sty-best"></dd><dt>Watch out</dt><dd id="sty-watch"></dd></dl>
+      <button class="btn" type="button" id="sty-fonts"></button>
+      <label class="toggle" id="sty-sig-wrap"><input type="checkbox" id="sty-sig" checked> <span id="sty-sig-l">Use the style's signature colors</span></label>
+      <p class="note" id="sty-note"></p>
+    </section>
 
     <section class="box" data-tab="color" aria-labelledby="brand-l" hidden>
       <div class="lbl" id="brand-l">Brand color</div>
+      <p class="note status err" id="sig-banner" hidden></p>
       <div class="hexrow">
         <input type="color" id="brand-pick" value="#2f6bff" aria-label="Pick brand color">
         <input type="text" id="brand-hex" value="#2f6bff" spellcheck="false" autocomplete="off" aria-label="Brand color hex">
@@ -372,10 +567,13 @@ input[aria-invalid="true"]{border-color:var(--bad)}
         <button class="chip" data-f="mobile" aria-pressed="false">Mobile</button>
         <button class="chip" data-f="color" aria-pressed="false">Color system</button>
       </div>
+      <div class="qs">
+      <select id="style-q" aria-label="UI style"></select>
       <div class="seg" role="group" aria-label="Preview surface" id="surfaces" style="min-width:220px">
         <button data-s="paper" aria-pressed="true">Paper</button>
         <button data-s="ink" aria-pressed="false">Ink</button>
         <button data-s="brand" aria-pressed="false">Brand</button>
+      </div>
       </div>
     </div>
 
@@ -540,6 +738,7 @@ const FONTS = [
   {n:'Crimson Pro',c:'serif',s:'oldstyle',w:[300,400,500,600,700,800],t:1},
   {n:'Spectral',c:'serif',s:'oldstyle',w:[300,400,500,600,700,800],t:1},
   {n:'Inter',c:'sans',s:'neo-grotesque',w:[300,400,500,600,700,800],t:1},
+  {n:'Roboto',c:'sans',s:'neo-grotesque',w:[300,400,500,700],t:1},
   {n:'Public Sans',c:'sans',s:'neo-grotesque',w:[300,400,500,600,700,800],t:1},
   {n:'Libre Franklin',c:'sans',s:'grotesque',w:[300,400,500,600,700,800],t:1},
   {n:'Schibsted Grotesk',c:'sans',s:'grotesque',w:[400,500,600,700,800],t:1},
@@ -570,6 +769,7 @@ const FONTS = [
   {n:'IBM Plex Mono',c:'mono',s:'mono',w:[400,500,600],t:0},
   {n:'Space Mono',c:'mono',s:'mono',w:[400,700],t:0},
   {n:'DM Mono',c:'mono',s:'mono',w:[400,500],t:0},
+  {n:'Roboto Mono',c:'mono',s:'mono',w:[400,500,700],t:0},
 ];
 FONTS.forEach(f=>f.src='google');
 const GOOGLE_COUNT = FONTS.length;
@@ -643,7 +843,7 @@ const MODES = {
   ]
 };
 
-const state = {display:'Fraunces', body:'Figtree', mono:'JetBrains Mono', mode:'contrast', pool:'all', kit:null, base:16, ratio:1.25, hw:600, track:-0.01, lh:1.55, surface:'paper', filter:'all', locks:{display:false, body:false, mono:false}};
+const state = {display:'Fraunces', body:'Figtree', mono:'JetBrains Mono', mode:'contrast', pool:'all', kit:null, base:16, ratio:1.25, hw:600, track:-0.01, lh:1.55, surface:'paper', style:'base', sig:true, filter:'all', locks:{display:false, body:false, mono:false}};
 const loaded = new Set();
 const $ = id => document.getElementById(id);
 const pick = arr => arr[Math.floor(Math.random()*arr.length)];
@@ -704,7 +904,7 @@ function generate(){
 function analyse(d, b, m){
   const why = `${d.n} brings ${NOTES[d.s]}. ${b.n} adds ${NOTES[b.s]}. ${m.n} handles ${NOTES.mono.replace('fixed-width rhythm for ','')}.`;
   const checks = [];
-  if(d.n===b.n) checks.push(['bad','Same family in both roles. Fine for a single-family system, but this is no longer a pairing.']);
+  if(d.n===b.n) checks.push(['warn','Single-family system. Hierarchy has to come from size and weight alone.']);
   else if(d.c!==b.c) checks.push(['ok',`Clear category contrast (${d.c} over ${b.c}). The roles never compete.`]);
   else if(d.s!==b.s) checks.push(['ok',`Same category, different skeletons (${d.s} vs ${b.s}). Subtle but intentional.`]);
   else checks.push(['warn',`Both are ${d.s} ${d.c}s. Close cousins can read as a mistake. Push weight and size contrast hard.`]);
@@ -839,18 +1039,18 @@ const deltaE = (h1,h2) => { const [L1,C1,H1] = rgbToOklch(hexToRgb(h1)), [L2,C2,
   return Math.hypot(L1-L2, C1*Math.cos(H1*r)-C2*Math.cos(H2*r), C1*Math.sin(H1*r)-C2*Math.sin(H2*r)); };
 let PAL = null, TYPE = null;
 
-function buildPalette(){
-  const [L0,C0,H0] = rgbToOklch(hexToRgb(COLOR.hex));
-  const brand = buildScale(COLOR.hex, COLOR);
-  const neutral = STEPS.map((step,i)=>({step, hex:oklchToHex(N_CURVE[i], COLOR.tint*(0.6+0.4*C_CURVE[i]), H0)}));
+function buildPalette(c = COLOR){
+  const [L0,C0,H0] = rgbToOklch(hexToRgb(c.hex));
+  const brand = buildScale(c.hex, c);
+  const neutral = STEPS.map((step,i)=>({step, hex:oklchToHex(N_CURVE[i], c.tint*(0.6+0.4*C_CURVE[i]), H0)}));
   const out = {brand, neutral};
   Object.entries(STATUS).forEach(([n,st])=>{
     const d = ((H0-st.H+540)%360)-180;
-    const H = (st.H + (C0<0.03 ? 0 : clamp(d,-20,20)*COLOR.harm) + 360)%360;
-    const C = C0<0.03 ? st.C : st.C + (clamp(C0,0.06,0.25)-st.C)*COLOR.harm*0.6;
+    const H = (st.H + (C0<0.03 ? 0 : clamp(d,-20,20)*c.harm) + 360)%360;
+    const C = C0<0.03 ? st.C : st.C + (clamp(C0,0.06,0.25)-st.C)*c.harm*0.6;
     out[n] = buildScale(oklchToHex(st.L,C,H), {hueShift:autoShift(H)});
   });
-  if(COLOR.sec) out.secondary = buildScale(COLOR.sec, {anchor500:COLOR.anchor500, hueShift:autoShift(rgbToOklch(hexToRgb(COLOR.sec))[2])});
+  if(c.sec) out.secondary = buildScale(c.sec, {anchor500:c.anchor500, hueShift:autoShift(rgbToOklch(hexToRgb(c.sec))[2])});
   out.lch = [L0,C0,H0];
   return out;
 }
@@ -896,21 +1096,172 @@ function renderChart(t){
   });
 }
 
+// ---- UI styles ----
+// fonts: suggested [display, body, mono]; sig: signature colors for styles defined by their palette;
+// force: a surface the style requires; canvas: needs a backdrop behind the panels.
+const STYLES = [
+  {id:'base', name:'Baseline', group:'Baseline', desc:'Pairwise\'s neutral starting point: thin borders, modest radius, no effects.', best:'Judging fonts and colors without a style in the way.', watch:'Nothing specific. This is the control.', fonts:null, r:[6,8,12], shadow:'none'},
+  {id:'swiss', name:'Swiss', group:'Structural & minimalist', desc:'International Typographic Style. Strict grid, flush-left asymmetry, heavy sans type as the main graphic, and nothing decorative.', best:'Editorial, portfolios, data-heavy marketing.', watch:'Leans entirely on type. A weak pairing has nowhere to hide.', fonts:['Archivo','Public Sans','IBM Plex Mono'], sig:{brand:'#e30613'}, r:[0,0,0], shadow:'none'},
+  {id:'dark', name:'Dark UI', group:'Structural & minimalist', desc:'Dark gray, not black. Depth comes from lighter elevation layers instead of shadows, and accents are desaturated so they don\'t vibrate.', best:'Media, dev tools, apps used for hours.', watch:'Saturated brand colors glow on dark backgrounds. That\'s why accents are toned down here.', fonts:['Manrope','Inter','JetBrains Mono'], force:'ink', canvas:true, r:[8,12,16], shadow:'none (elevation overlays)'},
+  {id:'flat', name:'Flat 2.0', group:'Structural & minimalist', desc:'Solid fills with no gradients or textures. One subtle shadow returns as the signal that something is clickable.', best:'Consumer apps, onboarding, illustration-led products.', watch:'Without the 2.0 shadow, buttons and labels look the same.', fonts:['Outfit','DM Sans','DM Mono'], r:[4,6,8], shadow:'0 1px 2px rgba(0,0,0,.06)'},
+  {id:'bauhaus', name:'Bauhaus', group:'Structural & minimalist', desc:'Function first. Primary colors, thick rules, circles and triangles, uppercase geometric type.', best:'Brand moments, events, cultural sites.', watch:'Primaries fight status colors. Keep red for errors or for the brand, not both.', fonts:['Syne','Work Sans','Space Mono'], sig:{brand:'#d7301f', sec:'#1f4e9c', third:'#f2c12e'}, r:[0,0,0], shadow:'none', border:'3px solid'},
+  {id:'skeuo', name:'Skeuomorphism', group:'Depth & materiality', desc:'Mimics real materials: bevels, gloss, inset fields, stitching, brushed metal.', best:'Audio tools, games, playful or nostalgic products.', watch:'Heavy. Every surface competes for attention, and it ages fast.', fonts:['Merriweather','Nunito Sans','IBM Plex Mono'], canvas:true, r:[8,12,12], shadow:'inset 0 1px 0 rgba(255,255,255,.55), 0 3px 8px rgba(0,0,0,.25)'},
+  {id:'neu', name:'Neumorphism', group:'Depth & materiality', desc:'Soft UI. Elements extrude from one monochrome surface using a light shadow and a dark shadow.', best:'Concept shots, small controls such as toggles and dials.', watch:'Fails contrast by design. Edges and states are hard to see, so it shouldn\'t carry a whole product.', fonts:['Plus Jakarta Sans','Nunito Sans','DM Mono'], canvas:true, r:[12,16,22], shadow:'9px 9px 18px dark, -9px -9px 18px light'},
+  {id:'glass', name:'Glassmorphism', group:'Depth & materiality', desc:'Frosted, translucent panels over vivid shapes. Depth comes from blur and color bleeding through.', best:'Overlays, widgets, hero sections.', watch:'Text contrast changes with whatever is behind the glass. Check the worst spot, not the average.', fonts:['Sora','Figtree','JetBrains Mono'], canvas:true, r:[12,14,20], shadow:'0 8px 32px rgba(0,0,0,.18)', blur:'20px'},
+  {id:'clay', name:'Claymorphism', group:'Depth & materiality', desc:'Puffy, matte, rounded shapes with inner highlights and big soft outer shadows.', best:'Kids, wellness, friendly consumer products.', watch:'The round, toy-like look reads as unserious in finance, health or enterprise.', fonts:['Rubik','Nunito Sans','DM Mono'], canvas:true, r:[16,24,32], shadow:'16px 18px 36px tint, inset highlights'},
+  {id:'brutal', name:'Neo-Brutalism', group:'Bold & expressive', desc:'Thick black borders, hard offset shadows, loud flat fills, raw uppercase type on a visible grid.', best:'Indie products, creative tools, launch pages that want to be noticed.', watch:'Easy to imitate badly. Without a strict grid it just looks broken.', fonts:['Archivo Black','Space Grotesk','Space Mono'], sig:{brand:'#ff5c8a', sec:'#4d7cff', third:'#ffd23f'}, canvas:true, r:[0,0,0], shadow:'4px 4px 0 #111', border:'3px solid #111'},
+  {id:'aurora', name:'Aurora', group:'Bold & expressive', desc:'Slowly drifting, blurred mesh gradients behind calm, translucent panels and clean type.', best:'AI products, landing pages, hero backgrounds.', watch:'Motion and color pull focus. Keep it behind content, never under body text at full strength.', fonts:['Bricolage Grotesque','Figtree','DM Mono'], sig:{brand:'#7b5cff', sec:'#00c2a8'}, canvas:true, r:[12,14,20], shadow:'none', blur:'12px'},
+  {id:'cyber', name:'Cyberpunk HUD', group:'Bold & expressive', desc:'Neon on near-black, corner brackets, scanlines, glow and monospace data. Hover a headline to see the glitch.', best:'Games, security and crypto dashboards, sci-fi brands.', watch:'Neon on black is tiring at length, and glow lowers effective contrast for small text.', fonts:['Big Shoulders Display','Space Grotesk','JetBrains Mono'], sig:{brand:'#00e5ff', sec:'#ff2bd6', third:'#b6ff00'}, force:'ink', canvas:true, r:[0,0,0], shadow:'0 0 12px glow'},
+  {id:'material', name:'Material 3', group:'System-driven & spatial', desc:'Google\'s system. Tinted tonal surfaces, pill buttons, filled text fields, snackbars and a strict elevation scale.', best:'Android, admin tools, teams that want a documented standard.', watch:'Instantly recognizable as Google. Your brand has to come through color and type.', fonts:['Roboto','Roboto','Roboto Mono'], canvas:true, r:[4,12,28], shadow:'0 1px 2px rgba(0,0,0,.3), 0 1px 3px 1px rgba(0,0,0,.15)'},
+  {id:'bento', name:'Bento', group:'System-driven & spatial', desc:'Every piece of content is a rounded cell on one shared grid, mixing sizes like a bento box.', best:'Dashboards, feature overviews, settings, widget-heavy pages.', watch:'Cells need a clear reading order, or the page becomes a pile of equal tiles.', fonts:['Schibsted Grotesk','Inter','JetBrains Mono'], canvas:true, r:[12,18,24], shadow:'none'},
+  {id:'spatial', name:'Spatial', group:'System-driven & spatial', desc:'visionOS-style glass floating in a room. No solid backgrounds, highlights on hover in place of gaze, generous radii.', best:'AR/VR, immersive media, sending a "future" signal.', watch:'On a flat screen the room is faked. Real spatial UI must handle any background behind it.', fonts:['Inter','Inter','JetBrains Mono'], force:'ink', canvas:true, r:[18,28,999], shadow:'0 24px 60px rgba(0,0,0,.35)', blur:'28px'}
+];
+const STYLE_BY = Object.fromEntries(STYLES.map(x=>[x.id,x]));
+const mixHex = (a,b,t) => { const A = hexToRgb(a), B = hexToRgb(b); return '#'+A.map((v,i)=>Math.round((v+(B[i]-v)*t)*255).toString(16).padStart(2,'0')).join(''); };
+const hexA = (hex,a) => hex + Math.round(a*255).toString(16).padStart(2,'0');
+const neon = hex => { const [, C, H] = rgbToOklch(hexToRgb(hex)); return oklchToHex(0.86, Math.max(C,0.17), H); };
+const activeSig = () => { const st = STYLE_BY[state.style]; return st.sig && state.sig ? st.sig : null; };
+
+// Adjust the surface tokens and add the extra variables a style's CSS reads.
+function styleVars(id, t){
+  const v = {}, dark = t.dark, H = PAL.lch[2], s2 = PAL.secondary ? 'secondary' : 'info';
+  const set = () => {
+    v['--pv-accent-hi'] = mixHex(t.accent,'#ffffff',0.3);
+    v['--pv-accent-deep'] = mixHex(t.accent,'#000000',0.25);
+    v['--pv-accent-soft'] = mixHex(t.accent,t.bg,0.86);
+    v['--pv-accent-text'] = t.accentText || (dark ? pget('brand',300) : pget('brand',600));
+    v['--pv-hi'] = mixHex(t.bg,'#ffffff',dark?0.12:0.6);
+    v['--pv-emboss'] = dark ? 'rgba(0,0,0,.6)' : 'rgba(255,255,255,.75)';
+    v['--tone-1'] = pget('brand',dark?800:100); v['--tone-2'] = pget(s2,dark?800:100); v['--tone-3'] = pget('success',dark?800:100);
+    v['--pv-accent3'] = (activeSig()&&activeSig().third) || pget('warning',300);
+    v['--hard'] = dark ? t.fg : '#111111';
+  };
+  let canvas = null, hdr = null;
+  const sub = n => pget('neutral',n);
+  switch(id){
+    case 'dark': {
+      const base = oklchToHex(0.2, 0.008, H);
+      Object.assign(t, {bg:base, fg:mixHex(base,'#ffffff',0.87), muted:mixHex(base,'#ffffff',0.6), line:mixHex(base,'#ffffff',0.14), card:mixHex(base,'#ffffff',0.08)});
+      const [, C] = rgbToOklch(hexToRgb(baseOf('brand').hex));
+      t.accent = oklchToHex(0.78, C*0.55, H);
+      ['success','warning','info','error'].forEach(k=>{ const [, Ck, Hk] = rgbToOklch(hexToRgb(pget(k,300))); t[k] = oklchToHex(0.8, Ck*0.6, Hk); });
+      v['--el1'] = mixHex(base,'#ffffff',0.05); v['--el2'] = mixHex(base,'#ffffff',0.09);
+      canvas = base; hdr = t.muted; break;
+    }
+    case 'neu': {
+      t.bg = state.surface==='ink' ? sub(800) : state.surface==='brand' ? pget('brand',800) : sub(100);
+      t.card = t.bg; t.line = t.bg; t.dark = state.surface!=='paper';
+      v['--neu-d'] = mixHex(t.bg,'#000000',t.dark?0.45:0.16); v['--neu-l'] = mixHex(t.bg,'#ffffff',t.dark?0.07:0.75);
+      canvas = t.bg; hdr = t.muted; break;
+    }
+    case 'clay': {
+      canvas = dark ? sub(950) : pget('brand',100);
+      t.bg = dark ? sub(900) : '#ffffff'; t.card = t.bg;
+      v['--clay-d'] = hexA(dark ? '#000000' : pget('brand',800), dark?0.55:0.22);
+      v['--clay-in-d'] = 'rgba(0,0,0,.08)'; v['--clay-in-l'] = dark ? 'rgba(255,255,255,.06)' : 'rgba(255,255,255,.75)';
+      hdr = dark ? sub(300) : pget('brand',800); break;
+    }
+    case 'glass': {
+      const A = pget('brand',400), B = pget(s2,300), Cc = pget('success',300);
+      canvas = `radial-gradient(circle at 16% 150px, ${A} 0 120px, transparent 121px) 0 0/100% 860px repeat-y, radial-gradient(circle at 86% 430px, ${B} 0 100px, transparent 101px) 0 0/100% 860px repeat-y, radial-gradient(circle at 52% 720px, ${Cc} 0 140px, transparent 141px) 0 0/100% 860px repeat-y, linear-gradient(160deg, ${pget('brand',700)}, ${pget(s2,600)})`;
+      hdr = '#ffffff'; break;
+    }
+    case 'aurora': {
+      const A = pget('brand',400), B = pget(s2,300), Cc = pget('success',300), D = pget('brand',200);
+      canvas = dark ? sub(950) : '#f5f6fa';
+      v['--aurora'] = `radial-gradient(640px 420px at 12% 220px, ${A}, transparent 70%) 0 0/100% 1200px repeat-y, radial-gradient(560px 460px at 88% 520px, ${B}, transparent 70%) 0 0/100% 1200px repeat-y, radial-gradient(700px 380px at 45% 950px, ${Cc}, transparent 70%) 0 0/100% 1200px repeat-y, radial-gradient(500px 300px at 70% 60px, ${D}, transparent 70%) 0 0/100% 1200px repeat-y`;
+      hdr = dark ? sub(200) : sub(800); break;
+    }
+    case 'spatial': {
+      Object.assign(t, {bg:'#1c1c1e', fg:'#ffffff', muted:'#c7c7cc', line:'#ffffff2e', card:'#ffffff14', accent:pget('brand',300)});
+      canvas = 'linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,.35)), radial-gradient(1200px 600px at 72% 0, #efe6d6, transparent 60%), linear-gradient(160deg, #b9b0a3 0%, #8a8479 45%, #4d4a46 100%)';
+      hdr = '#ffffff'; break;
+    }
+    case 'brutal': {
+      t.bg = dark ? sub(900) : '#ffffff';
+      const base = dark ? sub(950) : ((activeSig()&&activeSig().third) ? mixHex(activeSig().third,'#ffffff',0.55) : pget('warning',100));
+      const gl = hexA(dark ? '#ffffff' : '#111111', 0.1);
+      canvas = `linear-gradient(${gl} 1px, transparent 1px) 0 0/28px 28px, linear-gradient(90deg, ${gl} 1px, transparent 1px) 0 0/28px 28px, ${base}`;
+      hdr = dark ? '#ffffff' : '#111111'; break;
+    }
+    case 'cyber': {
+      const acc = neon(baseOf('brand').hex), acc2 = PAL.secondary ? neon(baseOf('secondary').hex) : '#ff2bd6';
+      Object.assign(t, {bg:'#080b12', card:'#0c121c', fg:'#d9f7ff', muted:'#7c97a8', accent:acc, accent2:acc2, accent2Text:acc2, line:hexA(acc,0.35), dark:true});
+      ['success','warning','info','error'].forEach(k=>{ t[k] = neon(pget(k,500)); });
+      v['--glow'] = hexA(acc,0.45);
+      canvas = `linear-gradient(${hexA(acc,0.07)} 1px, transparent 1px) 0 0/32px 32px, linear-gradient(90deg, ${hexA(acc,0.07)} 1px, transparent 1px) 0 0/32px 32px, #04060a`;
+      hdr = acc; break;
+    }
+    case 'material': {
+      if(dark){ t.bg = sub(900); t.card = sub(800); canvas = sub(950); }
+      else { t.bg = mixHex(pget('brand',50),'#ffffff',0.6); t.card = mixHex(pget('brand',100),pget('brand',50),0.5); canvas = mixHex(pget('brand',50),sub(100),0.5); }
+      hdr = t.muted; break;
+    }
+    case 'bento': {
+      canvas = t.bg; t.card = dark ? sub(900) : sub(100); hdr = t.muted; break;
+    }
+    case 'skeuo': {
+      canvas = `repeating-linear-gradient(45deg, rgba(0,0,0,.035) 0 2px, transparent 2px 5px), repeating-linear-gradient(-45deg, rgba(255,255,255,.05) 0 2px, transparent 2px 5px), ${dark ? sub(900) : sub(200)}`;
+      t.card = dark ? sub(800) : sub(100); hdr = dark ? sub(300) : sub(700); break;
+    }
+    case 'swiss': {
+      if(!dark) t.card = '#ffffff';
+      break;
+    }
+  }
+  set();
+  if(canvas){ v['--canvas'] = canvas; v['--hdr'] = hdr || t.muted; }
+  return {v, canvas:!!canvas};
+}
+
+function renderStylePanel(){
+  const st = STYLE_BY[state.style];
+  document.querySelectorAll('#sgroups button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.style===st.id));
+  $('style-q').value = st.id;
+  $('sty-name').textContent = st.name;
+  $('sty-desc').textContent = st.desc;
+  $('sty-best').textContent = st.best;
+  $('sty-watch').textContent = st.watch;
+  $('sty-fonts').hidden = !st.fonts;
+  if(st.fonts) $('sty-fonts').textContent = `Use suggested fonts: ${st.fonts[0]}${st.fonts[1]!==st.fonts[0]?' + '+st.fonts[1]:''}`;
+  $('sty-sig-wrap').hidden = !st.sig;
+  $('sty-sig').checked = state.sig;
+  const notes = [];
+  if(st.force) notes.push('This style sets its own dark surface, so the Paper / Ink / Brand switch is off.');
+  if(Object.values(state.locks).some(Boolean) && st.fonts) notes.push('Locked font roles keep their font.');
+  $('sty-note').textContent = notes.join(' ');
+}
+
 function renderColor(){
-  PAL = buildPalette();
-  const t = surfaceTokens(state.surface);
-  const st = $('stage').style;
-  [['bg','bg'],['fg','fg'],['muted','muted'],['line','line'],['card','card'],['accent','accent'],['danger','error'],['success','success'],['warning','warning'],['info','info']]
-    .forEach(([v,k])=>st.setProperty('--pv-'+v, t[k]));
-  st.setProperty('--pv-on-accent', onColor(t.accent));
+  const sig = activeSig();
+  PAL = buildPalette(sig ? {...COLOR, hex:sig.brand, sec:sig.sec || null, anchor500:false, hueShift:autoShift(rgbToOklch(hexToRgb(sig.brand))[2])} : COLOR);
+  const sty = STYLE_BY[state.style];
+  const surf = sty.force || state.surface;
+  const t = surfaceTokens(surf);
   // second color: fills use the scale step that suits the surface; text uses a step that passes on it
   const s2 = PAL.secondary ? 'secondary' : 'brand';
-  st.setProperty('--pv-accent2', state.surface==='paper' ? baseOf(s2).hex : pget(s2, state.surface==='ink' ? 400 : 300));
-  st.setProperty('--pv-accent2-text', !PAL.secondary ? t.fg : state.surface==='paper' ? pget('secondary',600) : pget('secondary', state.surface==='ink' ? 300 : 200));
+  t.accent2 = surf==='paper' ? baseOf(s2).hex : pget(s2, surf==='ink' ? 400 : 300);
+  t.accent2Text = !PAL.secondary ? null : surf==='paper' ? pget('secondary',600) : pget('secondary', surf==='ink' ? 300 : 200);
+  const {v, canvas} = styleVars(sty.id, t);
+  const stage = $('stage'), st = stage.style;
+  stage.dataset.style = sty.id;
+  stage.dataset.canvas = canvas ? '1' : '';
+  [['bg','bg'],['fg','fg'],['muted','muted'],['line','line'],['card','card'],['accent','accent'],['danger','error'],['success','success'],['warning','warning'],['info','info'],['accent2','accent2']]
+    .forEach(([k,key])=>st.setProperty('--pv-'+k, t[key]));
+  st.setProperty('--pv-accent2-text', t.accent2Text || t.fg);
+  st.setProperty('--pv-on-accent', onColor(t.accent));
+  st.setProperty('--pv-on-accent2', onColor(t.accent2));
+  ['--canvas','--hdr','--aurora','--glow','--neu-d','--neu-l','--clay-d','--clay-in-d','--clay-in-l','--el1','--el2'].forEach(k=>st.removeProperty(k));
+  Object.entries(v).forEach(([k,val])=>st.setProperty(k,val));
+  document.querySelectorAll('#surfaces button').forEach(b=>{ b.disabled = !!sty.force; b.title = sty.force ? `${sty.name} sets its own surface` : ''; });
+  $('sig-banner').hidden = !sig;
+  if(sig) $('sig-banner').textContent = `Showing ${sty.name}'s signature colors. Turn them off in the Style tab to see yours.`;
+  renderStylePanel();
 
   // status alerts: tinted on light surfaces, deep on dark ones
   document.querySelectorAll('#alerts .alert').forEach(a=>{
     const k = a.dataset.k, steps = t.dark ? [950,800,100,400] : [50,200,900,600];
+    if(sty.id==='cyber'){ a.style.setProperty('--a-bg','#0c121c'); a.style.setProperty('--a-line', hexA(t[k],0.5)); a.style.setProperty('--a-fg', t[k]); a.style.setProperty('--a-icon', t[k]); a.style.setProperty('--a-on','#080b12'); return; }
     const icon = pget(k, steps[3]);
     a.style.setProperty('--a-bg', pget(k,steps[0])); a.style.setProperty('--a-line', pget(k,steps[1]));
     a.style.setProperty('--a-fg', pget(k,steps[2])); a.style.setProperty('--a-icon', icon); a.style.setProperty('--a-on', onColor(icon));
@@ -957,7 +1308,7 @@ function renderColor(){
     const r2 = ratio(pget('secondary',600),'#ffffff'), rb = ratio(sb.hex, onColor(sb.hex));
     checks.splice(2,0,[r2>=4.5?'ok':r2>=3?'warn':'bad', `Second color as text: secondary-600 on white is ${fr(r2)}:1 (${grade(r2)}).`],
       [rb>=4.5?'ok':rb>=3?'warn':'bad', `Second color button: ${onColor(sb.hex)==='#ffffff'?'white':'ink'} text on secondary-${sb.step} is ${fr(rb)}:1 (${grade(rb)}).`]);
-    const [Ls2,Cs2,Hs2] = rgbToOklch(hexToRgb(COLOR.sec));
+    const [Ls2,Cs2,Hs2] = rgbToOklch(hexToRgb(sb.hex));
     $('sec-placed').textContent = `Sits at ${sb.step} (OKLCH ${Ls2.toFixed(2)} ${Cs2.toFixed(3)} ${Math.round(Hs2)}°), ${Math.round(hueGap(H0,Hs2))}° from the brand hue.`;
   }
   $('color-checks').innerHTML = checks.map(([k,txt])=>`<li><span class="dot ${k}" aria-label="${k}"></span><span>${txt}</span></li>`).join('');
@@ -973,18 +1324,20 @@ function renderExport(){
   const rem = px => (px/16).toFixed(3)+'rem';
   const sizes = {h1:z.h1, h2:z.h2, h3:z.h3, h4:z.h4, h5:z.h5, body:z.body, small:z.small};
   const fmt = $('fmt').value;
+  const sty = STYLE_BY[state.style];
+  const styCss = `\n\n  /* UI style: ${sty.name} */\n  --radius-sm: ${sty.r[0]}px;\n  --radius-md: ${sty.r[1]}px;\n  --radius-lg: ${sty.r[2]}px;\n  --shadow-card: ${sty.shadow};` + (sty.border ? `\n  --border-card: ${sty.border};` : '') + (sty.blur ? `\n  --blur-surface: ${sty.blur};` : '');
   let out;
   if(fmt==='css'){
     out = `${links}\n\n:root {\n  --font-display: ${stack(d)};\n  --font-body: ${stack(b)};\n  --font-mono: ${stack(m)};\n  --weight-display: ${state.hw};\n  --weight-body-strong: ${bw};\n  --tracking-display: ${state.track}em;\n  --leading-body: ${state.lh};\n`
       + Object.entries(sizes).map(([k,v])=>`  --text-${k}: ${rem(v)};`).join('\n') + '\n\n'
-      + scaleNames().map(n=>PAL[n].map(x=>`  --color-${n}-${x.step}: ${x.hex};`).join('\n')).join('\n\n') + '\n}';
+      + scaleNames().map(n=>PAL[n].map(x=>`  --color-${n}-${x.step}: ${x.hex};`).join('\n')).join('\n\n') + styCss + '\n}';
   } else if(fmt==='tw'){
     const colors = scaleNames().map(n=>`        ${n}: {\n${PAL[n].map(x=>`          ${x.step}: '${x.hex}',`).join('\n')}\n          DEFAULT: '${(PAL[n].find(x=>x.base)||PAL[n][5]).hex}',\n        },`).join('\n');
-    out = `// ${links.replace(/\n/g,'\n// ')}\n/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n${colors}\n      },\n      fontFamily: {\n        display: ${JSON.stringify(famArr(d)).replace(/"/g,"'").replace(/,/g,', ')},\n        body: ${JSON.stringify(famArr(b)).replace(/"/g,"'").replace(/,/g,', ')},\n        mono: ${JSON.stringify(famArr(m)).replace(/"/g,"'").replace(/,/g,', ')},\n      },\n      fontSize: {\n${Object.entries(sizes).map(([k,v])=>`        ${k}: '${rem(v)}',`).join('\n')}\n      },\n    },\n  },\n};`;
+    out = `// ${links.replace(/\n/g,'\n// ')}\n/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n${colors}\n      },\n      fontFamily: {\n        display: ${JSON.stringify(famArr(d)).replace(/"/g,"'").replace(/,/g,', ')},\n        body: ${JSON.stringify(famArr(b)).replace(/"/g,"'").replace(/,/g,', ')},\n        mono: ${JSON.stringify(famArr(m)).replace(/"/g,"'").replace(/,/g,', ')},\n      },\n      fontSize: {\n${Object.entries(sizes).map(([k,v])=>`        ${k}: '${rem(v)}',`).join('\n')}\n      },\n      // UI style: ${sty.name}\n      borderRadius: { sm: '${sty.r[0]}px', md: '${sty.r[1]}px', lg: '${sty.r[2]}px' },\n      boxShadow: { card: ${JSON.stringify(sty.shadow).replace(/"/g,"'")} },\n    },\n  },\n};`;
   } else if(fmt==='tw4'){
     out = `/* ${links.replace(/\n/g,' ')} */\n@import "tailwindcss";\n\n@theme {\n  --font-display: ${stack(d)};\n  --font-body: ${stack(b)};\n  --font-mono: ${stack(m)};\n`
       + Object.entries(sizes).map(([k,v])=>`  --text-${k}: ${rem(v)};`).join('\n') + '\n\n'
-      + scaleNames().map(n=>PAL[n].map(x=>`  --color-${n}-${x.step}: ${x.hex};`).join('\n')).join('\n\n') + '\n}';
+      + scaleNames().map(n=>PAL[n].map(x=>`  --color-${n}-${x.step}: ${x.hex};`).join('\n')).join('\n\n') + styCss + '\n}';
   } else {
     const tok = {
       color: Object.fromEntries(scaleNames().map(n=>[n, Object.fromEntries(PAL[n].map(x=>[x.step, {$type:'color', $value:x.hex}]))])),
@@ -992,7 +1345,9 @@ function renderExport(){
         family: {display:{$type:'fontFamily', $value:famArr(d)}, body:{$type:'fontFamily', $value:famArr(b)}, mono:{$type:'fontFamily', $value:famArr(m)}},
         weight: {display:{$type:'fontWeight', $value:state.hw}, strong:{$type:'fontWeight', $value:bw}},
         size: Object.fromEntries(Object.entries(sizes).map(([k,v])=>[k, {$type:'dimension', $value:rem(v)}]))
-      }
+      },
+      radius: {$description:`UI style: ${sty.name}`, sm:{$type:'dimension', $value:`${sty.r[0]}px`}, md:{$type:'dimension', $value:`${sty.r[1]}px`}, lg:{$type:'dimension', $value:`${sty.r[2]}px`}},
+      shadow: {card:{$type:'string', $value:sty.shadow}}
     };
     out = JSON.stringify(tok, null, 2);
   }
@@ -1062,6 +1417,23 @@ $('hshift').addEventListener('input', e=>{ COLOR.hueShift = +e.target.value; ren
 $('ntint').addEventListener('input', e=>{ COLOR.tint = +e.target.value; renderColor(); });
 $('harm').addEventListener('input', e=>{ COLOR.harm = +e.target.value; renderColor(); });
 $('fmt').addEventListener('change', renderExport);
+// style picker
+(function(){
+  const groups = [...new Set(STYLES.map(x=>x.group))];
+  $('sgroups').innerHTML = groups.map(g=>`<div class="sgroup"><h4>${g}</h4><div class="sgrid">${STYLES.filter(x=>x.group===g).map(x=>`<button type="button" data-style="${x.id}" aria-pressed="false">${x.name}</button>`).join('')}</div></div>`).join('');
+  $('style-q').innerHTML = groups.map(g=>`<optgroup label="${g}">${STYLES.filter(x=>x.group===g).map(x=>`<option value="${x.id}">${x.name}</option>`).join('')}</optgroup>`).join('');
+})();
+function setStyle(id){ state.style = id; renderColor(); }
+$('sgroups').addEventListener('click', e=>{ const b = e.target.closest('button'); if(b) setStyle(b.dataset.style); });
+$('style-q').addEventListener('change', e=>setStyle(e.target.value));
+$('sty-sig').addEventListener('change', e=>{ state.sig = e.target.checked; renderColor(); });
+$('sty-fonts').addEventListener('click', ()=>{
+  const f = STYLE_BY[state.style].fonts; if(!f) return;
+  ['display','body','mono'].forEach((k,i)=>{ if(!state.locks[k] && BY[f[i]]) state[k] = f[i]; });
+  if(!state.locks.display) state.hw = defaultWeight(BY[state.display]);
+  render(); renderColor();
+});
+
 function setSecond(hex, fromRule){
   COLOR.sec = hex; $('sec-hex').value = hex; $('sec-pick').value = hex; $('sec-hex').removeAttribute('aria-invalid');
   if(!fromRule){ COLOR.secRule = null; setPressed('harmony','rule',''); }

@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pairwise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky control rail on the left, a stack of labelled specimen frames on the right. Frames are proof sheets; chrome stays quiet so the type under test is the loudest thing on screen. */
+:root{
+  --bg:#ECEEF1; --panel:#FFFFFF; --ink:#14171C; --muted:#5A6371; --line:#D3D8DF; --accent:#2B44D6; --accent-ink:#FFFFFF;
+  --ok:#18794E; --warn:#A35C00; --bad:#C22F2F; --chip:#E3E7EE;
+  --ui:'IBM Plex Sans', system-ui, sans-serif; --ui-mono:'IBM Plex Mono', ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F1114; --panel:#171A1F; --ink:#E6E9EE; --muted:#97A0AD; --line:#2A2F37; --accent:#8C9BFF; --accent-ink:#0F1114;
+  --ok:#4CC38A; --warn:#F0A848; --bad:#FF7A7A; --chip:#232831; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0F1114; --panel:#171A1F; --ink:#E6E9EE; --muted:#97A0AD; --line:#2A2F37; --accent:#8C9BFF; --accent-ink:#0F1114;
+  --ok:#4CC38A; --warn:#F0A848; --bad:#FF7A7A; --chip:#232831; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--ink); font-family:var(--ui); font-size:14px; line-height:1.45}
+.app{display:grid; grid-template-columns:340px minmax(0,1fr); gap:24px; padding-block:20px; padding-inline:20px; max-width:1480px; margin:0 auto}
+@media (max-width:920px){ .app{grid-template-columns:minmax(0,1fr); padding-inline:16px} }
+
+/* ---------- control rail ---------- */
+.rail{position:sticky; top:calc(env(safe-area-inset-top,0px) + 20px); align-self:start; display:flex; flex-direction:column; gap:14px; max-height:calc(100vh - 40px); overflow:auto; padding-right:2px}
+@media (max-width:920px){ .rail{position:static; max-height:none; overflow:visible} }
+.brand{display:flex; align-items:baseline; justify-content:space-between; gap:8px}
+.brand h1{margin:0; font-size:20px; font-weight:600; letter-spacing:-0.01em}
+.brand span{font-family:var(--ui-mono); font-size:11px; color:var(--muted)}
+.box{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:12px}
+.lbl{font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); font-weight:500}
+.seg{display:grid; grid-auto-flow:column; grid-auto-columns:1fr; background:var(--chip); border-radius:8px; padding:3px; gap:3px}
+.seg button{border:0; background:transparent; color:var(--muted); font:inherit; font-size:12.5px; padding:6px 4px; border-radius:6px; cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--panel); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.role{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:6px 8px; align-items:center}
+.role .lbl{grid-column:1/-1; display:flex; justify-content:space-between}
+.role .lbl em{font-style:normal; text-transform:none; letter-spacing:0; font-family:var(--ui-mono)}
+select,input[type="text"]{width:100%; font:inherit; color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:7px; padding:7px 9px; min-width:0}
+.lock{border:1px solid var(--line); background:var(--panel); color:var(--muted); border-radius:7px; width:34px; height:34px; cursor:pointer; display:grid; place-items:center}
+.lock[aria-pressed="true"]{background:var(--ink); color:var(--panel); border-color:var(--ink)}
+.lock svg{width:15px; height:15px}
+.btn{font:inherit; font-weight:500; border-radius:8px; padding:9px 12px; cursor:pointer; border:1px solid var(--line); background:var(--panel); color:var(--ink)}
+.btn.primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+.btn:focus-visible,.seg button:focus-visible,.lock:focus-visible,select:focus-visible,input:focus-visible,.chip:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.row{display:flex; gap:8px; flex-wrap:wrap}
+.row > .btn{flex:1}
+kbd{font-family:var(--ui-mono); font-size:11px; border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; padding:0 4px; color:var(--muted)}
+.ctl{display:grid; grid-template-columns:96px minmax(0,1fr) 52px; gap:8px; align-items:center; font-size:12.5px}
+.ctl output{font-family:var(--ui-mono); font-size:12px; text-align:right; color:var(--muted); font-variant-numeric:tabular-nums}
+.ctl input[type="range"]{width:100%; accent-color:var(--accent)}
+.why{font-size:13px; color:var(--ink); margin:0}
+.checks{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px}
+.checks li{display:grid; grid-template-columns:18px minmax(0,1fr); gap:6px; font-size:12.5px; align-items:start}
+.checks .dot{width:9px; height:9px; border-radius:50%; margin-top:5px}
+.dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.bad{background:var(--bad)}
+.adobe{font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:8px; margin:0}
+.adobe p{margin:0}
+.b{font-weight:600}
+.mono-ui{font-family:var(--ui-mono); font-size:11.5px}
+.lib{display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:13px}
+.lib small{color:var(--muted); font-size:12px}
+.state{font-size:11px; font-family:var(--ui-mono); padding:2px 8px; border-radius:999px; background:var(--chip); color:var(--muted)}
+.state.on{color:var(--ok)}
+.state.err{color:var(--bad)}
+.kitrow{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:6px}
+.kitrow .btn{padding:7px 12px}
+.status{min-height:1em}
+.status.err{color:var(--bad)} .status.ok{color:var(--ok)}
+.seg button:disabled{opacity:.45; cursor:not-allowed}
+.afams{display:flex; flex-direction:column; gap:6px; border-top:1px solid var(--line); padding-top:10px}
+.afam{display:grid; grid-template-columns:minmax(0,1fr) 150px; gap:8px; align-items:center; font-size:12.5px}
+.afam .nm{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.afam select{padding:4px 6px; font-size:12px}
+.afams .head{display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--muted)}
+.linkbtn{all:unset; cursor:pointer; color:var(--accent); font-size:12px}
+.linkbtn:focus-visible{outline:2px solid var(--accent)}
+.saved{display:flex; flex-direction:column; gap:6px}
+.saved button{all:unset; cursor:pointer; padding:7px 9px; border:1px solid var(--line); border-radius:7px; font-size:12.5px; display:flex; justify-content:space-between; gap:8px}
+.saved button:focus-visible{outline:2px solid var(--accent)}
+.saved small{color:var(--muted); font-family:var(--ui-mono)}
+.empty{font-size:12.5px; color:var(--muted); margin:0}
+
+/* ---------- stage ---------- */
+.stage{display:flex; flex-direction:column; gap:18px; min-width:0}
+.toolbar{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap}
+.chips{display:flex; gap:6px; flex-wrap:wrap}
+.chip{font:inherit; font-size:12.5px; border:1px solid var(--line); background:var(--panel); color:var(--ink); border-radius:999px; padding:5px 12px; cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--panel); border-color:var(--ink)}
+.grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px}
+.grid .wide{grid-column:1/-1}
+@media (max-width:1180px){ .grid{grid-template-columns:minmax(0,1fr)} }
+.frame{display:flex; flex-direction:column; gap:6px; min-width:0}
+.frame > header{display:flex; justify-content:space-between; font-size:11px; color:var(--muted); font-family:var(--ui-mono)}
+
+/* ---------- preview surfaces (independent of page theme by design) ---------- */
+.pv{--pv-bg:#FFFFFF; --pv-fg:#16181B; --pv-muted:#5E636B; --pv-line:#E2E4E8; --pv-card:#F5F6F8; --pv-accent:#1F4FFF; --pv-on-accent:#FFFFFF; --pv-danger:#C0352B;
+  background:var(--pv-bg); color:var(--pv-fg); border:1px solid var(--line); border-radius:10px; padding:clamp(18px,3vw,32px);
+  font-family:var(--f-body); font-size:var(--base); line-height:var(--lh); overflow:hidden; min-width:0}
+.stage[data-surface="ink"] .pv{--pv-bg:#15171B; --pv-fg:#F0EFEA; --pv-muted:#A2A6AD; --pv-line:#2B2F36; --pv-card:#1E2127; --pv-accent:#C9F04A; --pv-on-accent:#15171B; --pv-danger:#FF8A80}
+.stage[data-surface="brand"] .pv{--pv-bg:#0E3B37; --pv-fg:#EDF5F2; --pv-muted:#A9C6BF; --pv-line:#21524C; --pv-card:#134640; --pv-accent:#F3C04F; --pv-on-accent:#0E3B37; --pv-danger:#FFB4A6}
+.pv h1,.pv h2,.pv h3,.pv h4,.pv .d{font-family:var(--f-display); font-weight:var(--hw); letter-spacing:var(--track); line-height:1.08; margin:0; text-wrap:balance}
+.pv h1{font-size:min(var(--s1),11vw)} .pv h2{font-size:min(var(--s2),9vw)} .pv h3{font-size:var(--s3)} .pv h4{font-size:var(--s4)}
+.pv p{margin:0; max-width:62ch}
+.pv .mono{font-family:var(--f-mono)}
+.pv .muted{color:var(--pv-muted)}
+.pv .eyebrow{font-family:var(--f-mono); font-size:calc(var(--base)*.75); letter-spacing:.08em; text-transform:uppercase; color:var(--pv-muted)}
+.pv .small{font-size:calc(var(--base)*.875)}
+.pv .b{font-weight:var(--bw)}
+.pv .pbtn{font-family:var(--f-body); font-weight:var(--bw); font-size:calc(var(--base)*.95); border-radius:8px; padding:.7em 1.15em; border:1px solid var(--pv-fg); background:transparent; color:var(--pv-fg); cursor:pointer}
+.pv .pbtn.fill{background:var(--pv-accent); border-color:var(--pv-accent); color:var(--pv-on-accent)}
+.stack{display:flex; flex-direction:column; gap:1em}
+
+/* hero */
+.hero{display:flex; flex-direction:column; gap:1.1em; padding-block:.5em}
+.hero .lead{font-size:calc(var(--base)*1.15); color:var(--pv-muted)}
+.nav{display:flex; justify-content:space-between; align-items:center; gap:1em; padding-bottom:1.2em; margin-bottom:1.6em; border-bottom:1px solid var(--pv-line); flex-wrap:wrap}
+.nav .logo{font-size:calc(var(--base)*1.25)}
+.nav ul{display:flex; gap:1.4em; list-style:none; margin:0; padding:0; font-size:calc(var(--base)*.9); flex-wrap:wrap}
+
+/* scale ladder */
+.ladder{display:flex; flex-direction:column}
+.ladder > div{display:grid; grid-template-columns:72px minmax(0,1fr); gap:12px; align-items:baseline; padding-block:.45em; border-bottom:1px solid var(--pv-line)}
+.ladder > div:last-child{border-bottom:0}
+.ladder .tag{font-family:var(--ui-mono); font-size:11px; color:var(--pv-muted); font-variant-numeric:tabular-nums}
+.ladder .t{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.15}
+
+/* article */
+.article{display:flex; flex-direction:column; gap:1em}
+.article .byline{display:flex; gap:.8em; align-items:center; font-size:calc(var(--base)*.85)}
+.article .avatar{width:2.2em; height:2.2em; border-radius:50%; background:var(--pv-accent); flex:none}
+.article blockquote{margin:.4em 0; padding-left:1em; border-left:3px solid var(--pv-accent); font-family:var(--f-display); font-size:var(--s4); line-height:1.25; font-weight:var(--hw); letter-spacing:var(--track)}
+.article p.dropcap::first-letter{font-family:var(--f-display); float:left; font-size:3.4em; line-height:.85; padding:.06em .1em 0 0; font-weight:var(--hw)}
+
+/* dashboard */
+.dash{display:flex; flex-direction:column; gap:1.2em}
+.kpis{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.8em}
+@media (max-width:560px){ .kpis{grid-template-columns:minmax(0,1fr)} }
+.kpi{background:var(--pv-card); border-radius:8px; padding:.9em 1em; display:flex; flex-direction:column; gap:.25em; min-width:0}
+.kpi .v{font-family:var(--f-display); font-size:var(--s3); font-weight:var(--hw); letter-spacing:var(--track); font-variant-numeric:tabular-nums; line-height:1.1}
+.delta{font-family:var(--f-mono); font-size:calc(var(--base)*.75)}
+.tbl{overflow-x:auto}
+.tbl table{width:100%; border-collapse:collapse; font-size:calc(var(--base)*.9); font-variant-numeric:tabular-nums}
+.tbl th{font-weight:var(--bw); text-align:left; color:var(--pv-muted); font-size:calc(var(--base)*.78); text-transform:uppercase; letter-spacing:.05em; padding:.5em .6em; border-bottom:1px solid var(--pv-line)}
+.tbl td{padding:.6em; border-bottom:1px solid var(--pv-line); white-space:nowrap}
+.tbl td.num{text-align:right; font-family:var(--f-mono)}
+.tbl th.num{text-align:right}
+.pill{display:inline-block; font-size:calc(var(--base)*.75); font-weight:var(--bw); padding:.15em .6em; border-radius:999px; border:1px solid currentColor}
+
+/* form */
+.form{display:flex; flex-direction:column; gap:1em; max-width:28em}
+.field{display:flex; flex-direction:column; gap:.35em}
+.field label{font-weight:var(--bw); font-size:calc(var(--base)*.9)}
+.field .in{border:1px solid var(--pv-line); background:var(--pv-card); border-radius:7px; padding:.65em .8em; font-family:var(--f-body); font-size:var(--base); color:var(--pv-fg)}
+.field.err .in{border-color:var(--pv-danger)}
+.field .help{font-size:calc(var(--base)*.8); color:var(--pv-muted)}
+.field.err .help{color:var(--pv-danger)}
+.check{display:flex; gap:.6em; align-items:flex-start; font-size:calc(var(--base)*.85)}
+.check i{width:1.1em; height:1.1em; border-radius:4px; background:var(--pv-accent); flex:none; margin-top:.15em}
+
+/* pricing */
+.price{display:flex; flex-direction:column; gap:1em}
+.price .amt{display:flex; align-items:baseline; gap:.3em}
+.price .amt .d{font-size:var(--s1); line-height:1; font-variant-numeric:tabular-nums}
+.price ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.55em; font-size:calc(var(--base)*.92)}
+.price li{display:flex; gap:.6em} .price li::before{content:"✓"; color:var(--pv-accent); font-weight:700}
+
+/* mobile + toast */
+.mobile{display:flex; gap:1.2em; flex-wrap:wrap; align-items:flex-start}
+.phone{width:min(260px,100%); border:1px solid var(--pv-line); border-radius:22px; padding:1.1em; display:flex; flex-direction:column; gap:.9em; background:var(--pv-card)}
+.phone .bar{display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:11px; color:var(--pv-muted)}
+.list{display:flex; flex-direction:column}
+.list div{display:flex; justify-content:space-between; gap:.6em; padding-block:.6em; border-bottom:1px solid var(--pv-line); font-size:calc(var(--base)*.9)}
+.toasts{display:flex; flex-direction:column; gap:.7em; flex:1; min-width:220px}
+.toast{border:1px solid var(--pv-line); border-radius:10px; padding:.8em 1em; display:flex; flex-direction:column; gap:.2em; background:var(--pv-bg)}
+.badges{display:flex; gap:.5em; flex-wrap:wrap}
+.badges span{font-family:var(--f-mono); font-size:calc(var(--base)*.72); padding:.25em .6em; border-radius:4px; background:var(--pv-card); border:1px solid var(--pv-line)}
+.code{font-family:var(--f-mono); font-size:calc(var(--base)*.82); background:var(--pv-card); border-radius:8px; padding:.9em 1em; overflow-x:auto; white-space:pre; line-height:1.55}
+
+/* export */
+.export pre{margin:0; font-family:var(--ui-mono); font-size:12px; background:var(--chip); border-radius:8px; padding:12px; overflow-x:auto; white-space:pre; max-height:220px}
+.toastmsg{font-size:12px; color:var(--ok); min-height:1em}
+@media (prefers-reduced-motion:no-preference){ .pv{transition:background-color .25s, color .25s} }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="rail" aria-label="Pairing controls">
+    <div class="brand"><h1>Pairwise</h1><span>font pairing lab</span></div>
+
+    <section class="box" aria-labelledby="src-l">
+      <div class="lbl" id="src-l">Libraries</div>
+      <div class="lib"><span><span class="b">Google Fonts</span><br><small id="g-count"></small></span><span class="state on">Connected</span></div>
+      <div class="lib"><span><span class="b">Adobe Fonts</span><br><small id="a-count">Web Project not connected</small></span><span class="state" id="a-state">Off</span></div>
+      <form class="adobe" id="adobe-form">
+        <label class="lbl" for="kit">Adobe Web Project ID</label>
+        <div class="kitrow"><input type="text" id="kit" placeholder="e.g. xkm4pfz" autocomplete="off" spellcheck="false"><button class="btn" id="kit-go" type="submit">Connect</button></div>
+        <p>Find it in Adobe Fonts → My Web Projects. It's the code in <span class="mono-ui">use.typekit.net/<b>xkm4pfz</b>.css</span>. Pairwise lists every family in the project.</p>
+        <p class="status" id="kit-status" aria-live="polite"></p>
+      </form>
+      <div class="afams" id="afams" hidden></div>
+    </section>
+
+    <section class="box" aria-labelledby="gen-l">
+      <div class="lbl" id="gen-l">Generate</div>
+      <div class="seg" role="group" aria-label="Draw fonts from" id="pools">
+        <button data-pool="all" aria-pressed="true">All libraries</button>
+        <button data-pool="google" aria-pressed="false">Google</button>
+        <button data-pool="adobe" aria-pressed="false" disabled>Adobe</button>
+      </div>
+      <div class="seg" role="group" aria-label="Pairing strategy" id="modes">
+        <button data-mode="contrast" aria-pressed="true">Contrast</button>
+        <button data-mode="harmony" aria-pressed="false">Harmony</button>
+        <button data-mode="editorial" aria-pressed="false">Editorial</button>
+        <button data-mode="product" aria-pressed="false">Product</button>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="shuffle">Generate pairing</button>
+        <button class="btn" id="save" style="flex:0 0 auto">Save</button>
+      </div>
+      <div class="empty">Press <kbd>Space</kbd> to generate. Lock a role to keep it.</div>
+    </section>
+
+    <section class="box" aria-label="Fonts by role" id="roles"></section>
+
+    <section class="box" aria-labelledby="why-l">
+      <div class="lbl" id="why-l">Why it works</div>
+      <p class="why" id="why"></p>
+      <ul class="checks" id="checks"></ul>
+    </section>
+
+    <section class="box" aria-labelledby="tune-l">
+      <div class="lbl" id="tune-l">Tune</div>
+      <div class="ctl"><label for="base">Base size</label><input type="range" id="base" min="13" max="20" step="1" value="16"><output id="base-o"></output></div>
+      <div class="ctl"><label for="ratio">Scale ratio</label>
+        <select id="ratio">
+          <option value="1.125">1.125 Major second</option>
+          <option value="1.2">1.200 Minor third</option>
+          <option value="1.25" selected>1.250 Major third</option>
+          <option value="1.333">1.333 Perfect fourth</option>
+          <option value="1.414">1.414 Aug. fourth</option>
+          <option value="1.5">1.500 Perfect fifth</option>
+        </select><output id="ratio-o"></output></div>
+      <div class="ctl"><label for="hw">Heading wt</label><select id="hw"></select><output id="hw-o"></output></div>
+      <div class="ctl"><label for="track">Tracking</label><input type="range" id="track" min="-0.04" max="0.04" step="0.005" value="-0.01"><output id="track-o"></output></div>
+      <div class="ctl"><label for="lh">Body leading</label><input type="range" id="lh" min="1.2" max="1.9" step="0.05" value="1.55"><output id="lh-o"></output></div>
+    </section>
+
+    <section class="box export" aria-labelledby="exp-l">
+      <div class="lbl" id="exp-l">Handoff tokens</div>
+      <pre id="css"></pre>
+      <button class="btn" id="copy">Copy CSS</button>
+      <div class="toastmsg" id="copied" aria-live="polite"></div>
+    </section>
+
+    <section class="box" aria-labelledby="sv-l">
+      <div class="lbl" id="sv-l">Saved on this device</div>
+      <div class="saved" id="saved"></div>
+    </section>
+  </aside>
+
+  <main class="stage" id="stage" data-surface="paper">
+    <div class="toolbar">
+      <div class="chips" role="group" aria-label="Use case filter" id="filters">
+        <button class="chip" data-f="all" aria-pressed="true">All use cases</button>
+        <button class="chip" data-f="marketing" aria-pressed="false">Marketing</button>
+        <button class="chip" data-f="product" aria-pressed="false">Product UI</button>
+        <button class="chip" data-f="editorial" aria-pressed="false">Editorial</button>
+        <button class="chip" data-f="mobile" aria-pressed="false">Mobile</button>
+      </div>
+      <div class="seg" role="group" aria-label="Preview surface" id="surfaces" style="min-width:220px">
+        <button data-s="paper" aria-pressed="true">Paper</button>
+        <button data-s="ink" aria-pressed="false">Ink</button>
+        <button data-s="brand" aria-pressed="false">Brand</button>
+      </div>
+    </div>
+
+    <div class="grid" id="grid">
+      <section class="frame wide" data-uc="marketing">
+        <header><span>Landing hero + nav</span><span>Marketing</span></header>
+        <div class="pv">
+          <nav class="nav"><span class="d logo">Harbor</span><ul><li>Product</li><li>Pricing</li><li>Customers</li><li class="b">Sign in</li></ul></nav>
+          <div class="hero">
+            <span class="eyebrow">New · Receipts sync with your card feed</span>
+            <h1>Expense reports that file themselves.</h1>
+            <p class="lead">Harbor matches every receipt to its card charge, flags policy issues before finance does, and closes the month in an afternoon.</p>
+            <div class="row"><button class="pbtn fill">Start free trial</button><button class="pbtn">Book a demo</button></div>
+            <p class="small muted">Free for teams under 10. No card required.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="frame" data-uc="product editorial marketing mobile">
+        <header><span>Type scale</span><span id="scale-label"></span></header>
+        <div class="pv"><div class="ladder" id="ladder"></div></div>
+      </section>
+
+      <section class="frame" data-uc="marketing">
+        <header><span>Pricing card</span><span>Marketing</span></header>
+        <div class="pv price">
+          <span class="eyebrow">Team plan</span>
+          <div class="amt"><span class="d">$12</span><span class="muted">per seat / month</span></div>
+          <p class="muted">Everything a growing finance team needs to stop chasing receipts.</p>
+          <ul><li>Unlimited receipts and card feeds</li><li>Policy rules with auto-flagging</li><li>NetSuite and Xero export</li><li>SSO and audit log</li></ul>
+          <button class="pbtn fill">Choose Team</button>
+        </div>
+      </section>
+
+      <section class="frame wide" data-uc="product">
+        <header><span>Dashboard: KPIs + data table</span><span>Product UI</span></header>
+        <div class="pv dash">
+          <div class="row" style="justify-content:space-between; align-items:baseline"><h3>September close</h3><span class="small muted">Updated 4 min ago</span></div>
+          <div class="kpis">
+            <div class="kpi"><span class="small muted">Spend this month</span><span class="v">$184,320</span><span class="delta" style="color:var(--pv-danger)">▲ 12.4% vs Aug</span></div>
+            <div class="kpi"><span class="small muted">Receipts matched</span><span class="v">1,947</span><span class="delta">96.1% auto-matched</span></div>
+            <div class="kpi"><span class="small muted">Days to close</span><span class="v">3.5</span><span class="delta">▼ 2.0 days</span></div>
+          </div>
+          <div class="tbl"><table>
+            <thead><tr><th>Merchant</th><th>Cardholder</th><th>Status</th><th class="num">Amount</th></tr></thead>
+            <tbody>
+              <tr><td class="b">Delta Air Lines</td><td>M. Okafor</td><td><span class="pill">Matched</span></td><td class="num">$1,284.60</td></tr>
+              <tr><td class="b">Blue Bottle Coffee</td><td>R. Tanaka</td><td><span class="pill" style="color:var(--pv-danger)">Missing receipt</span></td><td class="num">$18.75</td></tr>
+              <tr><td class="b">AWS</td><td>Platform team</td><td><span class="pill">Matched</span></td><td class="num">$22,019.11</td></tr>
+              <tr><td class="b">Hilton Lisbon</td><td>A. Silva</td><td><span class="pill" style="color:var(--pv-danger)">Over policy</span></td><td class="num">$912.00</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <section class="frame" data-uc="product">
+        <header><span>Form with states</span><span>Product UI</span></header>
+        <div class="pv form">
+          <h3>Create your workspace</h3>
+          <div class="field"><label>Company name</label><div class="in">Northwind Logistics</div><span class="help">Shown on reports and invoices.</span></div>
+          <div class="field err"><label>Work email</label><div class="in">sam@northwind</div><span class="help">Enter a full address, like sam@northwind.com.</span></div>
+          <div class="check"><i></i><span>Send me the monthly close checklist</span></div>
+          <button class="pbtn fill">Create workspace</button>
+        </div>
+      </section>
+
+      <section class="frame" data-uc="product">
+        <header><span>Docs + code</span><span>Product UI</span></header>
+        <div class="pv stack">
+          <span class="eyebrow">API reference</span>
+          <h3>Create a receipt</h3>
+          <p>Upload an image or PDF and Harbor extracts the merchant, total, and tax. Matching runs asynchronously; listen for <span class="mono">receipt.matched</span>.</p>
+          <div class="code">POST /v2/receipts
+{
+  "file_id": "fil_8Kq2",
+  "card_txn": "txn_19af",
+  "currency": "USD"
+}</div>
+        </div>
+      </section>
+
+      <section class="frame wide" data-uc="editorial">
+        <header><span>Long-form article</span><span>Editorial</span></header>
+        <div class="pv article">
+          <span class="eyebrow">Essay · 9 min read</span>
+          <h2>The case for slower software</h2>
+          <div class="byline"><span class="avatar"></span><span><span class="b">Priya Raman</span> <span class="muted">· October 2, 2026</span></span></div>
+          <p class="dropcap">Every product team I know has a dashboard that measures speed: time to first value, time to close, time saved. Few of them measure the time a person spends understanding what just happened. When software moves faster than the people using it, the savings show up on the dashboard and the confusion shows up in support tickets.</p>
+          <blockquote>The fastest flow is the one people only have to learn once.</blockquote>
+          <p>Slowing down does not mean adding steps. It means choosing the one moment in a flow where a person should pause, and designing that moment with the same care as the happy path.</p>
+        </div>
+      </section>
+
+      <section class="frame wide" data-uc="mobile">
+        <header><span>Mobile screen + notifications</span><span>Mobile</span></header>
+        <div class="pv mobile">
+          <div class="phone">
+            <div class="bar"><span>9:41</span><span>5G</span></div>
+            <h3>Wallet</h3>
+            <span class="d" style="font-size:var(--s2); font-variant-numeric:tabular-nums">$2,418.07</span>
+            <span class="small muted">Available on Harbor card</span>
+            <div class="list">
+              <div><span>Uber</span><span class="mono">−$24.30</span></div>
+              <div><span>Sweetgreen</span><span class="mono">−$16.85</span></div>
+              <div><span>Refund · Delta</span><span class="mono">+$212.00</span></div>
+            </div>
+            <button class="pbtn fill">Add receipt</button>
+          </div>
+          <div class="toasts">
+            <div class="toast"><span class="b">Receipt matched</span><span class="small muted">Delta Air Lines · $1,284.60 matched to card ••4021.</span></div>
+            <div class="toast"><span class="b" style="color:var(--pv-danger)">Receipt needed</span><span class="small muted">Blue Bottle Coffee · $18.75. Add a photo by Friday to stay in policy.</span></div>
+            <div class="badges"><span>DRAFT</span><span>IN REVIEW</span><span>APPROVED</span><span>EXPORTED</span></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+// n: family, c: category, s: style tag, w: weights to request, t: built for body text
+const FONTS = [
+  {n:'Playfair Display',c:'serif',s:'didone',w:[400,500,600,700,800,900],t:0},
+  {n:'DM Serif Display',c:'serif',s:'didone',w:[400],t:0},
+  {n:'Instrument Serif',c:'serif',s:'didone',w:[400],t:0},
+  {n:'Fraunces',c:'serif',s:'soft',w:[300,400,500,600,700,800,900],t:1},
+  {n:'Newsreader',c:'serif',s:'transitional',w:[300,400,500,600,700,800],t:1},
+  {n:'Source Serif 4',c:'serif',s:'transitional',w:[300,400,500,600,700,800,900],t:1},
+  {n:'Libre Baskerville',c:'serif',s:'transitional',w:[400,700],t:1},
+  {n:'Merriweather',c:'serif',s:'transitional',w:[300,400,700,900],t:1},
+  {n:'Lora',c:'serif',s:'soft',w:[400,500,600,700],t:1},
+  {n:'EB Garamond',c:'serif',s:'oldstyle',w:[400,500,600,700,800],t:1},
+  {n:'Cormorant Garamond',c:'serif',s:'oldstyle',w:[300,400,500,600,700],t:0},
+  {n:'Crimson Pro',c:'serif',s:'oldstyle',w:[300,400,500,600,700,800],t:1},
+  {n:'Spectral',c:'serif',s:'oldstyle',w:[300,400,500,600,700,800],t:1},
+  {n:'Inter',c:'sans',s:'neo-grotesque',w:[300,400,500,600,700,800],t:1},
+  {n:'Public Sans',c:'sans',s:'neo-grotesque',w:[300,400,500,600,700,800],t:1},
+  {n:'Libre Franklin',c:'sans',s:'grotesque',w:[300,400,500,600,700,800],t:1},
+  {n:'Schibsted Grotesk',c:'sans',s:'grotesque',w:[400,500,600,700,800],t:1},
+  {n:'Bricolage Grotesque',c:'sans',s:'grotesque',w:[300,400,500,600,700,800],t:1},
+  {n:'Space Grotesk',c:'sans',s:'grotesque',w:[300,400,500,600,700],t:1},
+  {n:'Archivo',c:'sans',s:'grotesque',w:[300,400,500,600,700,800],t:1},
+  {n:'Work Sans',c:'sans',s:'grotesque',w:[300,400,500,600,700,800],t:1},
+  {n:'DM Sans',c:'sans',s:'geometric',w:[300,400,500,600,700,800],t:1},
+  {n:'Outfit',c:'sans',s:'geometric',w:[300,400,500,600,700,800],t:1},
+  {n:'Sora',c:'sans',s:'geometric',w:[300,400,500,600,700,800],t:1},
+  {n:'Manrope',c:'sans',s:'geometric',w:[300,400,500,600,700,800],t:1},
+  {n:'Plus Jakarta Sans',c:'sans',s:'geometric',w:[300,400,500,600,700,800],t:1},
+  {n:'IBM Plex Sans',c:'sans',s:'humanist',w:[300,400,500,600,700],t:1},
+  {n:'Figtree',c:'sans',s:'humanist',w:[300,400,500,600,700,800],t:1},
+  {n:'Karla',c:'sans',s:'humanist',w:[300,400,500,600,700,800],t:1},
+  {n:'Nunito Sans',c:'sans',s:'humanist',w:[300,400,500,600,700,800],t:1},
+  {n:'Rubik',c:'sans',s:'geometric',w:[300,400,500,600,700,800],t:1},
+  {n:'Syne',c:'display',s:'wide',w:[400,500,600,700,800],t:0},
+  {n:'Unbounded',c:'display',s:'wide',w:[300,400,500,600,700,800,900],t:0},
+  {n:'Bebas Neue',c:'display',s:'condensed',w:[400],t:0},
+  {n:'Big Shoulders Display',c:'display',s:'condensed',w:[300,400,500,600,700,800,900],t:0},
+  {n:'Archivo Black',c:'display',s:'expressive',w:[400],t:0},
+  {n:'Abril Fatface',c:'display',s:'expressive',w:[400],t:0},
+  {n:'Roboto Slab',c:'slab',s:'slab',w:[300,400,500,600,700,800],t:1},
+  {n:'Zilla Slab',c:'slab',s:'slab',w:[300,400,500,600,700],t:1},
+  {n:'Arvo',c:'slab',s:'slab',w:[400,700],t:1},
+  {n:'JetBrains Mono',c:'mono',s:'mono',w:[400,500,700],t:0},
+  {n:'IBM Plex Mono',c:'mono',s:'mono',w:[400,500,600],t:0},
+  {n:'Space Mono',c:'mono',s:'mono',w:[400,700],t:0},
+  {n:'DM Mono',c:'mono',s:'mono',w:[400,500],t:0},
+];
+FONTS.forEach(f=>f.src='google');
+const GOOGLE_COUNT = FONTS.length;
+let BY = {};
+const reindex = () => { BY = Object.fromEntries(FONTS.map(f=>[f.n,f])); };
+reindex();
+
+// Adobe kits expose CSS family names (e.g. "proxima-nova") with no classification.
+// Known families get tagged from this table; unknown ones are guessed from the name and can be re-tagged by hand.
+const ADOBE_KNOWN = {
+  'proxima-nova':['sans','geometric',1], 'futura-pt':['sans','geometric',1], 'sofia-pro':['sans','geometric',1], 'europa':['sans','geometric',1],
+  'brandon-grotesque':['sans','geometric',1], 'museo-sans':['sans','geometric',1], 'neue-haas-grotesk-text':['sans','neo-grotesque',1],
+  'neue-haas-grotesk-display':['sans','neo-grotesque',0], 'aktiv-grotesk':['sans','neo-grotesque',1], 'nimbus-sans':['sans','neo-grotesque',1],
+  'acumin-pro':['sans','neo-grotesque',1], 'trade-gothic-next':['sans','grotesque',1], 'franklin-gothic-urw':['sans','grotesque',1],
+  'myriad-pro':['sans','humanist',1], 'source-sans-pro':['sans','humanist',1], 'freight-sans-pro':['sans','humanist',1], 'ff-meta-web-pro':['sans','humanist',1],
+  'freight-text-pro':['serif','transitional',1], 'freight-display-pro':['serif','didone',0], 'freight-big-pro':['serif','didone',0],
+  'minion-pro':['serif','oldstyle',1], 'adobe-garamond-pro':['serif','oldstyle',1], 'garamond-premier-pro':['serif','oldstyle',1],
+  'adobe-jenson-pro':['serif','oldstyle',1], 'adobe-caslon-pro':['serif','transitional',1], 'mrs-eaves':['serif','transitional',1],
+  'ivypresto-display':['serif','didone',0], 'ivymode':['sans','humanist',0], 'p22-mackinac-pro':['serif','soft',1],
+  'chaparral-pro':['slab','slab',1], 'museo-slab':['slab','slab',1], 'bebas-neue':['display','condensed',0], 'rift':['display','condensed',0],
+  'source-code-pro':['mono','mono',0], 'input-mono':['mono','mono',0], 'courier-prime':['mono','mono',0]
+};
+function classify(name){
+  const k = ADOBE_KNOWN[name];
+  if(k) return {c:k[0], s:k[1], t:k[2], known:true};
+  const n = name.toLowerCase();
+  if(/mono|code|courier/.test(n)) return {c:'mono', s:'mono', t:0};
+  if(/slab/.test(n)) return {c:'slab', s:'slab', t:1};
+  if(/condensed|compressed|narrow/.test(n)) return {c:'display', s:'condensed', t:0};
+  if(/serif|garamond|caslon|baskerville|bodoni|didot|roman|text|book/.test(n) && !/sans/.test(n)) return {c:'serif', s:/bodoni|didot|display/.test(n)?'didone':'transitional', t:/display/.test(n)?0:1};
+  if(/display|poster|headline/.test(n)) return {c:'sans', s:'grotesque', t:0};
+  return {c:'sans', s:'grotesque', t:1};
+}
+const FALLBACK = {serif:"Georgia, 'Times New Roman', serif", sans:"system-ui, -apple-system, 'Segoe UI', sans-serif", display:"Impact, system-ui, sans-serif", slab:"Rockwell, Georgia, serif", mono:"ui-monospace, Menlo, Consolas, monospace"};
+const NOTES = {
+  didone:'high stroke contrast that reads as premium at large sizes',
+  transitional:'sturdy, bookish proportions',
+  oldstyle:'calligraphic rhythm built for long reading',
+  soft:'warm, softened serifs with some personality',
+  geometric:'round, constructed letterforms',
+  grotesque:'slightly irregular grotesque details',
+  'neo-grotesque':'a neutral, even texture',
+  humanist:'open apertures that stay legible at small sizes',
+  condensed:'tall, compressed forms that pack impact into narrow columns',
+  wide:'a wide, attention-grabbing stance',
+  expressive:'heavy, characterful shapes',
+  slab:'blocky slab serifs with typewriter sturdiness',
+  mono:'fixed-width rhythm for code, IDs and figures'
+};
+const ROLES = [
+  {k:'display', label:'Display', hint:'Headlines'},
+  {k:'body', label:'Body', hint:'Text & UI'},
+  {k:'mono', label:'Utility', hint:'Code & data'}
+];
+// Which pools each strategy draws from. Each entry is [display filter, body filter].
+const MODES = {
+  contrast: [
+    [f=>['serif','display','slab'].includes(f.c), f=>f.c==='sans' && f.t],
+    [f=>f.c==='sans', f=>f.c==='serif' && f.t]
+  ],
+  harmony: [
+    [f=>f.c==='sans', f=>f.c==='sans' && f.t],
+    [f=>f.c==='serif', f=>f.c==='serif' && f.t]
+  ],
+  editorial: [
+    [f=>f.c==='serif' && ['didone','soft','transitional'].includes(f.s), f=>f.c==='serif' && f.t && ['oldstyle','transitional'].includes(f.s)],
+    [f=>f.c==='serif' && f.s==='didone', f=>f.c==='sans' && f.s==='humanist']
+  ],
+  product: [
+    [f=>f.c==='sans' && ['grotesque','geometric'].includes(f.s), f=>f.c==='sans' && f.t && ['neo-grotesque','humanist','geometric'].includes(f.s)]
+  ]
+};
+
+const state = {display:'Fraunces', body:'Figtree', mono:'JetBrains Mono', mode:'contrast', pool:'all', kit:null, base:16, ratio:1.25, hw:600, track:-0.01, lh:1.55, surface:'paper', filter:'all', locks:{display:false, body:false, mono:false}};
+const loaded = new Set();
+const $ = id => document.getElementById(id);
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+const stack = f => `'${f.n}', ${FALLBACK[f.c]}`;
+const closest = (ws, target) => ws.reduce((a,b)=>Math.abs(b-target)<Math.abs(a-target)?b:a);
+const familyParam = f => `family=${f.n.replace(/ /g,'+')}:wght@${f.w.join(';')}`;
+
+function loadFont(f){
+  if(f.src==='adobe' || loaded.has(f.n)) return; // Adobe faces arrive with the kit stylesheet
+  loaded.add(f.n);
+  const l = document.createElement('link');
+  l.rel = 'stylesheet';
+  l.href = `https://fonts.googleapis.com/css2?${familyParam(f)}&display=swap`;
+  document.head.appendChild(l);
+}
+
+const LOCK_SVG = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>';
+function buildRoles(){
+  const box = $('roles');
+  box.innerHTML = '';
+  ROLES.forEach(r=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'role';
+    const pool = r.k==='mono' ? FONTS.filter(f=>f.c==='mono') : FONTS.filter(f=>f.c!=='mono' && (r.k==='display' || f.t));
+    const groups = {};
+    pool.forEach(f=>(groups[`${f.src==='adobe'?'Adobe':'Google'} · ${f.c[0].toUpperCase()+f.c.slice(1)}`] ||= []).push(f));
+    const opts = Object.entries(groups).map(([g,fs])=>`<optgroup label="${g}">${fs.map(f=>`<option>${f.n}</option>`).join('')}</optgroup>`).join('');
+    wrap.innerHTML = `<label class="lbl" for="sel-${r.k}">${r.label} <em id="tag-${r.k}"></em></label>
+      <select id="sel-${r.k}">${opts}</select>
+      <button class="lock" id="lock-${r.k}" aria-pressed="false" aria-label="Lock ${r.label} font" title="Lock ${r.label} font">${LOCK_SVG}</button>`;
+    box.appendChild(wrap);
+    $('sel-'+r.k).addEventListener('change', e=>{ state[r.k] = e.target.value; if(r.k==='display') state.hw = defaultWeight(BY[state.display]); render(); });
+    $('lock-'+r.k).addEventListener('click', e=>{ state.locks[r.k] = !state.locks[r.k]; e.currentTarget.setAttribute('aria-pressed', state.locks[r.k]); });
+  });
+}
+const defaultWeight = f => closest(f.w, f.c==='display' ? 800 : f.c==='serif' ? 500 : 700);
+
+const inPool = f => state.pool==='all' || f.src===state.pool;
+function generate(){
+  const rules = MODES[state.mode];
+  for(let tries=0; tries<60; tries++){
+    const [dOk, bOk] = pick(rules);
+    // after 30 misses, widen to all libraries (a small Adobe kit may not cover every strategy)
+    const ok = tries<30 ? inPool : () => true;
+    let d = state.locks.display ? BY[state.display] : null;
+    let b = state.locks.body ? BY[state.body] : null;
+    if(!d){ const p = FONTS.filter(f=>ok(f) && dOk(f) && (!b || f.n!==b.n)); if(!p.length) continue; d = pick(p); }
+    if(!b){ const p = FONTS.filter(f=>ok(f) && bOk(f) && f.n!==d.n && !(state.mode==='harmony' && f.s===d.s)); if(!p.length) continue; b = pick(p); }
+    if(d.n===b.n) continue;
+    if(!state.locks.display){ state.display = d.n; state.hw = defaultWeight(d); }
+    if(!state.locks.body) state.body = b.n;
+    if(!state.locks.mono){ const monos = FONTS.filter(f=>f.c==='mono'); state.mono = pick(monos.filter(inPool).length ? monos.filter(inPool) : monos).n; }
+    return render();
+  }
+  render();
+}
+
+function analyse(d, b, m){
+  const why = `${d.n} brings ${NOTES[d.s]}. ${b.n} adds ${NOTES[b.s]}. ${m.n} handles ${NOTES.mono.replace('fixed-width rhythm for ','')}.`;
+  const checks = [];
+  if(d.n===b.n) checks.push(['bad','Same family in both roles. Fine for a single-family system, but this is no longer a pairing.']);
+  else if(d.c!==b.c) checks.push(['ok',`Clear category contrast (${d.c} over ${b.c}). The roles never compete.`]);
+  else if(d.s!==b.s) checks.push(['ok',`Same category, different skeletons (${d.s} vs ${b.s}). Subtle but intentional.`]);
+  else checks.push(['warn',`Both are ${d.s} ${d.c}s. Close cousins can read as a mistake. Push weight and size contrast hard.`]);
+  checks.push(b.t ? ['ok',`${b.n} is built for text sizes.`] : ['bad',`${b.n} is a display face. Expect fatigue past a few lines.`]);
+  checks.push(b.w.length>=4 ? ['ok',`${b.w.length} body weights cover regular, medium, and bold UI states.`] : ['warn',`Only ${b.w.length} body weights. Buttons and labels may lack a mid weight.`]);
+  checks.push(d.w.length>1 ? ['ok',`Display ships ${d.w.length} weights (${d.w[0]}–${d.w[d.w.length-1]}).`] : ['warn',`${d.n} has one weight. Hierarchy has to come from size alone.`]);
+  return {why, checks};
+}
+
+function sizes(){
+  const s = n => +(state.base * Math.pow(state.ratio, n)).toFixed(2);
+  return {h1:s(5), h2:s(4), h3:s(3), h4:s(2), h5:s(1), body:state.base, small:+(state.base/state.ratio).toFixed(2)};
+}
+
+function render(){
+  const d = BY[state.display], b = BY[state.body], m = BY[state.mono];
+  [d,b,m].forEach(loadFont);
+  ROLES.forEach(r=>{ $('sel-'+r.k).value = state[r.k]; const f = BY[state[r.k]]; $('tag-'+r.k).textContent = `${f.src==='adobe'?'adobe · ':''}${f.c} · ${f.s}`; });
+
+  // heading weight options follow the display font's real weights
+  if(!d.w.includes(state.hw)) state.hw = closest(d.w, state.hw);
+  $('hw').innerHTML = d.w.map(w=>`<option value="${w}" ${w===state.hw?'selected':''}>${w}</option>`).join('');
+  const bw = closest(b.w, 600);
+
+  const z = sizes();
+  const st = $('stage').style;
+  st.setProperty('--f-display', stack(d));
+  st.setProperty('--f-body', stack(b));
+  st.setProperty('--f-mono', stack(m));
+  st.setProperty('--base', state.base+'px');
+  st.setProperty('--lh', state.lh);
+  st.setProperty('--hw', state.hw);
+  st.setProperty('--bw', bw);
+  st.setProperty('--track', state.track+'em');
+  ['h1','h2','h3','h4'].forEach((k,i)=>st.setProperty('--s'+(i+1), z[k]+'px'));
+
+  $('base-o').textContent = state.base+'px';
+  $('ratio-o').textContent = '×'+state.ratio;
+  $('hw-o').textContent = 'body '+bw;
+  $('track-o').textContent = (state.track>0?'+':'')+state.track.toFixed(3);
+  $('lh-o').textContent = state.lh.toFixed(2);
+  $('scale-label').textContent = `${state.base}px × ${state.ratio}`;
+
+  const rows = [['H1',z.h1,'display','Expense reports, filed.'],['H2',z.h2,'display','Close the month faster'],['H3',z.h3,'display','Policy rules'],['H4',z.h4,'display','Card feeds'],['H5',z.h5,'body','Section label',true],['Body',z.body,'body','Harbor matches every receipt to its charge.'],['Small',z.small,'body','Updated 4 min ago'],['Mono',z.small,'mono','txn_19af · $1,284.60']];
+  $('ladder').innerHTML = rows.map(([t,px,role,txt,bold])=>`<div><span class="tag">${t} ${px}</span><span class="t" style="font-family:var(--f-${role}); font-size:min(${px}px, ${role==='display'?'10vw':'100%'}); ${role==='display'?'font-weight:var(--hw); letter-spacing:var(--track)':''} ${bold?'font-weight:var(--bw)':''}">${txt}</span></div>`).join('');
+
+  const a = analyse(d,b,m);
+  $('why').textContent = a.why;
+  $('checks').innerHTML = a.checks.map(([k,t])=>`<li><span class="dot ${k}" aria-label="${k}"></span><span>${t}</span></li>`).join('');
+
+  const used = [d,b,m].filter((f,i,arr)=>arr.findIndex(x=>x.n===f.n)===i);
+  const gFam = used.filter(f=>f.src==='google').map(familyParam).join('&');
+  const links = [
+    gFam && `<link href="https://fonts.googleapis.com/css2?${gFam}&display=swap" rel="stylesheet">`,
+    used.some(f=>f.src==='adobe') && `<!-- Adobe Fonts Web Project ${state.kit} -->\n<link href="https://use.typekit.net/${state.kit}.css" rel="stylesheet">`
+  ].filter(Boolean).join('\n');
+  $('css').textContent =
+`${links}
+
+:root {
+  --font-display: ${stack(d)};
+  --font-body: ${stack(b)};
+  --font-mono: ${stack(m)};
+  --weight-display: ${state.hw};
+  --weight-body-strong: ${bw};
+  --tracking-display: ${state.track}em;
+  --leading-body: ${state.lh};
+  --text-h1: ${(z.h1/16).toFixed(3)}rem; /* ${z.h1}px */
+  --text-h2: ${(z.h2/16).toFixed(3)}rem;
+  --text-h3: ${(z.h3/16).toFixed(3)}rem;
+  --text-h4: ${(z.h4/16).toFixed(3)}rem;
+  --text-h5: ${(z.h5/16).toFixed(3)}rem;
+  --text-body: ${(z.body/16).toFixed(3)}rem;
+  --text-small: ${(z.small/16).toFixed(3)}rem;
+}`;
+}
+
+// ---- saved pairings (per-device convenience only) ----
+const KEY = 'pairwise.saved';
+function readSaved(){ try{ return JSON.parse(localStorage.getItem(KEY)) || []; }catch(e){ return []; } }
+function writeSaved(list){ try{ localStorage.setItem(KEY, JSON.stringify(list)); }catch(e){} }
+function renderSaved(){
+  const list = readSaved();
+  const box = $('saved');
+  if(!list.length){ box.innerHTML = '<p class="empty">Nothing saved yet. Save a pairing to compare it later.</p>'; return; }
+  box.innerHTML = '';
+  list.forEach(p=>{
+    const btn = document.createElement('button');
+    btn.innerHTML = `<span>${p.display} / ${p.body}</span><small>${p.mode}</small>`;
+    btn.addEventListener('click', ()=>{
+      if(![p.display, p.body, p.mono].every(n=>BY[n])){ setKitStatus(`That pairing uses Adobe fonts from project ${p.kit || 'another project'}. Connect it first.`, 'err'); return; }
+      Object.assign(state, p, {locks:state.locks, kit:state.kit, pool:state.pool}); syncControls(); render();
+    });
+    box.appendChild(btn);
+  });
+}
+$('save').addEventListener('click', ()=>{
+  const {display, body, mono, mode, base, ratio, hw, track, lh, kit} = state;
+  const list = readSaved().filter(p=>!(p.display===display && p.body===body && p.mono===mono));
+  list.unshift({display, body, mono, mode, base, ratio, hw, track, lh, kit});
+  writeSaved(list.slice(0,8));
+  renderSaved();
+});
+
+// ---- wiring ----
+function setPressed(groupId, attr, val){ document.querySelectorAll(`#${groupId} button`).forEach(b=>b.setAttribute('aria-pressed', b.dataset[attr]===val)); }
+function syncControls(){
+  $('base').value = state.base; $('ratio').value = state.ratio; $('track').value = state.track; $('lh').value = state.lh;
+  setPressed('modes','mode',state.mode);
+}
+$('modes').addEventListener('click', e=>{ const b = e.target.closest('button'); if(!b) return; state.mode = b.dataset.mode; setPressed('modes','mode',state.mode); generate(); });
+$('surfaces').addEventListener('click', e=>{ const b = e.target.closest('button'); if(!b) return; state.surface = b.dataset.s; $('stage').dataset.surface = state.surface; setPressed('surfaces','s',state.surface); });
+$('filters').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  state.filter = b.dataset.f;
+  document.querySelectorAll('#filters button').forEach(x=>x.setAttribute('aria-pressed', x===b));
+  document.querySelectorAll('#grid .frame').forEach(fr=>{ fr.hidden = state.filter!=='all' && !fr.dataset.uc.split(' ').includes(state.filter); });
+});
+$('shuffle').addEventListener('click', generate);
+$('base').addEventListener('input', e=>{ state.base = +e.target.value; render(); });
+$('ratio').addEventListener('change', e=>{ state.ratio = +e.target.value; render(); });
+$('hw').addEventListener('change', e=>{ state.hw = +e.target.value; render(); });
+$('track').addEventListener('input', e=>{ state.track = +e.target.value; render(); });
+$('lh').addEventListener('input', e=>{ state.lh = +e.target.value; render(); });
+$('pools').addEventListener('click', e=>{ const b = e.target.closest('button'); if(!b || b.disabled) return; state.pool = b.dataset.pool; setPressed('pools','pool',state.pool); generate(); });
+
+// ---- Adobe Fonts Web Project ----
+const KIT_KEY = 'pairwise.kit';
+const familyName = ff => ff.family.replace(/^["']|["']$/g,'');
+function setKitStatus(msg, kind){ const s = $('kit-status'); s.textContent = msg; s.className = 'status' + (kind ? ' '+kind : ''); }
+
+function connectKit(id){
+  id = id.trim().toLowerCase();
+  if(!/^[a-z0-9]{5,10}$/.test(id)){ setKitStatus('Project IDs are 5–10 letters and numbers, like xkm4pfz.', 'err'); return; }
+  disconnectKit(true);
+  setKitStatus('Loading project…');
+  const before = new Set([...document.fonts].map(familyName));
+  const link = document.createElement('link');
+  link.rel = 'stylesheet'; link.id = 'adobe-kit';
+  link.href = `https://use.typekit.net/${id}.css`;
+  let settled = false;
+  const fail = msg => { if(settled) return; settled = true; link.remove(); $('a-state').textContent = 'Error'; $('a-state').className = 'state err'; setKitStatus(msg, 'err'); };
+  const timer = setTimeout(()=>fail('Adobe didn\'t respond. If you\'re viewing Pairwise inside Claude, its preview blocks Adobe\'s font server. Open the hosted page instead.'), 8000);
+  link.onerror = () => { clearTimeout(timer); fail(`Couldn't load project ${id}. Check the ID, or if you're viewing inside Claude, open the hosted page instead.`); };
+  link.onload = () => {
+    clearTimeout(timer);
+    if(settled) return; settled = true;
+    // Kit @font-face rules show up in document.fonts once the stylesheet applies
+    const faces = {};
+    [...document.fonts].forEach(ff=>{
+      const n = familyName(ff);
+      if(before.has(n) || BY[n]) return;
+      const w = String(ff.weight).split(' ').map(Number);
+      (faces[n] ||= new Set()).add(w[0]);
+      if(w[1]) for(let x=w[0]+100; x<=w[1]; x+=100) faces[n].add(x);
+    });
+    const names = Object.keys(faces);
+    if(!names.length){ link.remove(); fail(`Project ${id} loaded but has no web fonts. Add families to it in Adobe Fonts, then reconnect.`); return; }
+    names.forEach(n=>FONTS.push({n, ...classify(n), w:[...faces[n]].sort((a,b)=>a-b), src:'adobe'}));
+    reindex();
+    state.kit = id;
+    try{ localStorage.setItem(KIT_KEY, id); }catch(e){}
+    $('a-state').textContent = 'Connected'; $('a-state').className = 'state on';
+    $('a-count').textContent = `Project ${id} · ${names.length} ${names.length===1?'family':'families'}`;
+    $('pools').querySelector('[data-pool="adobe"]').disabled = false;
+    setKitStatus(`Added ${names.length} Adobe ${names.length===1?'family':'families'}. Check the categories below so the generator pairs them correctly.`, 'ok');
+    renderAdobeList();
+    buildRoles(); syncLocks(); render();
+  };
+  document.head.appendChild(link);
+}
+
+function disconnectKit(quiet){
+  document.getElementById('adobe-kit')?.remove();
+  const had = FONTS.some(f=>f.src==='adobe');
+  FONTS.splice(GOOGLE_COUNT);
+  reindex();
+  state.kit = null;
+  $('afams').hidden = true;
+  $('a-state').textContent = 'Off'; $('a-state').className = 'state';
+  $('a-count').textContent = 'Web Project not connected';
+  $('pools').querySelector('[data-pool="adobe"]').disabled = true;
+  if(state.pool==='adobe'){ state.pool = 'all'; setPressed('pools','pool','all'); }
+  if(quiet && !had) return;
+  // swap any Adobe selections back to Google defaults
+  if(!BY[state.display]){ state.display = 'Fraunces'; state.hw = defaultWeight(BY.Fraunces); }
+  if(!BY[state.body]) state.body = 'Figtree';
+  if(!BY[state.mono]) state.mono = 'JetBrains Mono';
+  if(!quiet){ try{ localStorage.removeItem(KIT_KEY); }catch(e){} setKitStatus('Disconnected.'); }
+  buildRoles(); syncLocks(); render();
+}
+
+const CATS = [['sans','geometric'],['sans','grotesque'],['sans','neo-grotesque'],['sans','humanist'],['serif','didone'],['serif','transitional'],['serif','oldstyle'],['serif','soft'],['slab','slab'],['display','condensed'],['display','wide'],['display','expressive'],['mono','mono']];
+function renderAdobeList(){
+  const box = $('afams');
+  const fams = FONTS.filter(f=>f.src==='adobe');
+  box.hidden = false;
+  box.innerHTML = `<div class="head"><span>In this project</span><button class="linkbtn" type="button" id="kit-off">Disconnect</button></div>`;
+  fams.forEach((f,i)=>{
+    const row = document.createElement('div');
+    row.className = 'afam';
+    row.innerHTML = `<span class="nm" style="font-family:'${f.n}', ${FALLBACK[f.c]}" title="${f.n} · weights ${f.w.join(', ')}">${f.n}</span>
+      <select id="acat-${i}" aria-label="Category for ${f.n}">${CATS.map(([c,s])=>`<option value="${c}|${s}" ${f.c===c&&f.s===s?'selected':''}>${c==='sans'||c==='serif'?c+' · '+s:s}</option>`).join('')}</select>`;
+    box.appendChild(row);
+    row.querySelector('select').addEventListener('change', e=>{
+      const [c,s] = e.target.value.split('|');
+      f.c = c; f.s = s; f.t = c==='display'||c==='mono'||s==='didone' ? 0 : 1;
+      buildRoles(); syncLocks(); render();
+    });
+  });
+  $('kit-off').addEventListener('click', ()=>disconnectKit(false));
+}
+function syncLocks(){ ROLES.forEach(r=>$('lock-'+r.k).setAttribute('aria-pressed', state.locks[r.k])); }
+
+$('adobe-form').addEventListener('submit', e=>{ e.preventDefault(); connectKit($('kit').value); });
+$('copy').addEventListener('click', ()=>{
+  const txt = $('css').textContent;
+  const done = () => { $('copied').textContent = 'Copied to clipboard'; setTimeout(()=>$('copied').textContent='', 2000); };
+  const fallback = () => { const r = document.createRange(); r.selectNodeContents($('css')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); $('copied').textContent = 'Selected. Press Ctrl/Cmd+C to copy.'; };
+  try{ navigator.clipboard.writeText(txt).then(done, fallback); }catch(e){ fallback(); }
+});
+document.addEventListener('keydown', e=>{
+  if(e.code!=='Space' || e.repeat) return;
+  if(e.target.closest('input,select,textarea,button')) return;
+  e.preventDefault(); generate();
+});
+
+buildRoles();
+state.hw = defaultWeight(BY[state.display]);
+$('g-count').textContent = `${GOOGLE_COUNT} curated families`;
+syncControls();
+render();
+renderSaved();
+try{ const k = localStorage.getItem(KIT_KEY); if(k){ $('kit').value = k; connectKit(k); } }catch(e){}
+</script>
+</body>
+</html>

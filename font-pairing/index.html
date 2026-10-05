@@ -96,7 +96,7 @@ kbd{font-family:var(--ui-mono); font-size:11px; border:1px solid var(--line); bo
 /* ---------- preview surfaces (independent of page theme by design) ---------- */
 /* Surface tokens are generated from the color scales in JS and set on .stage; these are first-paint defaults. */
 .stage{--pv-bg:#FFFFFF; --pv-fg:#16181B; --pv-muted:#5E636B; --pv-line:#E2E4E8; --pv-card:#F5F6F8; --pv-accent:#1F4FFF; --pv-on-accent:#FFFFFF; --pv-danger:#C0352B;
-  --pv-success:#18794E; --pv-warning:#A35C00; --pv-info:#1F6FD1}
+  --pv-success:#18794E; --pv-warning:#A35C00; --pv-info:#1F6FD1; --pv-accent2:#1F4FFF; --pv-accent2-text:#16181B}
 .pv{background:var(--pv-bg); color:var(--pv-fg); border:1px solid var(--line); border-radius:10px; padding:clamp(18px,3vw,32px);
   font-family:var(--f-body); font-size:var(--base); line-height:var(--lh); overflow:hidden; min-width:0}
 
@@ -139,6 +139,10 @@ input[aria-invalid="true"]{border-color:var(--bad)}
 .note{font-size:12.5px; color:var(--muted); margin:0}
 .toggle{display:flex; gap:8px; align-items:center; font-size:12.5px}
 .toggle input{accent-color:var(--accent)}
+.second{display:flex; flex-direction:column; gap:10px; border-top:1px solid var(--line); padding-top:12px}
+.head2{display:flex; justify-content:space-between; align-items:center}
+.seg button{min-width:0}
+#harmony button{font-size:11.5px; padding:6px 2px}
 .mini{display:grid; grid-template-columns:repeat(11,1fr); height:14px; border-radius:4px; overflow:hidden}
 .pv h1,.pv h2,.pv h3,.pv h4,.pv .d{font-family:var(--f-display); font-weight:var(--hw); letter-spacing:var(--track); line-height:1.08; margin:0; text-wrap:balance}
 .pv h1{font-size:min(var(--s1),11vw)} .pv h2{font-size:min(var(--s2),9vw)} .pv h3{font-size:var(--s3)} .pv h4{font-size:var(--s4)}
@@ -169,8 +173,8 @@ input[aria-invalid="true"]{border-color:var(--bad)}
 /* article */
 .article{display:flex; flex-direction:column; gap:1em}
 .article .byline{display:flex; gap:.8em; align-items:center; font-size:calc(var(--base)*.85)}
-.article .avatar{width:2.2em; height:2.2em; border-radius:50%; background:var(--pv-accent); flex:none}
-.article blockquote{margin:.4em 0; padding-left:1em; border-left:3px solid var(--pv-accent); font-family:var(--f-display); font-size:var(--s4); line-height:1.25; font-weight:var(--hw); letter-spacing:var(--track)}
+.article .avatar{width:2.2em; height:2.2em; border-radius:50%; background:var(--pv-accent2); flex:none}
+.article blockquote{margin:.4em 0; padding-left:1em; border-left:3px solid var(--pv-accent2); font-family:var(--f-display); font-size:var(--s4); line-height:1.25; font-weight:var(--hw); letter-spacing:var(--track)}
 .article p.dropcap::first-letter{font-family:var(--f-display); float:left; font-size:3.4em; line-height:.85; padding:.06em .1em 0 0; font-weight:var(--hw)}
 
 /* dashboard */
@@ -204,7 +208,8 @@ input[aria-invalid="true"]{border-color:var(--bad)}
 .price .amt{display:flex; align-items:baseline; gap:.3em}
 .price .amt .d{font-size:var(--s1); line-height:1; font-variant-numeric:tabular-nums}
 .price ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.55em; font-size:calc(var(--base)*.92)}
-.price li{display:flex; gap:.6em} .price li::before{content:"✓"; color:var(--pv-accent); font-weight:700}
+.price li{display:flex; gap:.6em} .price li::before{content:"✓"; color:var(--pv-accent2-text); font-weight:700}
+.pv .hl{color:var(--pv-accent2-text)}
 
 /* mobile + toast */
 .mobile{display:flex; gap:1.2em; flex-wrap:wrap; align-items:flex-start}
@@ -241,6 +246,21 @@ input[aria-invalid="true"]{border-color:var(--bad)}
       <div class="presets" id="presets" aria-label="Example brand colors"></div>
       <label class="toggle"><input type="checkbox" id="anchor500"> Always place my color at 500</label>
       <p class="note" id="placed"></p>
+      <button class="btn" type="button" id="add2">+ Add second color</button>
+      <div class="second" id="second" hidden>
+        <div class="lbl head2"><span>Second color</span><button class="linkbtn" type="button" id="rm2">Remove</button></div>
+        <div class="hexrow">
+          <input type="color" id="sec-pick" value="#ff8a3d" aria-label="Pick second color">
+          <input type="text" id="sec-hex" value="#ff8a3d" spellcheck="false" autocomplete="off" aria-label="Second color hex">
+        </div>
+        <div class="seg" role="group" aria-label="Suggest from brand color" id="harmony">
+          <button type="button" data-rule="complement" aria-pressed="true">Complement</button>
+          <button type="button" data-rule="split" aria-pressed="false">Split</button>
+          <button type="button" data-rule="triadic" aria-pressed="false">Triadic</button>
+          <button type="button" data-rule="analogous" aria-pressed="false">Analogous</button>
+        </div>
+        <p class="note" id="sec-placed"></p>
+      </div>
       <div class="ctl"><label for="hshift">Hue shift</label><input type="range" id="hshift" min="-30" max="30" step="1" value="0"><output id="hshift-o"></output></div>
       <p class="note">Rotates hue across the scale so shades don't go muddy. Yellows default toward orange.</p>
     </section>
@@ -364,7 +384,7 @@ input[aria-invalid="true"]{border-color:var(--bad)}
           <nav class="nav"><span class="d logo">Harbor</span><ul><li>Product</li><li>Pricing</li><li>Customers</li><li class="b">Sign in</li></ul></nav>
           <div class="hero">
             <span class="eyebrow">New · Receipts sync with your card feed</span>
-            <h1>Expense reports that file themselves.</h1>
+            <h1>Expense reports that <span class="hl">file themselves.</span></h1>
             <p class="lead">Harbor matches every receipt to its card charge, flags policy issues before finance does, and closes the month in an afternoon.</p>
             <div class="row"><button class="pbtn fill">Start free trial</button><button class="pbtn">Book a demo</button></div>
             <p class="small muted">Free for teams under 10. No card required.</p>
@@ -796,7 +816,20 @@ function buildScale(hex, {anchor500=false, hueShift=0}={}){
     : {step, hex:oklchToHex(Ls[i], cPeak*C_CURVE[i], (H0 + hueShift*(i-idx)/10 + 360)%360)});
 }
 
-const COLOR = {hex:'#2f6bff', anchor500:false, hueShift:0, tint:0.012, harm:0.35};
+const COLOR = {hex:'#2f6bff', anchor500:false, hueShift:0, tint:0.012, harm:0.35, sec:null, secRule:'complement'};
+// Hue offsets from the brand color for each suggestion; lightness and chroma match the brand so the pair feels like one system.
+const HARMONY = {complement:180, split:150, triadic:120, analogous:35};
+function suggestSecond(rule){
+  const [L,C,H] = rgbToOklch(hexToRgb(COLOR.hex));
+  const H2 = (H + HARMONY[rule]) % 360;
+  // Yellows and oranges only read as themselves when light; at a blue's lightness they turn mustard or brown.
+  const floor = H2>=70 && H2<=115 ? 0.8 : H2>=40 && H2<70 ? 0.68 : 0.45;
+  return oklchToHex(clamp(Math.max(L,floor),0.45,0.86), C<0.03 ? 0.15 : C, H2);
+}
+const hueGap = (a,b) => Math.abs(((a-b+540)%360)-180);
+// Perceptual distance in OKLab (×100 is roughly "just noticeable" units).
+const deltaE = (h1,h2) => { const [L1,C1,H1] = rgbToOklch(hexToRgb(h1)), [L2,C2,H2] = rgbToOklch(hexToRgb(h2)); const r = Math.PI/180;
+  return Math.hypot(L1-L2, C1*Math.cos(H1*r)-C2*Math.cos(H2*r), C1*Math.sin(H1*r)-C2*Math.sin(H2*r)); };
 let PAL = null, TYPE = null;
 
 function buildPalette(){
@@ -810,6 +843,7 @@ function buildPalette(){
     const C = C0<0.03 ? st.C : st.C + (clamp(C0,0.06,0.25)-st.C)*COLOR.harm*0.6;
     out[n] = buildScale(oklchToHex(st.L,C,H), {hueShift:autoShift(H)});
   });
+  if(COLOR.sec) out.secondary = buildScale(COLOR.sec, {anchor500:COLOR.anchor500, hueShift:autoShift(rgbToOklch(hexToRgb(COLOR.sec))[2])});
   out.lch = [L0,C0,H0];
   return out;
 }
@@ -862,6 +896,10 @@ function renderColor(){
   [['bg','bg'],['fg','fg'],['muted','muted'],['line','line'],['card','card'],['accent','accent'],['danger','error'],['success','success'],['warning','warning'],['info','info']]
     .forEach(([v,k])=>st.setProperty('--pv-'+v, t[k]));
   st.setProperty('--pv-on-accent', onColor(t.accent));
+  // second color: fills use the scale step that suits the surface; text uses a step that passes on it
+  const s2 = PAL.secondary ? 'secondary' : 'brand';
+  st.setProperty('--pv-accent2', state.surface==='paper' ? baseOf(s2).hex : pget(s2, state.surface==='ink' ? 400 : 300));
+  st.setProperty('--pv-accent2-text', !PAL.secondary ? t.fg : state.surface==='paper' ? pget('secondary',600) : pget('secondary', state.surface==='ink' ? 300 : 200));
 
   // status alerts: tinted on light surfaces, deep on dark ones
   document.querySelectorAll('#alerts .alert').forEach(a=>{
@@ -872,13 +910,15 @@ function renderColor(){
   });
 
   const g = $('gcard');
-  g.style.background = `linear-gradient(135deg, ${pget('brand',500)} 0%, ${pget('brand',700)} 55%, ${pget('brand',900)} 100%)`;
+  g.style.background = PAL.secondary
+    ? `linear-gradient(135deg, ${pget('brand',600)} 0%, ${pget('brand',800)} 50%, ${pget('secondary',700)} 100%)`
+    : `linear-gradient(135deg, ${pget('brand',500)} 0%, ${pget('brand',700)} 55%, ${pget('brand',900)} 100%)`;
   g.style.color = pget('brand',50);
   renderChart(t);
 
   // palette sheet
   const ink = pget('neutral',950);
-  $('sheet').innerHTML = ['brand','neutral','success','info','warning','error'].map(name=>`<div class="srow"><span class="nm">${name}</span>${PAL[name].map(sw=>{
+  $('sheet').innerHTML = scaleNames().map(name=>`<div class="srow"><span class="nm">${name}</span>${PAL[name].map(sw=>{
     const rw = ratio(sw.hex,'#ffffff'), rk = ratio(sw.hex, ink), useW = rw>=rk, best = Math.max(rw,rk);
     return `<div class="sw${sw.base?' base':''}" style="background:${sw.hex}; color:${useW?'#ffffff':ink}" title="${name}-${sw.step} ${sw.hex}: ${fr(rw)}:1 with white, ${fr(rk)}:1 with ink">
       <span class="st">${sw.step}</span><span>${sw.hex.slice(1)}</span><span class="cr">${useW?'W':'K'} ${(Math.floor(best*10)/10).toFixed(1)} ${grade(best)==='Fail'?'':grade(best).replace(' large',' lg')}</span></div>`;
@@ -900,13 +940,26 @@ function renderColor(){
     (()=>{ const r = ratio(pget('brand',400), pget('neutral',950)); return [r>=4.5?'ok':r>=3?'warn':'bad', `Dark mode: brand-400 on neutral-950 is ${fr(r)}:1 (${grade(r)}).`]; })(),
     (()=>{ const r = ratio(pget('warning',700),'#ffffff'); return [r>=4.5?'ok':'warn', `Warning text: warning-700 on white is ${fr(r)}:1. Yellows need dark steps for text.`]; })()
   ];
+  if(PAL.secondary){
+    const sb = baseOf('secondary'), dE = deltaE(b.hex, sb.hex)*100, Hs = rgbToOklch(hexToRgb(sb.hex))[2], Cs = rgbToOklch(hexToRgb(sb.hex))[1];
+    checks.unshift(dE<8 ? ['bad', `Second color is ${dE.toFixed(0)} ΔE from the brand. People will read it as an off-brand shade, not a second color.`]
+      : dE<15 ? ['warn', `Second color is only ${dE.toFixed(0)} ΔE from the brand. Use it for decoration, not to signal a different meaning.`]
+      : ['ok', `Second color is ${dE.toFixed(0)} ΔE from the brand, clearly a different color.`]);
+    const clash = Cs>0.08 && [['error',27,'destructive actions'],['success',150,'confirmations']].find(([,h])=>hueGap(Hs,h)<22);
+    if(clash) checks.splice(1,0,['warn', `Second color sits near ${clash[0]} ${clash[0]==='error'?'red':'green'}. Keep it away from ${clash[2]} and alerts so the meanings don't blur.`]);
+    const r2 = ratio(pget('secondary',600),'#ffffff'), rb = ratio(sb.hex, onColor(sb.hex));
+    checks.splice(2,0,[r2>=4.5?'ok':r2>=3?'warn':'bad', `Second color as text: secondary-600 on white is ${fr(r2)}:1 (${grade(r2)}).`],
+      [rb>=4.5?'ok':rb>=3?'warn':'bad', `Second color button: ${onColor(sb.hex)==='#ffffff'?'white':'ink'} text on secondary-${sb.step} is ${fr(rb)}:1 (${grade(rb)}).`]);
+    const [Ls2,Cs2,Hs2] = rgbToOklch(hexToRgb(COLOR.sec));
+    $('sec-placed').textContent = `Sits at ${sb.step} (OKLCH ${Ls2.toFixed(2)} ${Cs2.toFixed(3)} ${Math.round(Hs2)}°), ${Math.round(hueGap(H0,Hs2))}° from the brand hue.`;
+  }
   $('color-checks').innerHTML = checks.map(([k,txt])=>`<li><span class="dot ${k}" aria-label="${k}"></span><span>${txt}</span></li>`).join('');
   renderExport();
 }
 
 // ---- export ----
 const famArr = f => [f.n, ...FALLBACK[f.c].split(',').map(x=>x.trim().replace(/^'|'$/g,''))];
-const SCALES = ['brand','neutral','success','info','warning','error'];
+const scaleNames = () => ['brand', ...(PAL.secondary ? ['secondary'] : []), 'neutral','success','info','warning','error'];
 function renderExport(){
   if(!TYPE || !PAL) return;
   const {links, d, b, m, bw, z} = TYPE;
@@ -917,17 +970,17 @@ function renderExport(){
   if(fmt==='css'){
     out = `${links}\n\n:root {\n  --font-display: ${stack(d)};\n  --font-body: ${stack(b)};\n  --font-mono: ${stack(m)};\n  --weight-display: ${state.hw};\n  --weight-body-strong: ${bw};\n  --tracking-display: ${state.track}em;\n  --leading-body: ${state.lh};\n`
       + Object.entries(sizes).map(([k,v])=>`  --text-${k}: ${rem(v)};`).join('\n') + '\n\n'
-      + SCALES.map(n=>PAL[n].map(x=>`  --color-${n}-${x.step}: ${x.hex};`).join('\n')).join('\n\n') + '\n}';
+      + scaleNames().map(n=>PAL[n].map(x=>`  --color-${n}-${x.step}: ${x.hex};`).join('\n')).join('\n\n') + '\n}';
   } else if(fmt==='tw'){
-    const colors = SCALES.map(n=>`        ${n}: {\n${PAL[n].map(x=>`          ${x.step}: '${x.hex}',`).join('\n')}\n          DEFAULT: '${(PAL[n].find(x=>x.base)||PAL[n][5]).hex}',\n        },`).join('\n');
+    const colors = scaleNames().map(n=>`        ${n}: {\n${PAL[n].map(x=>`          ${x.step}: '${x.hex}',`).join('\n')}\n          DEFAULT: '${(PAL[n].find(x=>x.base)||PAL[n][5]).hex}',\n        },`).join('\n');
     out = `// ${links.replace(/\n/g,'\n// ')}\n/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n${colors}\n      },\n      fontFamily: {\n        display: ${JSON.stringify(famArr(d)).replace(/"/g,"'").replace(/,/g,', ')},\n        body: ${JSON.stringify(famArr(b)).replace(/"/g,"'").replace(/,/g,', ')},\n        mono: ${JSON.stringify(famArr(m)).replace(/"/g,"'").replace(/,/g,', ')},\n      },\n      fontSize: {\n${Object.entries(sizes).map(([k,v])=>`        ${k}: '${rem(v)}',`).join('\n')}\n      },\n    },\n  },\n};`;
   } else if(fmt==='tw4'){
     out = `/* ${links.replace(/\n/g,' ')} */\n@import "tailwindcss";\n\n@theme {\n  --font-display: ${stack(d)};\n  --font-body: ${stack(b)};\n  --font-mono: ${stack(m)};\n`
       + Object.entries(sizes).map(([k,v])=>`  --text-${k}: ${rem(v)};`).join('\n') + '\n\n'
-      + SCALES.map(n=>PAL[n].map(x=>`  --color-${n}-${x.step}: ${x.hex};`).join('\n')).join('\n\n') + '\n}';
+      + scaleNames().map(n=>PAL[n].map(x=>`  --color-${n}-${x.step}: ${x.hex};`).join('\n')).join('\n\n') + '\n}';
   } else {
     const tok = {
-      color: Object.fromEntries(SCALES.map(n=>[n, Object.fromEntries(PAL[n].map(x=>[x.step, {$type:'color', $value:x.hex}]))])),
+      color: Object.fromEntries(scaleNames().map(n=>[n, Object.fromEntries(PAL[n].map(x=>[x.step, {$type:'color', $value:x.hex}]))])),
       font: {
         family: {display:{$type:'fontFamily', $value:famArr(d)}, body:{$type:'fontFamily', $value:famArr(b)}, mono:{$type:'fontFamily', $value:famArr(m)}},
         weight: {display:{$type:'fontWeight', $value:state.hw}, strong:{$type:'fontWeight', $value:bw}},
@@ -988,19 +1041,31 @@ document.querySelector('.tabs').addEventListener('click', e=>{
 });
 const PRESETS = ['#2f6bff','#e4572e','#f5c518','#0f9d76','#7c3aed','#ff4f9a','#1f2937'];
 $('presets').innerHTML = PRESETS.map(h=>`<button type="button" style="background:${h}" data-hex="${h}" aria-label="Use ${h}"></button>`).join('');
-function setBrand(hex){
-  COLOR.hex = hex; $('brand-hex').value = hex; $('brand-pick').value = hex; $('brand-hex').removeAttribute('aria-invalid');
+function setBrand(hex, keepText){
+  COLOR.hex = hex; if(!keepText) $('brand-hex').value = hex; $('brand-pick').value = hex; $('brand-hex').removeAttribute('aria-invalid');
   COLOR.hueShift = autoShift(rgbToOklch(hexToRgb(hex))[2]); $('hshift').value = COLOR.hueShift;
+  if(COLOR.sec && COLOR.secRule){ applyRule(COLOR.secRule); return; }
   renderColor();
 }
 $('presets').addEventListener('click', e=>{ const b = e.target.closest('button'); if(b) setBrand(b.dataset.hex); });
 $('brand-pick').addEventListener('input', e=>setBrand(e.target.value));
-$('brand-hex').addEventListener('input', e=>{ const h = normHex(e.target.value); if(h){ COLOR.hex = h; $('brand-pick').value = h; e.target.removeAttribute('aria-invalid'); COLOR.hueShift = autoShift(rgbToOklch(hexToRgb(h))[2]); $('hshift').value = COLOR.hueShift; renderColor(); } else e.target.setAttribute('aria-invalid','true'); });
+$('brand-hex').addEventListener('input', e=>{ const h = normHex(e.target.value); if(h) setBrand(h, true); else e.target.setAttribute('aria-invalid','true'); });
 $('anchor500').addEventListener('change', e=>{ COLOR.anchor500 = e.target.checked; renderColor(); });
 $('hshift').addEventListener('input', e=>{ COLOR.hueShift = +e.target.value; renderColor(); });
 $('ntint').addEventListener('input', e=>{ COLOR.tint = +e.target.value; renderColor(); });
 $('harm').addEventListener('input', e=>{ COLOR.harm = +e.target.value; renderColor(); });
 $('fmt').addEventListener('change', renderExport);
+function setSecond(hex, fromRule){
+  COLOR.sec = hex; $('sec-hex').value = hex; $('sec-pick').value = hex; $('sec-hex').removeAttribute('aria-invalid');
+  if(!fromRule){ COLOR.secRule = null; setPressed('harmony','rule',''); }
+  renderColor();
+}
+function applyRule(rule){ COLOR.secRule = rule; setPressed('harmony','rule',rule); setSecond(suggestSecond(rule), true); }
+$('add2').addEventListener('click', ()=>{ $('add2').hidden = true; $('second').hidden = false; applyRule(COLOR.secRule || 'complement'); $('sec-hex').focus(); });
+$('rm2').addEventListener('click', ()=>{ COLOR.sec = null; $('second').hidden = true; $('add2').hidden = false; renderColor(); $('add2').focus(); });
+$('harmony').addEventListener('click', e=>{ const b = e.target.closest('button'); if(b) applyRule(b.dataset.rule); });
+$('sec-pick').addEventListener('input', e=>setSecond(e.target.value));
+$('sec-hex').addEventListener('input', e=>{ const h = normHex(e.target.value); if(h) setSecond(h); else e.target.setAttribute('aria-invalid','true'); });
 $('shuffle').addEventListener('click', generate);
 $('base').addEventListener('input', e=>{ state.base = +e.target.value; render(); });
 $('ratio').addEventListener('change', e=>{ state.ratio = +e.target.value; render(); });

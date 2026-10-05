@@ -225,6 +225,9 @@ input[aria-invalid="true"]{border-color:var(--bad)}
 
 /* export */
 .export pre{margin:0; font-family:var(--ui-mono); font-size:12px; background:var(--chip); border-radius:8px; padding:12px; overflow-x:auto; white-space:pre; max-height:220px}
+.mdopts{display:flex; flex-direction:column; gap:8px}
+.mdsec{border:0; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:6px}
+.mdsec legend{padding:0; margin-bottom:6px}
 .toastmsg{font-size:12px; color:var(--ok); min-height:1em}
 @media (prefers-reduced-motion:no-preference){ .pv{transition:background-color .25s, color .25s} }
 /* ---------- UI styles ----------
@@ -902,9 +905,22 @@ input[aria-invalid="true"]{border-color:var(--bad)}
         <option value="tw">tailwind.config.js</option>
         <option value="tw4">Tailwind v4 @theme</option>
         <option value="json">Design tokens JSON (W3C)</option>
+        <option value="md">Markdown spec (handoff doc)</option>
       </select>
+      <div class="mdopts" id="md-opts" hidden>
+        <label class="lbl" for="md-name">Product name</label>
+        <input type="text" id="md-name" value="Harbor" autocomplete="off">
+        <fieldset class="mdsec"><legend class="lbl">Include</legend>
+          <label class="toggle"><input type="checkbox" id="md-type" checked> Typography</label>
+          <label class="toggle"><input type="checkbox" id="md-color" checked> Color system</label>
+          <label class="toggle"><input type="checkbox" id="md-contrast" checked> Contrast checks</label>
+          <label class="toggle"><input type="checkbox" id="md-style" checked> UI style</label>
+          <label class="toggle"><input type="checkbox" id="md-components" checked> Components</label>
+          <label class="toggle"><input type="checkbox" id="md-tokens" checked> CSS tokens</label>
+        </fieldset>
+      </div>
       <pre id="css"></pre>
-      <button class="btn" id="copy">Copy</button>
+      <div class="row"><button class="btn" id="copy">Copy</button><button class="btn" id="dl" hidden>Download .md</button></div>
       <div class="toastmsg" id="copied" aria-live="polite"></div>
     </section>
 
@@ -2222,8 +2238,73 @@ function renderColor(){
     setPressed('secrole','role', COLOR.secAccent ? 'accent' : 'decor');
     $('sec-placed').textContent = `Sits at ${sb.step} (OKLCH ${Ls2.toFixed(2)} ${Cs2.toFixed(3)} ${Math.round(Hs2)}°), ${Math.round(hueGap(H0,Hs2))}° from the brand hue.`;
   }
+  COLOR_CHECKS = checks;
   $('color-checks').innerHTML = checks.map(([k,txt])=>`<li><span class="dot ${k}" aria-label="${k}"></span><span>${txt}</span></li>`).join('');
   renderExport();
+}
+
+// ---- markdown spec ----
+let COLOR_CHECKS = [];
+// Downloads are blocked inside Claude's artifact viewer; they work on GitHub Pages or locally.
+const CAN_DOWNLOAD = !/claude/i.test(location.hostname);
+const mdMark = k => ({ok:'✅', warn:'⚠️', bad:'❌'}[k] || '•');
+const mdText = h => String(h).replace(/<[^>]+>/g,'');
+function buildMarkdown(cssText){
+  const on = k => $('md-'+k).checked;
+  const {links, d, b, m, bw, z} = TYPE;
+  const sty = STYLE_BY[state.style], A = accScale(), sig = activeSig(), bb = baseOf('brand');
+  const name = $('md-name').value.trim() || 'Untitled product';
+  const src = f => f.src==='adobe' ? `Adobe Fonts (project ${state.kit})` : 'Google Fonts';
+  const date = new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+  const L = [];
+  L.push(`# ${name} design spec`, '', `Generated with Pairwise on ${date}. These are the type, color and style decisions currently selected, with the checks that ran against them.`, '');
+  L.push('| Decision | Choice |', '|---|---|',
+    `| Display font | ${d.n} |`, `| Body font | ${b.n} |`, `| Utility font | ${m.n} |`,
+    `| Brand color | \`${bb.hex}\` |`,
+    ...(PAL.secondary ? [`| Second color | \`${baseOf('secondary').hex}\` (${A==='secondary' ? 'accent' : 'decorative'}) |`] : []),
+    `| Action color | ${A} |`, `| UI style | ${sty.name} |`, '');
+  if(sig) L.push(`> Colors in this spec are the ${sty.name} signature palette, not the brand colors set in Pairwise.`, '');
+
+  if(on('type')){
+    const a = analyse(d, b, m), sizes = [['h1',z.h1,'Display'],['h2',z.h2,'Display'],['h3',z.h3,'Display'],['h4',z.h4,'Display'],['h5',z.h5,'Body, strong'],['body',z.body,'Body'],['small',z.small,'Body']];
+    L.push('## Typography', '', '| Role | Family | Classification | Weights | Source |', '|---|---|---|---|---|',
+      `| Display | ${d.n} | ${d.c}, ${d.s} | ${state.hw} (of ${d.w.join(', ')}) | ${src(d)} |`,
+      `| Body | ${b.n} | ${b.c}, ${b.s} | 400, ${bw} | ${src(b)} |`,
+      `| Utility | ${m.n} | ${m.c} | ${m.w.join(', ')} | ${src(m)} |`, '',
+      `**Why it works.** ${a.why}`, '', ...a.checks.map(([k,t])=>`- ${mdMark(k)} ${t}`), '',
+      '### Type scale', '', `Base ${state.base}px with a ${state.ratio} ratio (${$('ratio').selectedOptions[0].textContent.replace(/^[\d.]+\s*/,'')}). Display weight ${state.hw}, tracking ${state.track}em. Body leading ${state.lh}.`, '',
+      '| Token | Size | rem | Font |', '|---|---|---|---|', ...sizes.map(([k,px,f])=>`| ${k} | ${px}px | ${(px/16).toFixed(3)} | ${f} |`), '',
+      '### Loading the fonts', '', '```html', links, '```', '');
+  }
+  if(on('color')){
+    L.push('## Color system', '', `Scales are generated in OKLCH. The brand color sits at step ${bb.step}${COLOR.anchor500 ? ' (pinned)' : ''}. Grays carry a ${COLOR.tint.toFixed(3)} tint of the brand hue, and status colors are ${Math.round(COLOR.harm*100)}% harmonized toward it.`, '',
+      '### Roles', '',
+      `- **Actions** (buttons, links, focus, chart highlight): \`${A}\`, base \`${baseOf(A).hex}\``,
+      `- **Decoration** (highlights, illustration): \`${decScale()}\``,
+      '- **Status**: `success`, `info`, `warning`, `error`. Reserved for meaning, never decoration.', '',
+      '### Scales', '', `| Scale | ${STEPS.join(' | ')} |`, `|---|${STEPS.map(()=>'---').join('|')}|`,
+      ...scaleNames().map(n=>`| ${n} | ${PAL[n].map(x=>x.base ? `**\`${x.hex}\`**` : `\`${x.hex}\``).join(' | ')} |`), '',
+      'Bold values are the input colors.', '');
+  }
+  if(on('contrast')){
+    L.push('## Contrast checks', '', 'WCAG 2.x contrast ratios. AA needs 4.5:1 for body text and 3:1 for large text and UI parts.', '',
+      ...COLOR_CHECKS.map(([k,t])=>`- ${mdMark(k)} ${mdText(t)}`), '');
+  }
+  if(on('style')){
+    L.push(`## UI style: ${sty.name}`, '', sty.desc, '', `- **Best for:** ${sty.best}`, `- **Watch out:** ${sty.watch}`, '',
+      '| Token | Value |', '|---|---|', `| Radius (sm / md / lg) | ${sty.r.join(' / ')} px |`, `| Card shadow | \`${sty.shadow}\` |`,
+      ...(sty.border ? [`| Card border | \`${sty.border}\` |`] : []), ...(sty.blur ? [`| Surface blur | ${sty.blur} |`] : []),
+      ...(sty.force ? [`| Surface | Always dark |`] : []), '');
+    if(sty.fonts && (sty.fonts[0]!==d.n || sty.fonts[1]!==b.n)) L.push(`The style suggests ${sty.fonts[0]===sty.fonts[1] ? `${sty.fonts[0]} for both display and body` : `${sty.fonts[0]} and ${sty.fonts[1]}`}. This spec keeps ${d.n} and ${b.n}.`, '');
+  }
+  if(on('components')){
+    const groups = {};
+    document.querySelectorAll('#grid .frame.comp').forEach(fr=>{ const h = fr.querySelectorAll('header span'); (groups[h[1].textContent] ||= []).push(h[0].textContent); });
+    L.push('## Components', '', `All ${Object.values(groups).flat().length} components were previewed in the ${sty.name} style with the tokens in this spec.`, '');
+    Object.entries(groups).forEach(([g, list])=>L.push(`### ${g}`, '', ...list.map(x=>`- ${x}`), ''));
+  }
+  if(on('tokens')) L.push('## CSS tokens', '', '```css', cssText.replace(/^<link[^\n]*\n(<link[^\n]*\n|<!--[^\n]*\n)*\n?/, ''), '```', '');
+  return L.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
 }
 
 // ---- export ----
@@ -2240,11 +2321,15 @@ function renderExport(){
   const sty = STYLE_BY[state.style];
   const styCss = `\n\n  /* UI style: ${sty.name} */\n  --radius-sm: ${sty.r[0]}px;\n  --radius-md: ${sty.r[1]}px;\n  --radius-lg: ${sty.r[2]}px;\n  --shadow-card: ${sty.shadow};` + (sty.border ? `\n  --border-card: ${sty.border};` : '') + (sty.blur ? `\n  --blur-surface: ${sty.blur};` : '');
   let out;
-  if(fmt==='css'){
-    out = `${links}\n\n:root {\n  --font-display: ${stack(d)};\n  --font-body: ${stack(b)};\n  --font-mono: ${stack(m)};\n  --weight-display: ${state.hw};\n  --weight-body-strong: ${bw};\n  --tracking-display: ${state.track}em;\n  --leading-body: ${state.lh};\n`
+  const cssText = `${links}\n\n:root {\n  --font-display: ${stack(d)};\n  --font-body: ${stack(b)};\n  --font-mono: ${stack(m)};\n  --weight-display: ${state.hw};\n  --weight-body-strong: ${bw};\n  --tracking-display: ${state.track}em;\n  --leading-body: ${state.lh};\n`
       + Object.entries(sizes).map(([k,v])=>`  --text-${k}: ${rem(v)};`).join('\n') + '\n\n'
       + scaleNames().map(n=>PAL[n].map(x=>`  --color-${n}-${x.step}: ${x.hex};`).join('\n')).join('\n\n') + accCss + styCss + '\n}';
-  } else if(fmt==='tw'){
+  const isMd = fmt==='md';
+  $('md-opts').hidden = !isMd; $('dl').hidden = !(isMd && CAN_DOWNLOAD);
+  $('copy').textContent = isMd ? 'Copy markdown' : 'Copy';
+  if(fmt==='css') out = cssText;
+  else if(isMd) out = buildMarkdown(cssText);
+  else if(fmt==='tw'){
     const colors = [...scaleNames(), 'accent'].map(n=>n==='accent' ? `        // accent = ${A} (buttons, links, focus)\n        accent: {\n${PAL[A].map(x=>`          ${x.step}: '${x.hex}',`).join('\n')}\n          DEFAULT: '${baseOf(A).hex}',\n        },` : `        ${n}: {\n${PAL[n].map(x=>`          ${x.step}: '${x.hex}',`).join('\n')}\n          DEFAULT: '${(PAL[n].find(x=>x.base)||PAL[n][5]).hex}',\n        },`).join('\n');
     out = `// ${links.replace(/\n/g,'\n// ')}\n/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n${colors}\n      },\n      fontFamily: {\n        display: ${JSON.stringify(famArr(d)).replace(/"/g,"'").replace(/,/g,', ')},\n        body: ${JSON.stringify(famArr(b)).replace(/"/g,"'").replace(/,/g,', ')},\n        mono: ${JSON.stringify(famArr(m)).replace(/"/g,"'").replace(/,/g,', ')},\n      },\n      fontSize: {\n${Object.entries(sizes).map(([k,v])=>`        ${k}: '${rem(v)}',`).join('\n')}\n      },\n      // UI style: ${sty.name}\n      borderRadius: { sm: '${sty.r[0]}px', md: '${sty.r[1]}px', lg: '${sty.r[2]}px' },\n      boxShadow: { card: ${JSON.stringify(sty.shadow).replace(/"/g,"'")} },\n    },\n  },\n};`;
   } else if(fmt==='tw4'){
@@ -2740,6 +2825,15 @@ function renderAdobeList(){
 function syncLocks(){ ROLES.forEach(r=>$('lock-'+r.k).setAttribute('aria-pressed', state.locks[r.k])); }
 
 $('adobe-form').addEventListener('submit', e=>{ e.preventDefault(); connectKit($('kit').value); });
+$('md-opts').addEventListener('input', renderExport);
+$('md-opts').addEventListener('change', renderExport);
+$('dl').addEventListener('click', ()=>{
+  const slug = ($('md-name').value.trim() || 'design').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'design';
+  const url = URL.createObjectURL(new Blob([$('css').textContent], {type:'text/markdown'}));
+  const a = document.createElement('a'); a.href = url; a.download = `${slug}-design-spec.md`; document.body.append(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  $('copied').textContent = `Saved ${slug}-design-spec.md`; setTimeout(()=>$('copied').textContent='', 2500);
+});
 $('copy').addEventListener('click', ()=>{
   const txt = $('css').textContent;
   const done = () => { $('copied').textContent = 'Copied to clipboard'; setTimeout(()=>$('copied').textContent='', 2000); };

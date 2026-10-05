@@ -242,7 +242,7 @@ input[aria-invalid="true"]{border-color:var(--bad)}
 [data-style="swiss"] .pv h1,[data-style="swiss"] .pv h2{letter-spacing:-0.035em; line-height:.98}
 [data-style="swiss"] .pv .eyebrow{color:var(--pv-accent); text-transform:none; letter-spacing:0; font-family:var(--f-body); font-weight:var(--bw)}
 [data-style="swiss"] .pbtn,[data-style="swiss"] .kpi,[data-style="swiss"] .field .in,[data-style="swiss"] .toast,[data-style="swiss"] .alert,[data-style="swiss"] .code,[data-style="swiss"] .phone,[data-style="swiss"] .gcard,[data-style="swiss"] .pill,[data-style="swiss"] .badges span,[data-style="swiss"] .check i,[data-style="swiss"] .article .avatar{border-radius:0}
-[data-style="swiss"] .pbtn.fill{background:var(--pv-fg); border-color:var(--pv-fg); color:var(--pv-bg)}
+[data-style="swiss"] .pbtn.fill{background:var(--pv-accent); border-color:var(--pv-accent); color:var(--pv-on-accent)}
 [data-style="swiss"] .kpi{background:transparent; border-top:1px solid var(--pv-fg); padding-inline:0}
 [data-style="swiss"] .alert{border:0; border-top:2px solid var(--a-icon); background:transparent; border-radius:0}
 [data-style="swiss"] .gcard{background:var(--pv-accent)!important}
@@ -427,7 +427,7 @@ input[aria-invalid="true"]{border-color:var(--bad)}
       <p class="why" id="sty-desc"></p>
       <dl class="sty-meta"><dt>Best for</dt><dd id="sty-best"></dd><dt>Watch out</dt><dd id="sty-watch"></dd></dl>
       <button class="btn" type="button" id="sty-fonts"></button>
-      <label class="toggle" id="sty-sig-wrap"><input type="checkbox" id="sty-sig" checked> <span id="sty-sig-l">Use the style's signature colors</span></label>
+      <label class="toggle" id="sty-sig-wrap"><input type="checkbox" id="sty-sig"> <span id="sty-sig-l">Use the style's signature colors instead of my brand</span></label>
       <p class="note" id="sty-note"></p>
     </section>
 
@@ -836,7 +836,7 @@ const MODES = {
   ]
 };
 
-const state = {display:'Fraunces', body:'Figtree', mono:'JetBrains Mono', mode:'contrast', pool:'all', kit:null, base:16, ratio:1.25, hw:600, track:-0.01, lh:1.55, surface:'paper', style:'base', sig:true, filter:'all', locks:{display:false, body:false, mono:false}};
+const state = {display:'Fraunces', body:'Figtree', mono:'JetBrains Mono', mode:'contrast', pool:'all', kit:null, base:16, ratio:1.25, hw:600, track:-0.01, lh:1.55, surface:'paper', style:'base', sig:false, filter:'all', locks:{display:false, body:false, mono:false}};
 const loaded = new Set();
 const $ = id => document.getElementById(id);
 const pick = arr => arr[Math.floor(Math.random()*arr.length)];
@@ -1117,7 +1117,10 @@ const activeSig = () => { const st = STYLE_BY[state.style]; return st.sig && sta
 
 // Adjust the surface tokens and add the extra variables a style's CSS reads.
 function styleVars(id, t){
-  const v = {}, dark = t.dark, H = PAL.lch[2], s2 = PAL.secondary ? 'secondary' : 'info';
+  const v = {}, dark = t.dark, H = PAL.lch[2];
+  const rot = (step, deg) => { const [l,c,h] = rgbToOklch(hexToRgb(pget('brand',step))); return oklchToHex(l, c, (h+deg+360)%360); };
+  const c2 = step => PAL.secondary ? pget('secondary',step) : rot(step, 40);
+  const c3 = step => PAL.secondary ? rot(step, 40) : rot(step, -40);
   const set = () => {
     v['--pv-accent-hi'] = mixHex(t.accent,'#ffffff',0.3);
     v['--pv-accent-deep'] = mixHex(t.accent,'#000000',0.25);
@@ -1125,8 +1128,8 @@ function styleVars(id, t){
     v['--pv-accent-text'] = t.accentText || (dark ? pget('brand',300) : pget('brand',600));
     v['--pv-hi'] = mixHex(t.bg,'#ffffff',dark?0.12:0.6);
     v['--pv-emboss'] = dark ? 'rgba(0,0,0,.6)' : 'rgba(255,255,255,.75)';
-    v['--tone-1'] = pget('brand',dark?800:100); v['--tone-2'] = pget(s2,dark?800:100); v['--tone-3'] = pget('success',dark?800:100);
-    v['--pv-accent3'] = (activeSig()&&activeSig().third) || pget('warning',300);
+    v['--tone-1'] = pget('brand',dark?800:100); v['--tone-2'] = c2(dark?800:100); v['--tone-3'] = c3(dark?800:100);
+    v['--pv-accent3'] = (activeSig()&&activeSig().third) || c3(300);
     v['--hard'] = dark ? t.fg : '#111111';
   };
   let canvas = null, hdr = null;
@@ -1155,12 +1158,12 @@ function styleVars(id, t){
       hdr = dark ? sub(300) : pget('brand',800); break;
     }
     case 'glass': {
-      const A = pget('brand',400), B = pget(s2,300), Cc = pget('success',300);
-      canvas = `radial-gradient(circle at 16% 150px, ${A} 0 120px, transparent 121px) 0 0/100% 860px repeat-y, radial-gradient(circle at 86% 430px, ${B} 0 100px, transparent 101px) 0 0/100% 860px repeat-y, radial-gradient(circle at 52% 720px, ${Cc} 0 140px, transparent 141px) 0 0/100% 860px repeat-y, linear-gradient(160deg, ${pget('brand',700)}, ${pget(s2,600)})`;
+      const A = pget('brand',400), B = c2(300), Cc = c3(300);
+      canvas = `radial-gradient(circle at 16% 150px, ${A} 0 120px, transparent 121px) 0 0/100% 860px repeat-y, radial-gradient(circle at 86% 430px, ${B} 0 100px, transparent 101px) 0 0/100% 860px repeat-y, radial-gradient(circle at 52% 720px, ${Cc} 0 140px, transparent 141px) 0 0/100% 860px repeat-y, linear-gradient(160deg, ${pget('brand',700)}, ${c2(600)})`;
       hdr = '#ffffff'; break;
     }
     case 'aurora': {
-      const A = pget('brand',400), B = pget(s2,300), Cc = pget('success',300), D = pget('brand',200);
+      const A = pget('brand',400), B = c2(300), Cc = c3(300), D = pget('brand',200);
       canvas = dark ? sub(950) : '#f5f6fa';
       v['--aurora'] = `radial-gradient(640px 420px at 12% 220px, ${A}, transparent 70%) 0 0/100% 1200px repeat-y, radial-gradient(560px 460px at 88% 520px, ${B}, transparent 70%) 0 0/100% 1200px repeat-y, radial-gradient(700px 380px at 45% 950px, ${Cc}, transparent 70%) 0 0/100% 1200px repeat-y, radial-gradient(500px 300px at 70% 60px, ${D}, transparent 70%) 0 0/100% 1200px repeat-y`;
       hdr = dark ? sub(200) : sub(800); break;
@@ -1172,13 +1175,13 @@ function styleVars(id, t){
     }
     case 'brutal': {
       t.bg = dark ? sub(900) : '#ffffff';
-      const base = dark ? sub(950) : ((activeSig()&&activeSig().third) ? mixHex(activeSig().third,'#ffffff',0.55) : pget('warning',100));
+      const base = dark ? sub(950) : ((activeSig()&&activeSig().third) ? mixHex(activeSig().third,'#ffffff',0.55) : pget('brand',100));
       const gl = hexA(dark ? '#ffffff' : '#111111', 0.1);
       canvas = `linear-gradient(${gl} 1px, transparent 1px) 0 0/28px 28px, linear-gradient(90deg, ${gl} 1px, transparent 1px) 0 0/28px 28px, ${base}`;
       hdr = dark ? '#ffffff' : '#111111'; break;
     }
     case 'cyber': {
-      const acc = neon(baseOf('brand').hex), acc2 = PAL.secondary ? neon(baseOf('secondary').hex) : '#ff2bd6';
+      const acc = neon(baseOf('brand').hex), acc2 = neon(PAL.secondary ? baseOf('secondary').hex : rot(500, 40));
       Object.assign(t, {bg:'#080b12', card:'#0c121c', fg:'#d9f7ff', muted:'#7c97a8', accent:acc, accent2:acc2, accent2Text:acc2, line:hexA(acc,0.35), dark:true});
       ['success','warning','info','error'].forEach(k=>{ t[k] = neon(pget(k,500)); });
       v['--glow'] = hexA(acc,0.45);
@@ -1196,6 +1199,11 @@ function styleVars(id, t){
     case 'skeuo': {
       canvas = `repeating-linear-gradient(45deg, rgba(0,0,0,.035) 0 2px, transparent 2px 5px), repeating-linear-gradient(-45deg, rgba(255,255,255,.05) 0 2px, transparent 2px 5px), ${dark ? sub(900) : sub(200)}`;
       t.card = dark ? sub(800) : sub(100); hdr = dark ? sub(300) : sub(700); break;
+    }
+    case 'bauhaus': {
+      // Bauhaus needs three distinct colors; without a second color, borrow a rotated brand hue
+      if(!PAL.secondary && !activeSig()) t.accent2 = c2(600);
+      break;
     }
     case 'swiss': {
       if(!dark) t.card = '#ffffff';

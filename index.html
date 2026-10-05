@@ -22,7 +22,8 @@
   --ok:#4CC38A; --warn:#F0A848; --bad:#FF7A7A; --chip:#232831; color-scheme:dark }
 
 *{box-sizing:border-box}
-body{background:var(--bg); color:var(--ink); font-family:var(--ui); font-size:14px; line-height:1.45}
+[hidden]{display:none!important}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--ui); font-size:14px; line-height:1.45}
 .app{display:grid; grid-template-columns:340px minmax(0,1fr); gap:24px; padding-block:20px; padding-inline:20px; max-width:1480px; margin:0 auto}
 @media (max-width:920px){ .app{grid-template-columns:minmax(0,1fr); padding-inline:16px} }
 
@@ -98,11 +99,52 @@ kbd{font-family:var(--ui-mono); font-size:11px; border:1px solid var(--line); bo
 .frame > header{display:flex; justify-content:space-between; font-size:11px; color:var(--muted); font-family:var(--ui-mono)}
 
 /* ---------- preview surfaces (independent of page theme by design) ---------- */
-.pv{--pv-bg:#FFFFFF; --pv-fg:#16181B; --pv-muted:#5E636B; --pv-line:#E2E4E8; --pv-card:#F5F6F8; --pv-accent:#1F4FFF; --pv-on-accent:#FFFFFF; --pv-danger:#C0352B;
-  background:var(--pv-bg); color:var(--pv-fg); border:1px solid var(--line); border-radius:10px; padding:clamp(18px,3vw,32px);
+/* Surface tokens are generated from the color scales in JS and set on .stage; these are first-paint defaults. */
+.stage{--pv-bg:#FFFFFF; --pv-fg:#16181B; --pv-muted:#5E636B; --pv-line:#E2E4E8; --pv-card:#F5F6F8; --pv-accent:#1F4FFF; --pv-on-accent:#FFFFFF; --pv-danger:#C0352B;
+  --pv-success:#18794E; --pv-warning:#A35C00; --pv-info:#1F6FD1}
+.pv{background:var(--pv-bg); color:var(--pv-fg); border:1px solid var(--line); border-radius:10px; padding:clamp(18px,3vw,32px);
   font-family:var(--f-body); font-size:var(--base); line-height:var(--lh); overflow:hidden; min-width:0}
-.stage[data-surface="ink"] .pv{--pv-bg:#15171B; --pv-fg:#F0EFEA; --pv-muted:#A2A6AD; --pv-line:#2B2F36; --pv-card:#1E2127; --pv-accent:#C9F04A; --pv-on-accent:#15171B; --pv-danger:#FF8A80}
-.stage[data-surface="brand"] .pv{--pv-bg:#0E3B37; --pv-fg:#EDF5F2; --pv-muted:#A9C6BF; --pv-line:#21524C; --pv-card:#134640; --pv-accent:#F3C04F; --pv-on-accent:#0E3B37; --pv-danger:#FFB4A6}
+
+/* palette sheet */
+.sheet{overflow-x:auto}
+.sheet-in{min-width:760px; display:flex; flex-direction:column; gap:14px}
+.srow{display:grid; grid-template-columns:84px repeat(11,minmax(0,1fr)); gap:4px; align-items:stretch}
+.srow .nm{font-family:var(--f-body); font-weight:var(--bw); font-size:calc(var(--base)*.85); align-self:center; text-transform:capitalize}
+.sw{border-radius:6px; padding:8px 6px 6px; display:flex; flex-direction:column; gap:2px; font-family:var(--ui-mono); font-size:10.5px; line-height:1.25; min-height:78px; position:relative}
+.sw .st{font-weight:600; font-size:11.5px}
+.sw .cr{margin-top:auto; opacity:.9}
+.sw.base{outline:2px solid var(--pv-fg); outline-offset:2px}
+.sw.base::after{content:"base"; position:absolute; top:6px; right:6px; font-size:9px; letter-spacing:.06em; text-transform:uppercase}
+
+/* status alerts */
+.alerts{display:flex; flex-direction:column; gap:.7em}
+.alert{display:grid; grid-template-columns:1.4em minmax(0,1fr); gap:.7em; padding:.85em 1em; border-radius:8px; border:1px solid var(--a-line); background:var(--a-bg); color:var(--a-fg)}
+.alert .ic{width:1.4em; height:1.4em; border-radius:50%; background:var(--a-icon); color:var(--a-on); display:grid; place-items:center; font-size:.8em; font-weight:700; font-family:var(--ui)}
+.alert p{font-size:calc(var(--base)*.88); opacity:.9}
+.pill.ok{color:var(--pv-success)} .pill.warn{color:var(--pv-warning)} .pill.bad{color:var(--pv-danger)}
+
+/* chart + gradient */
+.chart{position:relative}
+.chart svg{display:block; width:100%; height:auto; overflow:visible}
+.chart .tip{position:absolute; pointer-events:none; background:var(--pv-fg); color:var(--pv-bg); font-size:calc(var(--base)*.78); padding:.35em .6em; border-radius:6px; white-space:nowrap; transform:translate(-50%,-110%)}
+.gcard{border-radius:14px; padding:1.3em; display:flex; flex-direction:column; gap:1.6em; min-height:11em}
+.gcard .row{justify-content:space-between}
+
+/* rail tabs + color controls */
+.tabs{display:grid; grid-template-columns:1fr 1fr; background:var(--chip); border-radius:9px; padding:3px; gap:3px}
+.tabs button{border:0; background:transparent; color:var(--muted); font:inherit; font-weight:500; padding:8px; border-radius:7px; cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--panel); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.tabs button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+input[aria-invalid="true"]{border-color:var(--bad)}
+.hexrow{display:grid; grid-template-columns:44px minmax(0,1fr); gap:8px}
+.hexrow input[type="color"]{width:44px; height:36px; padding:2px; border:1px solid var(--line); border-radius:7px; background:var(--panel); cursor:pointer}
+.presets{display:flex; gap:6px; flex-wrap:wrap}
+.presets button{width:24px; height:24px; border-radius:50%; border:1px solid var(--line); cursor:pointer}
+.presets button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.note{font-size:12.5px; color:var(--muted); margin:0}
+.toggle{display:flex; gap:8px; align-items:center; font-size:12.5px}
+.toggle input{accent-color:var(--accent)}
+.mini{display:grid; grid-template-columns:repeat(11,1fr); height:14px; border-radius:4px; overflow:hidden}
 .pv h1,.pv h2,.pv h3,.pv h4,.pv .d{font-family:var(--f-display); font-weight:var(--hw); letter-spacing:var(--track); line-height:1.08; margin:0; text-wrap:balance}
 .pv h1{font-size:min(var(--s1),11vw)} .pv h2{font-size:min(var(--s2),9vw)} .pv h3{font-size:var(--s3)} .pv h4{font-size:var(--s4)}
 .pv p{margin:0; max-width:62ch}
@@ -191,9 +233,39 @@ kbd{font-family:var(--ui-mono); font-size:11px; border:1px solid var(--line); bo
 
 <div class="app">
   <aside class="rail" aria-label="Pairing controls">
-    <div class="brand"><h1>Pairwise</h1><span>font pairing lab</span></div>
+    <div class="brand"><h1>Pairwise</h1><span>type + color lab</span></div>
+    <div class="tabs" role="tablist" aria-label="Tool">
+      <button role="tab" id="tab-type" aria-selected="true" data-tab="type">Type</button>
+      <button role="tab" id="tab-color" aria-selected="false" data-tab="color">Color</button>
+    </div>
 
-    <section class="box" aria-labelledby="src-l">
+    <section class="box" data-tab="color" aria-labelledby="brand-l" hidden>
+      <div class="lbl" id="brand-l">Brand color</div>
+      <div class="hexrow">
+        <input type="color" id="brand-pick" value="#2f6bff" aria-label="Pick brand color">
+        <input type="text" id="brand-hex" value="#2f6bff" spellcheck="false" autocomplete="off" aria-label="Brand color hex">
+      </div>
+      <div class="presets" id="presets" aria-label="Example brand colors"></div>
+      <label class="toggle"><input type="checkbox" id="anchor500"> Always place my color at 500</label>
+      <p class="note" id="placed"></p>
+      <div class="ctl"><label for="hshift">Hue shift</label><input type="range" id="hshift" min="-30" max="30" step="1" value="0"><output id="hshift-o"></output></div>
+      <p class="note">Rotates hue across the scale so shades don't go muddy. Yellows default toward orange.</p>
+    </section>
+
+    <section class="box" data-tab="color" aria-labelledby="sys-l" hidden>
+      <div class="lbl" id="sys-l">Neutrals + status</div>
+      <div class="ctl"><label for="ntint">Gray tint</label><input type="range" id="ntint" min="0" max="0.04" step="0.002" value="0.012"><output id="ntint-o"></output></div>
+      <div class="mini" id="mini-neutral" aria-hidden="true"></div>
+      <div class="ctl"><label for="harm">Harmonize</label><input type="range" id="harm" min="0" max="1" step="0.05" value="0.35"><output id="harm-o"></output></div>
+      <p class="note">Gray tint borrows the brand hue. Harmonize pulls success, info, warning and error toward the brand's hue and chroma.</p>
+    </section>
+
+    <section class="box" data-tab="color" aria-labelledby="a11y-l" hidden>
+      <div class="lbl" id="a11y-l">Contrast</div>
+      <ul class="checks" id="color-checks"></ul>
+    </section>
+
+    <section class="box" data-tab="type" aria-labelledby="src-l">
       <div class="lbl" id="src-l">Libraries</div>
       <div class="lib"><span><span class="b">Google Fonts</span><br><small id="g-count"></small></span><span class="state on">Connected</span></div>
       <div class="lib"><span><span class="b">Adobe Fonts</span><br><small id="a-count">Web Project not connected</small></span><span class="state" id="a-state">Off</span></div>
@@ -206,7 +278,7 @@ kbd{font-family:var(--ui-mono); font-size:11px; border:1px solid var(--line); bo
       <div class="afams" id="afams" hidden></div>
     </section>
 
-    <section class="box" aria-labelledby="gen-l">
+    <section class="box" data-tab="type" aria-labelledby="gen-l">
       <div class="lbl" id="gen-l">Generate</div>
       <div class="seg" role="group" aria-label="Draw fonts from" id="pools">
         <button data-pool="all" aria-pressed="true">All libraries</button>
@@ -226,15 +298,15 @@ kbd{font-family:var(--ui-mono); font-size:11px; border:1px solid var(--line); bo
       <div class="empty">Press <kbd>Space</kbd> to generate. Lock a role to keep it.</div>
     </section>
 
-    <section class="box" aria-label="Fonts by role" id="roles"></section>
+    <section class="box" data-tab="type" aria-label="Fonts by role" id="roles"></section>
 
-    <section class="box" aria-labelledby="why-l">
+    <section class="box" data-tab="type" aria-labelledby="why-l">
       <div class="lbl" id="why-l">Why it works</div>
       <p class="why" id="why"></p>
       <ul class="checks" id="checks"></ul>
     </section>
 
-    <section class="box" aria-labelledby="tune-l">
+    <section class="box" data-tab="type" aria-labelledby="tune-l">
       <div class="lbl" id="tune-l">Tune</div>
       <div class="ctl"><label for="base">Base size</label><input type="range" id="base" min="13" max="20" step="1" value="16"><output id="base-o"></output></div>
       <div class="ctl"><label for="ratio">Scale ratio</label>
@@ -252,13 +324,19 @@ kbd{font-family:var(--ui-mono); font-size:11px; border:1px solid var(--line); bo
     </section>
 
     <section class="box export" aria-labelledby="exp-l">
-      <div class="lbl" id="exp-l">Handoff tokens</div>
+      <div class="lbl" id="exp-l">Handoff</div>
+      <select id="fmt" aria-label="Export format">
+        <option value="css">CSS variables (type + color)</option>
+        <option value="tw">tailwind.config.js</option>
+        <option value="tw4">Tailwind v4 @theme</option>
+        <option value="json">Design tokens JSON (W3C)</option>
+      </select>
       <pre id="css"></pre>
-      <button class="btn" id="copy">Copy CSS</button>
+      <button class="btn" id="copy">Copy</button>
       <div class="toastmsg" id="copied" aria-live="polite"></div>
     </section>
 
-    <section class="box" aria-labelledby="sv-l">
+    <section class="box" data-tab="type" aria-labelledby="sv-l">
       <div class="lbl" id="sv-l">Saved on this device</div>
       <div class="saved" id="saved"></div>
     </section>
@@ -272,6 +350,7 @@ kbd{font-family:var(--ui-mono); font-size:11px; border:1px solid var(--line); bo
         <button class="chip" data-f="product" aria-pressed="false">Product UI</button>
         <button class="chip" data-f="editorial" aria-pressed="false">Editorial</button>
         <button class="chip" data-f="mobile" aria-pressed="false">Mobile</button>
+        <button class="chip" data-f="color" aria-pressed="false">Color system</button>
       </div>
       <div class="seg" role="group" aria-label="Preview surface" id="surfaces" style="min-width:220px">
         <button data-s="paper" aria-pressed="true">Paper</button>
@@ -281,6 +360,11 @@ kbd{font-family:var(--ui-mono); font-size:11px; border:1px solid var(--line); bo
     </div>
 
     <div class="grid" id="grid">
+      <section class="frame wide only" data-uc="color" hidden>
+        <header><span>Scales · OKLCH · contrast vs white / ink</span><span>Color system</span></header>
+        <div class="pv sheet"><div class="sheet-in" id="sheet"></div></div>
+      </section>
+
       <section class="frame wide" data-uc="marketing">
         <header><span>Landing hero + nav</span><span>Marketing</span></header>
         <div class="pv">
@@ -323,10 +407,10 @@ kbd{font-family:var(--ui-mono); font-size:11px; border:1px solid var(--line); bo
           <div class="tbl"><table>
             <thead><tr><th>Merchant</th><th>Cardholder</th><th>Status</th><th class="num">Amount</th></tr></thead>
             <tbody>
-              <tr><td class="b">Delta Air Lines</td><td>M. Okafor</td><td><span class="pill">Matched</span></td><td class="num">$1,284.60</td></tr>
-              <tr><td class="b">Blue Bottle Coffee</td><td>R. Tanaka</td><td><span class="pill" style="color:var(--pv-danger)">Missing receipt</span></td><td class="num">$18.75</td></tr>
-              <tr><td class="b">AWS</td><td>Platform team</td><td><span class="pill">Matched</span></td><td class="num">$22,019.11</td></tr>
-              <tr><td class="b">Hilton Lisbon</td><td>A. Silva</td><td><span class="pill" style="color:var(--pv-danger)">Over policy</span></td><td class="num">$912.00</td></tr>
+              <tr><td class="b">Delta Air Lines</td><td>M. Okafor</td><td><span class="pill ok">Matched</span></td><td class="num">$1,284.60</td></tr>
+              <tr><td class="b">Blue Bottle Coffee</td><td>R. Tanaka</td><td><span class="pill bad">Missing receipt</span></td><td class="num">$18.75</td></tr>
+              <tr><td class="b">AWS</td><td>Platform team</td><td><span class="pill ok">Matched</span></td><td class="num">$22,019.11</td></tr>
+              <tr><td class="b">Hilton Lisbon</td><td>A. Silva</td><td><span class="pill warn">Over policy</span></td><td class="num">$912.00</td></tr>
             </tbody>
           </table></div>
         </div>
@@ -355,6 +439,29 @@ kbd{font-family:var(--ui-mono); font-size:11px; border:1px solid var(--line); bo
   "card_txn": "txn_19af",
   "currency": "USD"
 }</div>
+        </div>
+      </section>
+
+      <section class="frame" data-uc="color product">
+        <header><span>Status messages</span><span>Color system</span></header>
+        <div class="pv alerts" id="alerts">
+          <div class="alert" data-k="success"><span class="ic" aria-hidden="true">✓</span><div><span class="b">Export complete</span><p>September's 1,947 expenses were sent to NetSuite.</p></div></div>
+          <div class="alert" data-k="info"><span class="ic" aria-hidden="true">i</span><div><span class="b">Card feed syncing</span><p>New transactions from Chase appear within 15 minutes.</p></div></div>
+          <div class="alert" data-k="warning"><span class="ic" aria-hidden="true">!</span><div><span class="b">3 receipts due Friday</span><p>Expenses without receipts after Friday go to finance for review.</p></div></div>
+          <div class="alert" data-k="error"><span class="ic" aria-hidden="true">×</span><div><span class="b">Xero connection expired</span><p>Reconnect Xero to resume exports. Nothing has been lost.</p></div></div>
+        </div>
+      </section>
+
+      <section class="frame" data-uc="color product marketing">
+        <header><span>Chart + gradient card</span><span>Color system</span></header>
+        <div class="pv stack">
+          <div class="row" style="justify-content:space-between; align-items:baseline"><span class="b">Monthly card spend</span><span class="small muted">Apr–Sep 2026</span></div>
+          <div class="chart" id="chart"></div>
+          <div class="gcard" id="gcard">
+            <div class="row"><span class="d" style="font-size:var(--s4)">Harbor</span><span class="mono small">VIRTUAL</span></div>
+            <div class="stack" style="gap:.2em"><span class="small" style="opacity:.85">Available</span><span class="d" style="font-size:var(--s2); font-variant-numeric:tabular-nums">$12,480.00</span></div>
+            <div class="row"><span class="mono small">•••• 4021</span><span class="mono small">09/29</span></div>
+          </div>
         </div>
       </section>
 
@@ -634,25 +741,209 @@ function render(){
     gFam && `<link href="https://fonts.googleapis.com/css2?${gFam}&display=swap" rel="stylesheet">`,
     used.some(f=>f.src==='adobe') && `<!-- Adobe Fonts Web Project ${state.kit} -->\n<link href="https://use.typekit.net/${state.kit}.css" rel="stylesheet">`
   ].filter(Boolean).join('\n');
-  $('css').textContent =
-`${links}
+  TYPE = {links, d, b, m, bw, z};
+  renderExport();
+}
 
-:root {
-  --font-display: ${stack(d)};
-  --font-body: ${stack(b)};
-  --font-mono: ${stack(m)};
-  --weight-display: ${state.hw};
-  --weight-body-strong: ${bw};
-  --tracking-display: ${state.track}em;
-  --leading-body: ${state.lh};
-  --text-h1: ${(z.h1/16).toFixed(3)}rem; /* ${z.h1}px */
-  --text-h2: ${(z.h2/16).toFixed(3)}rem;
-  --text-h3: ${(z.h3/16).toFixed(3)}rem;
-  --text-h4: ${(z.h4/16).toFixed(3)}rem;
-  --text-h5: ${(z.h5/16).toFixed(3)}rem;
-  --text-body: ${(z.body/16).toFixed(3)}rem;
-  --text-small: ${(z.small/16).toFixed(3)}rem;
-}`;
+// ---- color system ----
+// Scales are built in OKLCH (Björn Ottosson's OKLab) so equal lightness steps look equal across hues.
+const STEPS = [50,100,200,300,400,500,600,700,800,900,950];
+// Target lightness per step: a big jump at the light end for subtle backgrounds, tighter spacing through 500–700 where buttons and hover states live.
+const L_CURVE = [0.975,0.945,0.885,0.815,0.72,0.635,0.55,0.47,0.4,0.335,0.25];
+// Neutrals follow a slightly wider curve so 950 reads as ink, not as a dark tint.
+const N_CURVE = [0.985,0.965,0.92,0.87,0.71,0.555,0.445,0.37,0.28,0.21,0.145];
+// Relative chroma per step: tints and deep shades carry less color than the middle of the scale.
+const C_CURVE = [0.12,0.24,0.44,0.68,0.9,1,0.97,0.87,0.75,0.63,0.5];
+const STATUS = {success:{H:150,C:0.15,L:0.63}, info:{H:245,C:0.14,L:0.62}, warning:{H:75,C:0.16,L:0.78}, error:{H:27,C:0.19,L:0.6}};
+const clamp = (x,a,b) => Math.min(b, Math.max(a,x));
+
+const normHex = h => { h = h.trim().replace('#','').toLowerCase(); if(h.length===3) h = h.split('').map(c=>c+c).join(''); return /^[0-9a-f]{6}$/.test(h) ? '#'+h : null; };
+const hexToRgb = h => { const n = parseInt(h.slice(1),16); return [(n>>16&255)/255, (n>>8&255)/255, (n&255)/255]; };
+const toLin = c => c<=0.04045 ? c/12.92 : ((c+0.055)/1.055)**2.4;
+const toGam = c => c<=0.0031308 ? 12.92*c : 1.055*c**(1/2.4)-0.055;
+function rgbToOklch(rgb){
+  const [r,g,b] = rgb.map(toLin);
+  const l = Math.cbrt(0.4122214708*r+0.5363325363*g+0.0514459929*b);
+  const m = Math.cbrt(0.2119034982*r+0.6806995451*g+0.1073969566*b);
+  const q = Math.cbrt(0.0883024619*r+0.2817188376*g+0.6299787005*b);
+  const L = 0.2104542553*l+0.7936177850*m-0.0040720468*q;
+  const A = 1.9779984951*l-2.4285922050*m+0.4505937099*q;
+  const B = 0.0259040371*l+0.7827717662*m-0.8086757660*q;
+  return [L, Math.hypot(A,B), (Math.atan2(B,A)*180/Math.PI+360)%360];
+}
+function oklchToLin(L,C,H){
+  const a = C*Math.cos(H*Math.PI/180), b = C*Math.sin(H*Math.PI/180);
+  const l = (L+0.3963377774*a+0.2158037573*b)**3, m = (L-0.1055613458*a-0.0638541728*b)**3, q = (L-0.0894841775*a-1.2914855480*b)**3;
+  return [4.0767416621*l-3.3077115913*m+0.2309699292*q, -1.2684380046*l+2.6097574011*m-0.3413193965*q, -0.0041960863*l-0.7034186147*m+1.7076147010*q];
+}
+const inGamut = rgb => rgb.every(c=>c>=-1e-4 && c<=1+1e-4);
+// Out-of-gamut colors keep their lightness and hue; chroma is reduced until they fit in sRGB.
+function oklchToHex(L,C,H){
+  let rgb = oklchToLin(L,C,H);
+  if(!inGamut(rgb)){ let lo=0, hi=C; for(let i=0;i<22;i++){ const mid=(lo+hi)/2; inGamut(oklchToLin(L,mid,H)) ? lo=mid : hi=mid; } rgb = oklchToLin(L,lo,H); }
+  return '#'+rgb.map(c=>Math.round(clamp(toGam(clamp(c,0,1)),0,1)*255).toString(16).padStart(2,'0')).join('');
+}
+const lum = hex => { const [r,g,b] = hexToRgb(hex).map(toLin); return 0.2126*r+0.7152*g+0.0722*b; };
+const ratio = (a,b) => { const x = lum(a), y = lum(b); return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05); };
+const fr = r => (Math.floor(r*100)/100).toFixed(2);
+const grade = r => r>=7 ? 'AAA' : r>=4.5 ? 'AA' : r>=3 ? 'AA large' : 'Fail';
+const autoShift = H => (H>=70 && H<=115) ? -12 : 0;
+
+function buildScale(hex, {anchor500=false, hueShift=0}={}){
+  const [L0,C0,H0] = rgbToOklch(hexToRgb(hex));
+  const idx = anchor500 ? 5 : L_CURVE.reduce((bi,l,i)=>Math.abs(l-L0)<Math.abs(L_CURVE[bi]-L0) ? i : bi, 0);
+  const dL = L0 - L_CURVE[idx];
+  const cPeak = Math.min(0.37, C0 / C_CURVE[idx]);
+  // Bend the curve through the input color, easing the offset out toward 50 and 950 so the ends stay near white and black.
+  const Ls = L_CURVE.map((l,i)=>{ if(i===idx) return L0; const span = i<idx ? idx : 10-idx; return l + dL*Math.pow(1-Math.abs(i-idx)/(span+1), 2); });
+  for(let i=idx-1;i>=0;i--) Ls[i] = clamp(Math.max(Ls[i], Ls[i+1]+0.02), 0, 0.99);
+  for(let i=idx+1;i<11;i++) Ls[i] = clamp(Math.min(Ls[i], Ls[i-1]-0.02), 0.08, 1);
+  return STEPS.map((step,i)=> i===idx
+    ? {step, hex:normHex(hex), base:true}
+    : {step, hex:oklchToHex(Ls[i], cPeak*C_CURVE[i], (H0 + hueShift*(i-idx)/10 + 360)%360)});
+}
+
+const COLOR = {hex:'#2f6bff', anchor500:false, hueShift:0, tint:0.012, harm:0.35};
+let PAL = null, TYPE = null;
+
+function buildPalette(){
+  const [L0,C0,H0] = rgbToOklch(hexToRgb(COLOR.hex));
+  const brand = buildScale(COLOR.hex, COLOR);
+  const neutral = STEPS.map((step,i)=>({step, hex:oklchToHex(N_CURVE[i], COLOR.tint*(0.6+0.4*C_CURVE[i]), H0)}));
+  const out = {brand, neutral};
+  Object.entries(STATUS).forEach(([n,st])=>{
+    const d = ((H0-st.H+540)%360)-180;
+    const H = (st.H + (C0<0.03 ? 0 : clamp(d,-20,20)*COLOR.harm) + 360)%360;
+    const C = C0<0.03 ? st.C : st.C + (clamp(C0,0.06,0.25)-st.C)*COLOR.harm*0.6;
+    out[n] = buildScale(oklchToHex(st.L,C,H), {hueShift:autoShift(H)});
+  });
+  out.lch = [L0,C0,H0];
+  return out;
+}
+const pget = (scale, step) => PAL[scale].find(x=>x.step===step).hex;
+const baseOf = scale => PAL[scale].find(x=>x.base);
+const onColor = bg => ratio(bg,'#ffffff') >= ratio(bg, pget('neutral',950)) ? '#ffffff' : pget('neutral',950);
+
+function surfaceTokens(surface){
+  const S = (step) => Object.fromEntries(['success','warning','info','error'].map(k=>[k, pget(k, step)]));
+  if(surface==='ink') return {bg:pget('neutral',950), fg:pget('neutral',50), muted:pget('neutral',400), line:pget('neutral',800), card:pget('neutral',900), accent:pget('brand',400), ...S(400), dark:true};
+  if(surface==='brand') return {bg:pget('brand',900), fg:pget('brand',50), muted:pget('brand',200), line:pget('brand',700), card:pget('brand',800), accent:pget('brand',300), ...S(300), dark:true};
+  return {bg:'#ffffff', fg:pget('neutral',950), muted:pget('neutral',600), line:pget('neutral',200), card:pget('neutral',50), accent:baseOf('brand').hex, ...S(700), error:pget('error',600), dark:false};
+}
+
+const SPEND = [['Apr',142.3],['May',156.8],['Jun',149.1],['Jul',171.4],['Aug',164.0],['Sep',184.3]];
+function renderChart(t){
+  const W=460, H=200, padL=42, padB=24, padT=14, max=200;
+  const y = v => padT + (H-padT-padB)*(1-v/max);
+  const bw = (W-padL)/SPEND.length;
+  const ticks = [0,50,100,150,200].map(v=>`<line x1="${padL}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="${t.line}" stroke-width="1"/><text x="${padL-8}" y="${y(v)+4}" text-anchor="end" font-size="12" fill="${t.muted}" font-family="var(--f-mono)">$${v}k</text>`).join('');
+  const bars = SPEND.map(([mo,v],i)=>{
+    const x = padL + i*bw + bw*0.22, w = bw*0.56, top = y(v), base = y(0), r = 4;
+    const fill = i===SPEND.length-1 ? t.accent : (t.dark ? pget('brand',700) : pget('brand',200));
+    return `<path d="M${x},${base} V${top+r} Q${x},${top} ${x+r},${top} H${x+w-r} Q${x+w},${top} ${x+w},${top+r} V${base} Z" fill="${fill}"/>
+      <text x="${x+w/2}" y="${H-6}" text-anchor="middle" font-size="12" fill="${t.muted}" font-family="var(--f-body)">${mo}</text>
+      <rect x="${padL+i*bw}" y="${padT}" width="${bw}" height="${base-padT}" fill="transparent" data-i="${i}"/>`;
+  }).join('');
+  const last = SPEND[SPEND.length-1];
+  const lx = padL + (SPEND.length-1)*bw + bw/2;
+  $('chart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly card spend, April to September 2026, rising from $142k to $184k">${ticks}${bars}
+    <text x="${lx}" y="${y(last[1])-8}" text-anchor="middle" font-size="13" font-weight="600" fill="${t.fg}" font-family="var(--f-body)">$${last[1]}k</text></svg><div class="tip" hidden></div>`;
+  const tip = $('chart').querySelector('.tip'), svg = $('chart').querySelector('svg');
+  svg.querySelectorAll('rect[data-i]').forEach(r=>{
+    r.addEventListener('mouseenter', ()=>{
+      const [mo,v] = SPEND[+r.dataset.i];
+      const box = svg.getBoundingClientRect(), k = box.width/W;
+      tip.textContent = `${mo} 2026 · $${v.toFixed(1)}k`;
+      tip.style.left = (padL + (+r.dataset.i+0.5)*bw)*k + 'px';
+      tip.style.top = y(v)*k + 'px';
+      tip.hidden = false;
+    });
+    r.addEventListener('mouseleave', ()=>{ tip.hidden = true; });
+  });
+}
+
+function renderColor(){
+  PAL = buildPalette();
+  const t = surfaceTokens(state.surface);
+  const st = $('stage').style;
+  [['bg','bg'],['fg','fg'],['muted','muted'],['line','line'],['card','card'],['accent','accent'],['danger','error'],['success','success'],['warning','warning'],['info','info']]
+    .forEach(([v,k])=>st.setProperty('--pv-'+v, t[k]));
+  st.setProperty('--pv-on-accent', onColor(t.accent));
+
+  // status alerts: tinted on light surfaces, deep on dark ones
+  document.querySelectorAll('#alerts .alert').forEach(a=>{
+    const k = a.dataset.k, steps = t.dark ? [950,800,100,400] : [50,200,900,600];
+    const icon = pget(k, steps[3]);
+    a.style.setProperty('--a-bg', pget(k,steps[0])); a.style.setProperty('--a-line', pget(k,steps[1]));
+    a.style.setProperty('--a-fg', pget(k,steps[2])); a.style.setProperty('--a-icon', icon); a.style.setProperty('--a-on', onColor(icon));
+  });
+
+  const g = $('gcard');
+  g.style.background = `linear-gradient(135deg, ${pget('brand',500)} 0%, ${pget('brand',700)} 55%, ${pget('brand',900)} 100%)`;
+  g.style.color = pget('brand',50);
+  renderChart(t);
+
+  // palette sheet
+  const ink = pget('neutral',950);
+  $('sheet').innerHTML = ['brand','neutral','success','info','warning','error'].map(name=>`<div class="srow"><span class="nm">${name}</span>${PAL[name].map(sw=>{
+    const rw = ratio(sw.hex,'#ffffff'), rk = ratio(sw.hex, ink), useW = rw>=rk, best = Math.max(rw,rk);
+    return `<div class="sw${sw.base?' base':''}" style="background:${sw.hex}; color:${useW?'#ffffff':ink}" title="${name}-${sw.step} ${sw.hex}: ${fr(rw)}:1 with white, ${fr(rk)}:1 with ink">
+      <span class="st">${sw.step}</span><span>${sw.hex.slice(1)}</span><span class="cr">${useW?'W':'K'} ${(Math.floor(best*10)/10).toFixed(1)} ${grade(best)==='Fail'?'':grade(best).replace(' large',' lg')}</span></div>`;
+  }).join('')}</div>`).join('');
+
+  $('mini-neutral').innerHTML = PAL.neutral.map(x=>`<span style="background:${x.hex}"></span>`).join('');
+  const b = baseOf('brand'), [L0,C0,H0] = PAL.lch;
+  $('placed').textContent = `Your color sits at ${b.step} (OKLCH ${L0.toFixed(2)} ${C0.toFixed(3)} ${Math.round(H0)}°).${!COLOR.anchor500 && b.step!==500 ? ' Its lightness fits there better than at 500.' : ''}`;
+  $('hshift-o').textContent = (COLOR.hueShift>0?'+':'')+COLOR.hueShift+'°';
+  $('ntint-o').textContent = COLOR.tint.toFixed(3);
+  $('harm-o').textContent = Math.round(COLOR.harm*100)+'%';
+
+  // contrast checks against the Paper surface, where most product UI lives
+  const btn = ratio(b.hex, onColor(b.hex));
+  const firstWhite = PAL.brand.find(x=>ratio(x.hex,'#ffffff')>=4.5);
+  const checks = [
+    [btn>=4.5?'ok':btn>=3?'warn':'bad', `Button: ${onColor(b.hex)==='#ffffff'?'white':'ink'} text on brand-${b.step} is ${fr(btn)}:1 (${grade(btn)}).${btn<4.5 && firstWhite ? ` White text passes from brand-${firstWhite.step}.` : ''}`],
+    ...[['Link text','brand',600],['Muted text','neutral',600]].map(([label,sc,step])=>{ const r = ratio(pget(sc,step),'#ffffff'); return [r>=4.5?'ok':r>=3?'warn':'bad', `${label}: ${sc}-${step} on white is ${fr(r)}:1 (${grade(r)}).`]; }),
+    (()=>{ const r = ratio(pget('brand',400), pget('neutral',950)); return [r>=4.5?'ok':r>=3?'warn':'bad', `Dark mode: brand-400 on neutral-950 is ${fr(r)}:1 (${grade(r)}).`]; })(),
+    (()=>{ const r = ratio(pget('warning',700),'#ffffff'); return [r>=4.5?'ok':'warn', `Warning text: warning-700 on white is ${fr(r)}:1. Yellows need dark steps for text.`]; })()
+  ];
+  $('color-checks').innerHTML = checks.map(([k,txt])=>`<li><span class="dot ${k}" aria-label="${k}"></span><span>${txt}</span></li>`).join('');
+  renderExport();
+}
+
+// ---- export ----
+const famArr = f => [f.n, ...FALLBACK[f.c].split(',').map(x=>x.trim().replace(/^'|'$/g,''))];
+const SCALES = ['brand','neutral','success','info','warning','error'];
+function renderExport(){
+  if(!TYPE || !PAL) return;
+  const {links, d, b, m, bw, z} = TYPE;
+  const rem = px => (px/16).toFixed(3)+'rem';
+  const sizes = {h1:z.h1, h2:z.h2, h3:z.h3, h4:z.h4, h5:z.h5, body:z.body, small:z.small};
+  const fmt = $('fmt').value;
+  let out;
+  if(fmt==='css'){
+    out = `${links}\n\n:root {\n  --font-display: ${stack(d)};\n  --font-body: ${stack(b)};\n  --font-mono: ${stack(m)};\n  --weight-display: ${state.hw};\n  --weight-body-strong: ${bw};\n  --tracking-display: ${state.track}em;\n  --leading-body: ${state.lh};\n`
+      + Object.entries(sizes).map(([k,v])=>`  --text-${k}: ${rem(v)};`).join('\n') + '\n\n'
+      + SCALES.map(n=>PAL[n].map(x=>`  --color-${n}-${x.step}: ${x.hex};`).join('\n')).join('\n\n') + '\n}';
+  } else if(fmt==='tw'){
+    const colors = SCALES.map(n=>`        ${n}: {\n${PAL[n].map(x=>`          ${x.step}: '${x.hex}',`).join('\n')}\n          DEFAULT: '${(PAL[n].find(x=>x.base)||PAL[n][5]).hex}',\n        },`).join('\n');
+    out = `// ${links.replace(/\n/g,'\n// ')}\n/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n${colors}\n      },\n      fontFamily: {\n        display: ${JSON.stringify(famArr(d)).replace(/"/g,"'").replace(/,/g,', ')},\n        body: ${JSON.stringify(famArr(b)).replace(/"/g,"'").replace(/,/g,', ')},\n        mono: ${JSON.stringify(famArr(m)).replace(/"/g,"'").replace(/,/g,', ')},\n      },\n      fontSize: {\n${Object.entries(sizes).map(([k,v])=>`        ${k}: '${rem(v)}',`).join('\n')}\n      },\n    },\n  },\n};`;
+  } else if(fmt==='tw4'){
+    out = `/* ${links.replace(/\n/g,' ')} */\n@import "tailwindcss";\n\n@theme {\n  --font-display: ${stack(d)};\n  --font-body: ${stack(b)};\n  --font-mono: ${stack(m)};\n`
+      + Object.entries(sizes).map(([k,v])=>`  --text-${k}: ${rem(v)};`).join('\n') + '\n\n'
+      + SCALES.map(n=>PAL[n].map(x=>`  --color-${n}-${x.step}: ${x.hex};`).join('\n')).join('\n\n') + '\n}';
+  } else {
+    const tok = {
+      color: Object.fromEntries(SCALES.map(n=>[n, Object.fromEntries(PAL[n].map(x=>[x.step, {$type:'color', $value:x.hex}]))])),
+      font: {
+        family: {display:{$type:'fontFamily', $value:famArr(d)}, body:{$type:'fontFamily', $value:famArr(b)}, mono:{$type:'fontFamily', $value:famArr(m)}},
+        weight: {display:{$type:'fontWeight', $value:state.hw}, strong:{$type:'fontWeight', $value:bw}},
+        size: Object.fromEntries(Object.entries(sizes).map(([k,v])=>[k, {$type:'dimension', $value:rem(v)}]))
+      }
+    };
+    out = JSON.stringify(tok, null, 2);
+  }
+  $('css').textContent = out;
 }
 
 // ---- saved pairings (per-device convenience only) ----
@@ -689,13 +980,34 @@ function syncControls(){
   setPressed('modes','mode',state.mode);
 }
 $('modes').addEventListener('click', e=>{ const b = e.target.closest('button'); if(!b) return; state.mode = b.dataset.mode; setPressed('modes','mode',state.mode); generate(); });
-$('surfaces').addEventListener('click', e=>{ const b = e.target.closest('button'); if(!b) return; state.surface = b.dataset.s; $('stage').dataset.surface = state.surface; setPressed('surfaces','s',state.surface); });
-$('filters').addEventListener('click', e=>{
+$('surfaces').addEventListener('click', e=>{ const b = e.target.closest('button'); if(!b) return; state.surface = b.dataset.s; $('stage').dataset.surface = state.surface; setPressed('surfaces','s',state.surface); renderColor(); });
+function setFilter(f){
+  state.filter = f;
+  document.querySelectorAll('#filters button').forEach(x=>x.setAttribute('aria-pressed', x.dataset.f===f));
+  document.querySelectorAll('#grid .frame').forEach(fr=>{ fr.hidden = f==='all' ? fr.classList.contains('only') : !fr.dataset.uc.split(' ').includes(f); });
+}
+$('filters').addEventListener('click', e=>{ const b = e.target.closest('button'); if(b) setFilter(b.dataset.f); });
+document.querySelector('.tabs').addEventListener('click', e=>{
   const b = e.target.closest('button'); if(!b) return;
-  state.filter = b.dataset.f;
-  document.querySelectorAll('#filters button').forEach(x=>x.setAttribute('aria-pressed', x===b));
-  document.querySelectorAll('#grid .frame').forEach(fr=>{ fr.hidden = state.filter!=='all' && !fr.dataset.uc.split(' ').includes(state.filter); });
+  document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected', x===b));
+  document.querySelectorAll('.rail [data-tab]').forEach(sec=>{ if(sec.tagName==='SECTION') sec.hidden = sec.dataset.tab!==b.dataset.tab; });
+  setFilter(b.dataset.tab==='color' ? 'color' : 'all');
 });
+const PRESETS = ['#2f6bff','#e4572e','#f5c518','#0f9d76','#7c3aed','#ff4f9a','#1f2937'];
+$('presets').innerHTML = PRESETS.map(h=>`<button type="button" style="background:${h}" data-hex="${h}" aria-label="Use ${h}"></button>`).join('');
+function setBrand(hex){
+  COLOR.hex = hex; $('brand-hex').value = hex; $('brand-pick').value = hex; $('brand-hex').removeAttribute('aria-invalid');
+  COLOR.hueShift = autoShift(rgbToOklch(hexToRgb(hex))[2]); $('hshift').value = COLOR.hueShift;
+  renderColor();
+}
+$('presets').addEventListener('click', e=>{ const b = e.target.closest('button'); if(b) setBrand(b.dataset.hex); });
+$('brand-pick').addEventListener('input', e=>setBrand(e.target.value));
+$('brand-hex').addEventListener('input', e=>{ const h = normHex(e.target.value); if(h){ COLOR.hex = h; $('brand-pick').value = h; e.target.removeAttribute('aria-invalid'); COLOR.hueShift = autoShift(rgbToOklch(hexToRgb(h))[2]); $('hshift').value = COLOR.hueShift; renderColor(); } else e.target.setAttribute('aria-invalid','true'); });
+$('anchor500').addEventListener('change', e=>{ COLOR.anchor500 = e.target.checked; renderColor(); });
+$('hshift').addEventListener('input', e=>{ COLOR.hueShift = +e.target.value; renderColor(); });
+$('ntint').addEventListener('input', e=>{ COLOR.tint = +e.target.value; renderColor(); });
+$('harm').addEventListener('input', e=>{ COLOR.harm = +e.target.value; renderColor(); });
+$('fmt').addEventListener('change', renderExport);
 $('shuffle').addEventListener('click', generate);
 $('base').addEventListener('input', e=>{ state.base = +e.target.value; render(); });
 $('ratio').addEventListener('change', e=>{ state.ratio = +e.target.value; render(); });
@@ -810,6 +1122,8 @@ state.hw = defaultWeight(BY[state.display]);
 $('g-count').textContent = `${GOOGLE_COUNT} curated families`;
 syncControls();
 render();
+renderColor();
+setFilter('all');
 renderSaved();
 try{ const k = localStorage.getItem(KIT_KEY); if(k){ $('kit').value = k; connectKit(k); } }catch(e){}
 </script>

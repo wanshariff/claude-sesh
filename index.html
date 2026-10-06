@@ -339,7 +339,6 @@ input[aria-invalid="true"]{border-color:var(--bad)}
 [data-style="brutal"] .article .avatar{border-radius:0; border:3px solid var(--hard)}
 
 /* Aurora: drifting mesh gradient behind clean translucent panels */
-[data-style="aurora"] .grid{overflow:hidden}
 [data-style="aurora"] .grid::before{content:""; position:absolute; inset:-60px; z-index:-1; background:var(--aurora); filter:blur(48px) saturate(1.2)}
 @media (prefers-reduced-motion:no-preference){ [data-style="aurora"] .grid::before{animation:aurora 22s ease-in-out infinite alternate} }
 @keyframes aurora{ from{transform:translate3d(0,0,0) scale(1)} to{transform:translate3d(-4%,3%,0) scale(1.12)} }
@@ -997,18 +996,166 @@ input[aria-invalid="true"]{border-color:var(--bad)}
 @media (prefers-reduced-motion:no-preference){ .pv .btoast,.pv .snack{animation:toastin .2s ease-out} }
 @keyframes toastin{from{transform:translateY(-.4em); opacity:0}}
 @media (prefers-reduced-motion:reduce){ .pv .growsp,.pv .prog.anim i,.pv .glow .sk{animation:none; opacity:1} .pv .clp,.pv .clp-h,.pv .oc,.pv .oc-back{transition:none} }
+
+/* ---------- website mode ----------
+   The preview is the page. Settings float above it in a collapsible panel.
+   "Flat" styles run sections edge to edge; "panel" styles keep their cards on the style's backdrop. */
+.app{display:block; padding:0; max-width:none}
+.stage{min-height:100vh; overflow-x:clip; --hdr:var(--pv-muted); --wrap:1160px; --gut:max(20px, calc(50vw - var(--wrap)/2))}
+.stage .grid{grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; padding:0 max(16px, calc((100% - var(--wrap))/2)) 0; background:var(--pv-bg); border-radius:0; min-height:100vh; align-content:start}
+.stage[data-canvas="1"] .grid{padding:0 max(16px, calc((100% - var(--wrap))/2)) 0; border-radius:0; background:var(--canvas)}
+.stage .grid > .frame{grid-column:auto; scroll-margin-top:84px}
+.stage .grid > .frame.wide{grid-column:1/-1}
+.stage .grid > .lft{grid-column:1}
+.stage .grid > .rgt{grid-column:2}
+@media (max-width:900px){ .stage .grid{grid-template-columns:minmax(0,1fr)} .stage .grid > .frame,.stage .grid > .lft,.stage .grid > .rgt{grid-column:1/-1} }
+.stage:not(.compview) .frame > header{display:none}
+.stage .frame > header{color:var(--hdr)}
+
+/* section rhythm */
+.stage:not(.compview) .frame:not(.comp):not(.sitenav):not(.sfooter) > .pv{padding-block:clamp(40px,6vw,88px)}
+.stage .shd{display:flex; flex-direction:column; gap:.7em; max-width:46em}
+.stage .shd h2,.stage .shd-in h2{font-size:min(var(--s2), 8vw)}
+.stage:not(.compview) .shead > .pv{padding-bottom:0!important}
+.stage:not(.compview) .shead + .frame > .pv,.stage:not(.compview) .shead + .frame + .frame.rgt > .pv{padding-top:32px!important}
+.stage .shd-in{display:flex; flex-direction:column; gap:.7em; max-width:40em; margin-bottom:2.2em}
+.stage .pv .lead{font-size:calc(var(--base)*1.12)}
+.stage:not(.compview) .hero h1{font-size:min(calc(var(--s1)*1.3), 12vw)}
+.stage:not(.compview) .pv .nav{display:none}
+.stage:not(.compview) .hero{padding-block:2em 1em}
+
+/* sticky site navbar */
+.stage .sitenav{position:sticky; top:env(safe-area-inset-top,0px); z-index:20}
+.stage .snav{display:flex; align-items:center; gap:1.4em; padding:14px 22px; border-radius:0}
+.stage .snav-brand{border:0; background:transparent; color:inherit; cursor:pointer; padding:0; font-size:calc(var(--base)*1.25)}
+.stage .snav-links{display:flex; gap:.2em; flex:1}
+.stage .snav-links button{border:0; background:transparent; color:var(--pv-muted); font:inherit; font-size:.92em; padding:.45em .75em; border-radius:6px; cursor:pointer}
+.stage .snav-links button:hover{color:var(--pv-fg)}
+.stage .snav-links button[aria-current]{color:var(--pv-fg); font-weight:var(--bw)}
+.stage .snav-end{display:flex; gap:.4em; align-items:center}
+@media (max-width:760px){ .stage .snav-links,.stage .snav-signin{display:none} .stage .snav{justify-content:space-between} }
+
+/* logos, pricing tiers, call to action, footer */
+.stage .logos{display:flex; flex-direction:column; align-items:center; gap:1.4em; text-align:center}
+.stage:not(.compview) .logos{padding-block:36px!important}
+.stage .logo-row{display:flex; flex-wrap:wrap; justify-content:center; gap:1.2em 3em; font-size:calc(var(--base)*1.35); color:var(--pv-muted); opacity:.85}
+.stage .tiers{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,15em),1fr)); gap:1.2em; align-items:stretch}
+.stage .tier{padding:1.6em; display:flex; flex-direction:column; gap:1em}
+.stage .tier .pbtn{margin-top:auto}
+.stage .tier.hot{border:2px solid var(--pv-accent)}
+.stage .tier .amt .d{font-size:var(--s2)}
+.stage .ctab{text-align:center; display:flex; flex-direction:column; align-items:center; gap:1em; background:var(--pv-accent)!important; color:var(--pv-on-accent)}
+.stage .ctab h2{font-size:min(var(--s2), 8vw)}
+.stage .ctab .lead{color:inherit; opacity:.9}
+.stage .ctab .row-wrap{justify-content:center}
+.stage .ctab .pbtn.fill{background:var(--pv-on-accent); color:var(--pv-accent); border-color:var(--pv-on-accent)}
+.stage .ctab .pbtn:not(.fill){background:transparent; color:var(--pv-on-accent); border-color:currentColor}
+.stage .sfoot{display:flex; flex-direction:column; gap:2em; padding-block:48px 28px!important}
+.stage .sfoot-grid{display:grid; grid-template-columns:2fr repeat(3,1fr); gap:1.6em}
+@media (max-width:640px){ .stage .sfoot-grid{grid-template-columns:1fr 1fr} }
+.stage .flink{border:0; background:transparent; color:var(--pv-muted); font:inherit; font-size:.9em; padding:0; text-align:left; cursor:pointer}
+.stage .flink:hover{color:var(--pv-fg); text-decoration:underline}
+.stage .sfoot-base{border-top:1px solid var(--pv-line); padding-top:1.2em}
+
+/* flat styles: sections bleed edge to edge and the page reads as one surface */
+.stage.flat:not(.compview) .grid{gap:0 56px}
+.stage.flat:not(.compview) .frame:not(.wide):not(.comp) > .pv{padding-inline:0}
+.stage.flat .frame:not(.comp) > .pv{border:0; border-radius:0; box-shadow:none; background:var(--pv-bg)}
+.stage.flat .frame.wide:not(.comp),.stage.flat .sitenav,.stage.flat .sfooter{margin-inline:calc(50% - 50vw)}
+.stage.flat .frame.wide:not(.comp) > .pv,.stage.flat .sitenav > .pv,.stage.flat .sfooter > .pv{padding-inline:var(--gut)}
+.stage.flat .frame.band > .pv{background:var(--band, var(--pv-card))}
+.stage.flat .sitenav > .pv{border-bottom:1px solid var(--pv-line); background:color-mix(in srgb, var(--pv-bg) 88%, transparent); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px)}
+.stage.flat .sfooter > .pv{border-top:1px solid var(--pv-line)}
+.stage.flat .pv::before,.stage.flat .pv::after{display:none}
+[data-style="swiss"].stage.flat .shead > .pv,[data-style="swiss"].stage.flat .frame.band > .pv{border-top:4px solid var(--pv-fg)}
+[data-style="bauhaus"].stage.flat .shead > .pv{border-top:10px solid var(--pv-accent3)}
+
+/* panel styles: the page is the style's backdrop with section cards on it */
+.stage.panels .grid{padding-bottom:20px}
+.stage.panels .sitenav{margin-top:12px}
+.stage.panels .sitenav > .pv{border-radius:999px}
+[data-style="brutal"].stage.panels .sitenav > .pv,[data-style="cyber"].stage.panels .sitenav > .pv{border-radius:0}
+.stage.panels .shead > .pv{background:transparent!important; border:0!important; box-shadow:none!important; -webkit-backdrop-filter:none!important; backdrop-filter:none!important; color:var(--hdr)}
+.stage.panels .shead .muted,.stage.panels .shead .eyebrow{color:inherit; opacity:.8}
+.stage.panels .shead > .pv::after,.stage.panels .shead > .pv::before{display:none}
+[data-style="aurora"] .grid{overflow:clip}
+
+/* the settings panel */
+.rail{position:fixed; z-index:60; top:12px; left:12px; bottom:12px; width:min(360px, calc(100vw - 24px)); max-height:none; overflow:auto; overscroll-behavior:contain; padding:12px; background:color-mix(in srgb, var(--bg) 94%, transparent); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px); border:1px solid var(--line); border-radius:16px; box-shadow:0 24px 64px rgba(0,0,0,.28); transition:transform .28s ease, opacity .2s ease, visibility 0s}
+.app.rail-right .rail{left:auto; right:12px}
+.app.collapsed .rail{transform:translateX(calc(-100% - 24px)); opacity:0; visibility:hidden; pointer-events:none; transition:transform .28s ease, opacity .2s ease, visibility 0s linear .28s}
+.app.rail-right.collapsed .rail{transform:translateX(calc(100% + 24px))}
+.brand{align-items:center}
+.brand-t{display:flex; align-items:baseline; gap:8px}
+.brand-act{display:flex; gap:4px}
+.rbtn{width:32px; height:32px; display:grid; place-items:center; border:1px solid var(--line); background:var(--panel); color:var(--ink); border-radius:8px; cursor:pointer; padding:0}
+.rbtn svg{width:16px; height:16px}
+.rbtn:hover{border-color:var(--accent)}
+.rbtn:focus-visible,.fab:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.fab{position:fixed; z-index:60; left:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:999px; border:1px solid var(--line); background:var(--panel); color:var(--ink); font:inherit; font-weight:600; box-shadow:0 12px 32px rgba(0,0,0,.25); cursor:pointer}
+.app.rail-right .fab{left:auto; right:16px}
+.fab svg{width:18px; height:18px}
+.fab kbd{margin-left:2px}
+.pvbox .toolbar{flex-direction:column; align-items:stretch}
+.pvbox .qs{display:flex; flex-direction:column; gap:8px}
+.pvbox .qs select{width:100%}
+.pvbox .seg{min-width:0!important}
+@media (max-width:720px){
+  .rail{top:auto; left:8px; right:8px; bottom:8px; width:auto; max-height:72vh}
+  .app.rail-right .rail{right:8px}
+  .app.collapsed .rail,.app.rail-right.collapsed .rail{transform:translateY(calc(100% + 24px))}
+}
+@media (prefers-reduced-motion:reduce){ .rail{transition:none} }
 </style>
 </head>
 <body>
 
 <div class="app">
-  <aside class="rail" aria-label="Pairing controls">
-    <div class="brand"><h1>Pairwise</h1><span>type + color lab</span></div>
+  <aside class="rail" id="rail" aria-label="Customize">
+    <div class="brand"><div class="brand-t"><h1>Pairwise</h1><span>Customize</span></div><div class="brand-act">
+      <button type="button" class="rbtn" id="rail-side" aria-label="Move panel to the right" title="Move panel to the other side"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h13M17 4l3 3-3 3M17 17H4M7 14l-3 3 3 3"/></svg></button>
+      <button type="button" class="rbtn" id="rail-hide" aria-label="Hide panel" title="Hide panel (\)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div></div>
     <div class="tabs" role="tablist" aria-label="Tool">
       <button role="tab" id="tab-type" aria-selected="true" data-tab="type">Type</button>
       <button role="tab" id="tab-color" aria-selected="false" data-tab="color">Color</button>
       <button role="tab" id="tab-style" aria-selected="false" data-tab="style">Style</button>
     </div>
+
+    <section class="box pvbox" aria-labelledby="pvb-l">
+      <div class="lbl" id="pvb-l">Preview</div>
+      <div class="toolbar">
+      <div class="seg" role="group" aria-label="Preview" id="views" style="min-width:230px">
+        <button data-v="screens" aria-pressed="true">Screens</button>
+        <button data-v="components" aria-pressed="false">Components</button>
+      </div>
+      <div class="chips" role="group" aria-label="Component group" id="cfilters" hidden>
+        <button class="chip" data-g="all" aria-pressed="true">All 43</button>
+        <button class="chip" data-g="layout" aria-pressed="false">Layout &amp; navigation</button>
+        <button class="chip" data-g="content" aria-pressed="false">Content &amp; data</button>
+        <button class="chip" data-g="actions" aria-pressed="false">Actions &amp; forms</button>
+        <button class="chip" data-g="feedback" aria-pressed="false">Feedback &amp; overlays</button>
+      </div>
+      <div class="chips" role="group" aria-label="Use case filter" id="filters">
+        <button class="chip" data-f="all" aria-pressed="true">All use cases</button>
+        <button class="chip" data-f="marketing" aria-pressed="false">Marketing</button>
+        <button class="chip" data-f="product" aria-pressed="false">Product UI</button>
+        <button class="chip" data-f="editorial" aria-pressed="false">Editorial</button>
+        <button class="chip" data-f="mobile" aria-pressed="false">Mobile</button>
+        <button class="chip" data-f="color" aria-pressed="false">Color system</button>
+        <button class="chip" data-f="type" aria-pressed="false">Type scale</button>
+      </div>
+      <div class="qs">
+      <select id="style-q" aria-label="UI style"></select>
+      <div class="seg" role="group" aria-label="Preview surface" id="surfaces" style="min-width:220px">
+        <button data-s="paper" aria-pressed="true">Paper</button>
+        <button data-s="ink" aria-pressed="false">Ink</button>
+        <button data-s="brand" aria-pressed="false">Brand</button>
+      </div>
+      </div>
+    </div>
+    </section>
+
 
     <section class="box" data-tab="style" aria-labelledby="sty-l" hidden>
       <div class="lbl" id="sty-l">UI style</div>
@@ -1162,39 +1309,24 @@ input[aria-invalid="true"]{border-color:var(--bad)}
       <div class="saved" id="saved"></div>
     </section>
   </aside>
+  <button type="button" class="fab" id="rail-show" aria-controls="rail" aria-expanded="true" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Customize<kbd>\</kbd></button>
 
   <main class="stage" id="stage" data-surface="paper">
-    <div class="toolbar">
-      <div class="seg" role="group" aria-label="Preview" id="views" style="min-width:230px">
-        <button data-v="screens" aria-pressed="true">Screens</button>
-        <button data-v="components" aria-pressed="false">Components</button>
-      </div>
-      <div class="chips" role="group" aria-label="Component group" id="cfilters" hidden>
-        <button class="chip" data-g="all" aria-pressed="true">All 43</button>
-        <button class="chip" data-g="layout" aria-pressed="false">Layout &amp; navigation</button>
-        <button class="chip" data-g="content" aria-pressed="false">Content &amp; data</button>
-        <button class="chip" data-g="actions" aria-pressed="false">Actions &amp; forms</button>
-        <button class="chip" data-g="feedback" aria-pressed="false">Feedback &amp; overlays</button>
-      </div>
-      <div class="chips" role="group" aria-label="Use case filter" id="filters">
-        <button class="chip" data-f="all" aria-pressed="true">All use cases</button>
-        <button class="chip" data-f="marketing" aria-pressed="false">Marketing</button>
-        <button class="chip" data-f="product" aria-pressed="false">Product UI</button>
-        <button class="chip" data-f="editorial" aria-pressed="false">Editorial</button>
-        <button class="chip" data-f="mobile" aria-pressed="false">Mobile</button>
-        <button class="chip" data-f="color" aria-pressed="false">Color system</button>
-      </div>
-      <div class="qs">
-      <select id="style-q" aria-label="UI style"></select>
-      <div class="seg" role="group" aria-label="Preview surface" id="surfaces" style="min-width:220px">
-        <button data-s="paper" aria-pressed="true">Paper</button>
-        <button data-s="ink" aria-pressed="false">Ink</button>
-        <button data-s="brand" aria-pressed="false">Brand</button>
-      </div>
-      </div>
-    </div>
-
     <div class="grid" id="grid">
+      <header class="frame wide sitenav" id="s-top">
+        <div class="pv snav">
+          <button type="button" class="d brandmark snav-brand" data-go="s-top">Harbor</button>
+          <nav class="snav-links" aria-label="Site">
+            <button type="button" data-go="s-product">Product</button>
+            <button type="button" data-go="s-pricing">Pricing</button>
+            <button type="button" data-go="s-dev">Developers</button>
+            <button type="button" data-go="s-blog">Blog</button>
+            <button type="button" data-go="components">Components</button>
+          </nav>
+          <div class="snav-end"><button type="button" class="pbtn ghost snav-signin">Sign in</button><button type="button" class="pbtn fill">Start free trial</button></div>
+        </div>
+      </header>
+
       <section class="frame wide only" data-uc="color" hidden>
         <header><span>Scales · OKLCH · contrast vs white / ink</span><span>Color system</span></header>
         <div class="pv sheet"><div class="sheet-in" id="sheet"></div></div>
@@ -1214,20 +1346,20 @@ input[aria-invalid="true"]{border-color:var(--bad)}
         </div>
       </section>
 
-      <section class="frame" data-uc="product editorial marketing mobile">
+      <section class="frame wide site-only band" data-uc="marketing">
+        <div class="pv logos">
+          <span class="sub">Finance teams at 1,200 companies close faster with Harbor</span>
+          <div class="logo-row" aria-label="Customer logos"><span class="d">Northwind</span><span class="d">Tidewater</span><span class="d">Brightline</span><span class="d">Kestrel &amp; Co</span><span class="d">Meridian</span></div>
+        </div>
+      </section>
+
+      <section class="frame only lft" data-uc="type">
         <header><span>Type scale</span><span id="scale-label"></span></header>
         <div class="pv"><div class="ladder" id="ladder"></div></div>
       </section>
 
-      <section class="frame" data-uc="marketing">
-        <header><span>Pricing card</span><span>Marketing</span></header>
-        <div class="pv price">
-          <span class="eyebrow">Team plan</span>
-          <div class="amt"><span class="d">$12</span><span class="muted">per seat / month</span></div>
-          <p class="muted">Everything a growing finance team needs to stop chasing receipts.</p>
-          <ul><li>Unlimited receipts and card feeds</li><li>Policy rules with auto-flagging</li><li>NetSuite and Xero export</li><li>SSO and audit log</li></ul>
-          <button class="pbtn fill">Choose Team</button>
-        </div>
+      <section class="frame wide site-only shead" data-uc="product" id="s-product">
+        <div class="pv shd"><span class="eyebrow">Product</span><h2>Close the month while it's still the month.</h2><p class="lead muted">Every card charge arrives matched to its receipt and checked against policy, so finance reviews exceptions instead of everything.</p></div>
       </section>
 
       <section class="frame wide" data-uc="product">
@@ -1251,7 +1383,38 @@ input[aria-invalid="true"]{border-color:var(--bad)}
         </div>
       </section>
 
-      <section class="frame" data-uc="product">
+      <section class="frame wide site-only shead" data-uc="product marketing color">
+        <div class="pv shd"><span class="eyebrow">Why Harbor</span><h2>Know what needs attention before finance asks.</h2><p class="lead muted">Policy flags, missing receipts and sync problems show up where your team already works.</p></div>
+      </section>
+
+      <section class="frame lft" data-uc="color product">
+        <header><span>Status messages</span><span>Color system</span></header>
+        <div class="pv alerts" id="alerts">
+          <div class="alert" data-k="success"><span class="ic" aria-hidden="true">✓</span><div><span class="b">Export complete</span><p>September's 1,947 expenses were sent to NetSuite.</p></div></div>
+          <div class="alert" data-k="info"><span class="ic" aria-hidden="true">i</span><div><span class="b">Card feed syncing</span><p>New transactions from Chase appear within 15 minutes.</p></div></div>
+          <div class="alert" data-k="warning"><span class="ic" aria-hidden="true">!</span><div><span class="b">3 receipts due Friday</span><p>Expenses without receipts after Friday go to finance for review.</p></div></div>
+          <div class="alert" data-k="error"><span class="ic" aria-hidden="true">×</span><div><span class="b">Xero connection expired</span><p>Reconnect Xero to resume exports. Nothing has been lost.</p></div></div>
+        </div>
+      </section>
+
+      <section class="frame rgt" data-uc="color product marketing">
+        <header><span>Chart + gradient card</span><span>Color system</span></header>
+        <div class="pv stack">
+          <div class="row" style="justify-content:space-between; align-items:baseline"><span class="b">Monthly card spend</span><span class="small muted">Apr–Sep 2026</span></div>
+          <div class="chart" id="chart"></div>
+          <div class="gcard" id="gcard">
+            <div class="row"><span class="d" style="font-size:var(--s4)">Harbor</span><span class="mono small">VIRTUAL</span></div>
+            <div class="stack" style="gap:.2em"><span class="small" style="opacity:.85">Available</span><span class="d" style="font-size:var(--s2); font-variant-numeric:tabular-nums">$12,480.00</span></div>
+            <div class="row"><span class="mono small">•••• 4021</span><span class="mono small">09/29</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="frame wide site-only shead" data-uc="product" id="s-dev">
+        <div class="pv shd"><span class="eyebrow">Admins and developers</span><h2>Set up in an afternoon. Integrate in a sprint.</h2><p class="lead muted">Invite your team, connect your cards and ledger, and use the API for anything we don't do out of the box.</p></div>
+      </section>
+
+      <section class="frame lft" data-uc="product">
         <header><span>Form with states</span><span>Product UI</span></header>
         <div class="pv form">
           <h3>Create your workspace</h3>
@@ -1262,7 +1425,7 @@ input[aria-invalid="true"]{border-color:var(--bad)}
         </div>
       </section>
 
-      <section class="frame" data-uc="product">
+      <section class="frame rgt" data-uc="product">
         <header><span>Docs + code</span><span>Product UI</span></header>
         <div class="pv stack">
           <span class="eyebrow">API reference</span>
@@ -1277,42 +1440,41 @@ input[aria-invalid="true"]{border-color:var(--bad)}
         </div>
       </section>
 
-      <section class="frame" data-uc="color product">
-        <header><span>Status messages</span><span>Color system</span></header>
-        <div class="pv alerts" id="alerts">
-          <div class="alert" data-k="success"><span class="ic" aria-hidden="true">✓</span><div><span class="b">Export complete</span><p>September's 1,947 expenses were sent to NetSuite.</p></div></div>
-          <div class="alert" data-k="info"><span class="ic" aria-hidden="true">i</span><div><span class="b">Card feed syncing</span><p>New transactions from Chase appear within 15 minutes.</p></div></div>
-          <div class="alert" data-k="warning"><span class="ic" aria-hidden="true">!</span><div><span class="b">3 receipts due Friday</span><p>Expenses without receipts after Friday go to finance for review.</p></div></div>
-          <div class="alert" data-k="error"><span class="ic" aria-hidden="true">×</span><div><span class="b">Xero connection expired</span><p>Reconnect Xero to resume exports. Nothing has been lost.</p></div></div>
-        </div>
-      </section>
-
-      <section class="frame" data-uc="color product marketing">
-        <header><span>Chart + gradient card</span><span>Color system</span></header>
-        <div class="pv stack">
-          <div class="row" style="justify-content:space-between; align-items:baseline"><span class="b">Monthly card spend</span><span class="small muted">Apr–Sep 2026</span></div>
-          <div class="chart" id="chart"></div>
-          <div class="gcard" id="gcard">
-            <div class="row"><span class="d" style="font-size:var(--s4)">Harbor</span><span class="mono small">VIRTUAL</span></div>
-            <div class="stack" style="gap:.2em"><span class="small" style="opacity:.85">Available</span><span class="d" style="font-size:var(--s2); font-variant-numeric:tabular-nums">$12,480.00</span></div>
-            <div class="row"><span class="mono small">•••• 4021</span><span class="mono small">09/29</span></div>
+      <section class="frame wide band" data-uc="marketing" id="s-pricing">
+        <header><span>Pricing</span><span>Marketing</span></header>
+        <div class="pv price-sec">
+          <div class="shd-in"><span class="eyebrow">Pricing</span><h2>Pricing that grows with your team</h2><p class="lead muted">Every plan includes unlimited receipts and card feeds. Pay per active cardholder.</p></div>
+          <div class="tiers">
+            <article class="tier price c-surface">
+              <span class="eyebrow">Starter</span>
+              <div class="amt"><span class="d">$0</span><span class="muted">up to 10 people</span></div>
+              <p class="muted small">Receipts, cards and reimbursements for small teams.</p>
+              <ul><li>Unlimited receipts</li><li>2 card feeds</li><li>Email support</li></ul>
+              <button type="button" class="pbtn">Start free</button>
+            </article>
+            <article class="tier price c-surface hot">
+              <div class="row-between"><span class="eyebrow">Team</span><span class="tag solid">Most popular</span></div>
+              <div class="amt"><span class="d">$12</span><span class="muted">per seat / month</span></div>
+              <p class="muted small">Everything a growing finance team needs to stop chasing receipts.</p>
+              <ul><li>Unlimited receipts and card feeds</li><li>Policy rules with auto-flagging</li><li>NetSuite and Xero export</li><li>SSO and audit log</li></ul>
+              <button type="button" class="pbtn fill">Choose Team</button>
+            </article>
+            <article class="tier price c-surface">
+              <span class="eyebrow">Enterprise</span>
+              <div class="amt"><span class="d">Custom</span></div>
+              <p class="muted small">For multi-entity companies with complex approval chains.</p>
+              <ul><li>Multi-entity and multi-currency</li><li>Custom approval workflows</li><li>Dedicated success manager</li></ul>
+              <button type="button" class="pbtn">Talk to sales</button>
+            </article>
           </div>
         </div>
       </section>
 
-      <section class="frame wide" data-uc="editorial">
-        <header><span>Long-form article</span><span>Editorial</span></header>
-        <div class="pv article">
-          <span class="eyebrow">Essay · 9 min read</span>
-          <h2>The case for slower software</h2>
-          <div class="byline"><span class="avatar"></span><span><span class="b">Priya Raman</span> <span class="muted">· October 2, 2026</span></span></div>
-          <p class="dropcap">Every product team I know has a dashboard that measures speed: time to first value, time to close, time saved. Few of them measure the time a person spends understanding what just happened. When software moves faster than the people using it, the savings show up on the dashboard and the confusion shows up in support tickets.</p>
-          <blockquote>The fastest flow is the one people only have to learn once.</blockquote>
-          <p>Slowing down does not mean adding steps. It means choosing the one moment in a flow where a person should pause, and designing that moment with the same care as the happy path.</p>
-        </div>
+      <section class="frame wide site-only shead" data-uc="mobile">
+        <div class="pv shd"><span class="eyebrow">On the go</span><h2>Snap it, match it, forget it.</h2><p class="lead muted">Cardholders photograph a receipt and Harbor does the rest. Approvers clear their queue from their phone.</p></div>
       </section>
 
-      <section class="frame wide" data-uc="mobile">
+      <section class="frame wide band" data-uc="mobile">
         <header><span>Mobile screen + notifications</span><span>Mobile</span></header>
         <div class="pv mobile">
           <div class="phone">
@@ -1333,6 +1495,34 @@ input[aria-invalid="true"]{border-color:var(--bad)}
             <div class="badges"><span>DRAFT</span><span>IN REVIEW</span><span>APPROVED</span><span>EXPORTED</span></div>
           </div>
         </div>
+      </section>
+
+      <section class="frame wide site-only shead" data-uc="editorial" id="s-blog">
+        <div class="pv shd"><span class="eyebrow">From the blog</span><h2>Notes on running finance operations</h2></div>
+      </section>
+
+      <section class="frame wide" data-uc="editorial">
+        <header><span>Long-form article</span><span>Editorial</span></header>
+        <div class="pv article">
+          <span class="eyebrow">Essay · 9 min read</span>
+          <h2>The case for slower software</h2>
+          <div class="byline"><span class="avatar"></span><span><span class="b">Priya Raman</span> <span class="muted">· October 2, 2026</span></span></div>
+          <p class="dropcap">Every product team I know has a dashboard that measures speed: time to first value, time to close, time saved. Few of them measure the time a person spends understanding what just happened. When software moves faster than the people using it, the savings show up on the dashboard and the confusion shows up in support tickets.</p>
+          <blockquote>The fastest flow is the one people only have to learn once.</blockquote>
+          <p>Slowing down does not mean adding steps. It means choosing the one moment in a flow where a person should pause, and designing that moment with the same care as the happy path.</p>
+        </div>
+      </section>
+
+      <section class="frame wide site-only cta" data-uc="marketing">
+        <div class="pv ctab">
+          <h2>Close September in an afternoon.</h2>
+          <p class="lead">Free for teams under 10. Set up takes about 20 minutes.</p>
+          <div class="row-wrap"><button type="button" class="pbtn fill lg">Start free trial</button><button type="button" class="pbtn lg">Talk to sales</button></div>
+        </div>
+      </section>
+
+      <section class="frame wide comp comp-head" data-grp="head" hidden>
+        <div class="pv shd"><span class="eyebrow">Style guide</span><h2>Components</h2><p class="lead muted">Every Harbor component in the current type, color and UI style. Filter by group in the Customize panel.</p></div>
       </section>
 
       <!-- ===== Component library: Bootstrap taxonomy, plus extras Bootstrap lacks ===== -->
@@ -2057,6 +2247,18 @@ input[aria-invalid="true"]{border-color:var(--bad)}
           </div>
         </div>
       </section>
+
+      <footer class="frame wide sfooter">
+        <div class="pv sfoot">
+          <div class="sfoot-grid">
+            <div class="stack-s"><span class="d brandmark">Harbor</span><span class="muted small">Expense reports that file themselves.</span></div>
+            <div class="stack-s"><span class="lbl-s">Product</span><button type="button" class="flink">Expenses</button><button type="button" class="flink">Cards</button><button type="button" class="flink">Reimbursements</button><button type="button" class="flink">Integrations</button></div>
+            <div class="stack-s"><span class="lbl-s">Company</span><button type="button" class="flink">About</button><button type="button" class="flink">Careers</button><button type="button" class="flink">Security</button></div>
+            <div class="stack-s"><span class="lbl-s">Resources</span><button type="button" class="flink">Docs</button><button type="button" class="flink">API status</button><button type="button" class="flink" data-go="s-blog">Blog</button></div>
+          </div>
+          <div class="row-between wrap sfoot-base"><span class="sub">© 2026 Harbor Labs, Inc. A fictional product for previewing design decisions.</span><span class="row-wrap"><button type="button" class="flink">Privacy</button><button type="button" class="flink">Terms</button></span></div>
+        </div>
+      </footer>
     </div>
   </main>
 </div>
@@ -2462,6 +2664,8 @@ const STYLES = [
   {id:'spatial', name:'Spatial', group:'System-driven & spatial', desc:'visionOS-style glass floating in a room. No solid backgrounds, highlights on hover in place of gaze, generous radii.', best:'AR/VR, immersive media, sending a "future" signal.', watch:'On a flat screen the room is faked. Real spatial UI must handle any background behind it.', fonts:['Inter','Inter','JetBrains Mono'], force:'ink', canvas:true, r:[18,28,999], shadow:'0 24px 60px rgba(0,0,0,.35)', blur:'28px'}
 ];
 const STYLE_BY = Object.fromEntries(STYLES.map(x=>[x.id,x]));
+// Styles whose sections run edge to edge in the website preview; the rest keep floating panels.
+const FLAT_STYLES = new Set(['base','swiss','dark','flat','bauhaus','material']);
 const mixHex = (a,b,t) => { const A = hexToRgb(a), B = hexToRgb(b); return '#'+A.map((v,i)=>Math.round((v+(B[i]-v)*t)*255).toString(16).padStart(2,'0')).join(''); };
 const hexA = (hex,a) => hex + Math.round(a*255).toString(16).padStart(2,'0');
 const neon = hex => { const [, C, H] = rgbToOklch(hexToRgb(hex)); return oklchToHex(0.86, Math.max(C,0.17), H); };
@@ -2493,7 +2697,7 @@ function styleVars(id, t){
       const [, C, Ha] = rgbToOklch(hexToRgb(baseOf(accScale()).hex));
       t.accent = oklchToHex(0.78, C*0.55, Ha);
       ['success','warning','info','error'].forEach(k=>{ const [, Ck, Hk] = rgbToOklch(hexToRgb(pget(k,300))); t[k] = oklchToHex(0.8, Ck*0.6, Hk); });
-      v['--el1'] = mixHex(base,'#ffffff',0.05); v['--el2'] = mixHex(base,'#ffffff',0.09);
+      v['--el1'] = mixHex(base,'#ffffff',0.05); v['--el2'] = mixHex(base,'#ffffff',0.09); v['--band'] = v['--el1'];
       canvas = base; hdr = t.muted; break;
     }
     case 'neu': {
@@ -2599,6 +2803,7 @@ function renderColor(){
   const stage = $('stage'), st = stage.style;
   stage.dataset.style = sty.id;
   stage.dataset.canvas = canvas ? '1' : '';
+  const flat = FLAT_STYLES.has(sty.id); stage.classList.toggle('flat', flat); stage.classList.toggle('panels', !flat);
   [['bg','bg'],['fg','fg'],['muted','muted'],['line','line'],['card','card'],['accent','accent'],['danger','error'],['success','success'],['warning','warning'],['info','info'],['accent2','accent2']]
     .forEach(([k,key])=>st.setProperty('--pv-'+k, t[key]));
   st.setProperty('--pv-accent2-text', t.accent2Text || t.fg);
@@ -2608,7 +2813,7 @@ function renderColor(){
   st.setProperty('--pv-on-success', onColor(t.success));
   st.setProperty('--pv-on-warning', onColor(t.warning));
   st.setProperty('--pv-on-info', onColor(t.info));
-  ['--canvas','--hdr','--aurora','--glow','--neu-d','--neu-l','--clay-d','--clay-in-d','--clay-in-l','--el1','--el2'].forEach(k=>st.removeProperty(k));
+  ['--canvas','--hdr','--aurora','--glow','--neu-d','--neu-l','--clay-d','--clay-in-d','--clay-in-l','--el1','--el2','--band'].forEach(k=>st.removeProperty(k));
   Object.entries(v).forEach(([k,val])=>st.setProperty(k,val));
   document.querySelectorAll('#surfaces button').forEach(b=>{ b.disabled = !!sty.force; b.title = sty.force ? `${sty.name} sets its own surface` : ''; });
   $('sig-banner').hidden = !sig;
@@ -2821,7 +3026,7 @@ function buildMarkdown(cssText){
   }
   if(on('components')){
     const groups = {};
-    document.querySelectorAll('#grid .frame.comp').forEach(fr=>{ const h = fr.querySelectorAll('header span'); (groups[h[1].textContent] ||= []).push(h[0].textContent); });
+    document.querySelectorAll('#grid .frame.comp:not(.comp-head)').forEach(fr=>{ const h = fr.querySelectorAll('header span'); (groups[h[1].textContent] ||= []).push(h[0].textContent); });
     L.push('## Components', '', `All ${Object.values(groups).flat().length} components were previewed in the ${sty.name} style with the tokens in this spec.`, '');
     Object.entries(groups).forEach(([g, list])=>L.push(`### ${g}`, '', ...list.map(x=>`- ${x}`), ''));
   }
@@ -3189,11 +3394,14 @@ function applyFrames(){
   setPressed('views','v', state.view);
   document.querySelectorAll('#filters button').forEach(x=>x.setAttribute('aria-pressed', x.dataset.f===state.filter));
   document.querySelectorAll('#cfilters button').forEach(x=>x.setAttribute('aria-pressed', x.dataset.g===state.cgroup));
-  document.querySelectorAll('#grid .frame').forEach(fr=>{
+  $('stage').classList.toggle('compview', comp);
+  document.querySelectorAll('#grid > .frame').forEach(fr=>{
+    if(fr.classList.contains('sitenav') || fr.classList.contains('sfooter')) return fr.hidden = false;
     const isComp = fr.classList.contains('comp');
-    if(comp) fr.hidden = !isComp || (state.cgroup!=='all' && fr.dataset.grp!==state.cgroup);
+    if(comp) fr.hidden = !isComp || (state.cgroup!=='all' && fr.dataset.grp!==state.cgroup && fr.dataset.grp!=='head');
     else fr.hidden = isComp || (state.filter==='all' ? fr.classList.contains('only') : !(fr.dataset.uc||'').split(' ').includes(state.filter));
   });
+  document.querySelectorAll('.snav-links [data-go="components"]').forEach(b=>comp ? b.setAttribute('aria-current','page') : b.removeAttribute('aria-current'));
 }
 function setFilter(f){ state.filter = f; state.view = 'screens'; applyFrames(); }
 $('views').addEventListener('click', e=>{ const b = e.target.closest('button'); if(!b) return; state.view = b.dataset.v; applyFrames(); });
@@ -3385,6 +3593,38 @@ $('g-count').textContent = `${GOOGLE_COUNT} curated families`;
 syncControls();
 render();
 renderColor();
+// ---- website shell: collapsible settings panel + site navigation ----
+(function(){
+  const app = document.querySelector('.app'), show = $('rail-show'), hide = $('rail-hide'), side = $('rail-side');
+  const KEY = 'pairwise.panel';
+  let pref = {}; try{ pref = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){}
+  const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(pref)); }catch(e){} };
+  const setOpen = (open, focus) => {
+    app.classList.toggle('collapsed', !open); show.hidden = open; show.setAttribute('aria-expanded', open);
+    $('rail').toggleAttribute('inert', !open);
+    pref.open = open; save();
+    if(focus) (open ? hide : show).focus({preventScroll:true});
+  };
+  const setSide = right => { app.classList.toggle('rail-right', right); side.setAttribute('aria-label', right ? 'Move panel to the left' : 'Move panel to the right'); pref.right = right; save(); };
+  hide.addEventListener('click', ()=>setOpen(false, true));
+  show.addEventListener('click', ()=>setOpen(true, true));
+  side.addEventListener('click', ()=>setSide(!app.classList.contains('rail-right')));
+  document.addEventListener('keydown', e=>{
+    if(e.key!=='\\' || e.metaKey || e.ctrlKey || e.altKey) return;
+    if(e.target.closest('input,select,textarea,[contenteditable]')) return;
+    e.preventDefault(); setOpen(app.classList.contains('collapsed'), true);
+  });
+  setSide(!!pref.right);
+  setOpen(pref.open ?? !matchMedia('(max-width:720px)').matches);
+
+  // site links scroll within the page; "Components" opens the style guide
+  document.querySelector('#grid').addEventListener('click', e=>{
+    const b = e.target.closest('[data-go]'); if(!b) return;
+    if(b.dataset.go==='components'){ state.view = 'components'; applyFrames(); window.scrollTo({top:0, behavior: reduceMotion() ? 'auto' : 'smooth'}); return; }
+    if(state.view!=='screens' || state.filter!=='all'){ state.view = 'screens'; state.filter = 'all'; applyFrames(); }
+    const t = $(b.dataset.go); if(t) t.scrollIntoView({behavior: reduceMotion() ? 'auto' : 'smooth', block:'start'});
+  });
+})();
 initComponents();
 initBootstrapSet();
 setFilter('all');

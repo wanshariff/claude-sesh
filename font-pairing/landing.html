@@ -1,0 +1,413 @@
+<title>Kernhue</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link id="font-ui" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Figtree:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#fbfbfd; --surface:#ffffff; --sunk:#f1f3f8; --fg:#14171c; --muted:#525a69; --line:#dfe3ea;
+  --brand:#2b63f0; --brand-ink:#1d47b8; --brand-soft:#e8eefe; --on-brand:#ffffff;
+  --ok:#0f7a5c; --ok-bg:#e3f5ee; --info:#1d47b8; --info-bg:#e8eefe; --warn:#8a5a00; --warn-bg:#fdf1d8; --bad:#b42318; --bad-bg:#fde8e6;
+  --ui:'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; --mono:'JetBrains Mono', ui-monospace, monospace;
+  --d:'Fraunces', Georgia, serif; --b:'Figtree', system-ui, sans-serif;
+  --r:14px; --shadow:0 1px 2px rgba(20,23,28,.06), 0 8px 24px rgba(20,23,28,.06);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1115; --surface:#161920; --sunk:#1c2029; --fg:#eef0f4; --muted:#a6adbb; --line:#2a2f3a;
+    --brand:#6f95ff; --brand-ink:#a9c0ff; --brand-soft:#1b2643; --on-brand:#0b1020;
+    --ok:#5fd3a8; --ok-bg:#12301f; --info:#a9c0ff; --info-bg:#1b2643; --warn:#f2c46b; --warn-bg:#33270e; --bad:#ff8a80; --bad-bg:#3a1714;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1115; --surface:#161920; --sunk:#1c2029; --fg:#eef0f4; --muted:#a6adbb; --line:#2a2f3a;
+  --brand:#6f95ff; --brand-ink:#a9c0ff; --brand-soft:#1b2643; --on-brand:#0b1020;
+  --ok:#5fd3a8; --ok-bg:#12301f; --info:#a9c0ff; --info-bg:#1b2643; --warn:#f2c46b; --warn-bg:#33270e; --bad:#ff8a80; --bad-bg:#3a1714;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none !important; animation:none !important} }
+body{margin:0; background:var(--bg); color:var(--fg); font:400 16px/1.6 var(--ui); -webkit-font-smoothing:antialiased}
+a{color:var(--brand-ink)}
+:focus-visible{outline:2px solid var(--brand); outline-offset:3px; border-radius:6px}
+.wrap{max-width:1120px; margin:0 auto; padding:0 24px}
+@media (max-width:600px){ .wrap{padding:0 16px} }
+.skip{position:absolute; left:16px; top:-48px; background:var(--fg); color:var(--bg); padding:8px 14px; border-radius:8px; z-index:20; text-decoration:none}
+.skip:focus{top:12px}
+
+/* nav */
+.nav{position:sticky; top:0; z-index:10; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex; align-items:center; gap:24px; height:64px}
+.logo{display:flex; align-items:center; gap:10px; font:700 19px/1 var(--ui); color:var(--fg); text-decoration:none; letter-spacing:-.01em}
+.logo svg{width:28px; height:28px}
+.nav ul{display:flex; gap:22px; list-style:none; margin:0 0 0 12px; padding:0}
+.nav ul a{color:var(--muted); text-decoration:none; font-weight:500; font-size:15px}
+.nav ul a:hover{color:var(--fg)}
+.nav .end{margin-left:auto}
+@media (max-width:760px){ .nav ul{display:none} }
+
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:0 18px; border-radius:10px; border:1px solid var(--line); background:var(--surface); color:var(--fg); font:600 15px/1 var(--ui); text-decoration:none; cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.fill{background:var(--brand); border-color:var(--brand); color:var(--on-brand)}
+.btn.fill:hover{background:var(--brand-ink); border-color:var(--brand-ink)}
+.btn.lg{min-height:52px; padding:0 24px; font-size:16px}
+.btn svg{width:18px; height:18px}
+
+.eyebrow{font:500 12px/1 var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+h1,h2,h3{margin:0; letter-spacing:-.02em}
+h2{font:600 clamp(28px,4vw,40px)/1.15 var(--ui)}
+.lead{font-size:18px; color:var(--muted); max-width:60ch}
+section{padding:96px 0}
+@media (max-width:600px){ section{padding:64px 0} }
+.shd{display:grid; gap:14px; margin-bottom:40px}
+
+/* hero */
+.hero{padding:72px 0 88px}
+.hero .wrap{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); gap:48px; align-items:center}
+@media (max-width:900px){ .hero .wrap{grid-template-columns:1fr} }
+.hero h1{font-family:var(--d); font-weight:600; font-size:clamp(40px,6.4vw,72px); line-height:1.02; transition:opacity .2s}
+.hero .sub{font-family:var(--b); font-size:19px; color:var(--muted); max-width:52ch; margin:22px 0 30px; transition:opacity .2s}
+.hero.swap h1, .hero.swap .sub{opacity:.15}
+.cta-row{display:flex; flex-wrap:wrap; gap:12px; align-items:center}
+.fine{font-size:14px; color:var(--muted); margin-top:16px}
+.spec{background:var(--surface); border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow); padding:24px; display:grid; gap:18px}
+.spec-h{display:flex; justify-content:space-between; align-items:center; gap:12px}
+.spec .pair{font:600 15px/1.3 var(--ui)}
+.spec .roles{display:grid; gap:12px}
+.role{display:grid; grid-template-columns:76px 1fr; gap:12px; align-items:baseline; border-top:1px solid var(--line); padding-top:12px}
+.role .k{font:500 12px/1 var(--mono); color:var(--muted); text-transform:uppercase; letter-spacing:.06em}
+.role .v{font-size:15px}
+.role .v.dn{font-family:var(--d); font-size:30px; line-height:1.1}
+.role .v.bn{font-family:var(--b)}
+.role .v.mn{font-family:var(--mono); font-size:14px}
+.chip{display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font:600 12px/1.2 var(--ui); white-space:nowrap}
+.chip.ok{background:var(--ok-bg); color:var(--ok)} .chip.info{background:var(--info-bg); color:var(--info)}
+.chip.warn{background:var(--warn-bg); color:var(--warn)} .chip.bad{background:var(--bad-bg); color:var(--bad)}
+.kbd{font:500 12px/1 var(--mono); border:1px solid var(--line); border-bottom-width:2px; border-radius:5px; padding:2px 6px; background:var(--sunk)}
+
+/* steps */
+.steps{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; counter-reset:s; list-style:none; margin:0; padding:0}
+@media (max-width:800px){ .steps{grid-template-columns:1fr} }
+.steps li{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:24px; counter-increment:s}
+.steps li::before{content:counter(s); display:grid; place-items:center; width:32px; height:32px; border-radius:50%; background:var(--brand-soft); color:var(--brand-ink); font:700 15px/1 var(--ui); margin-bottom:16px}
+.steps h3{font:600 19px/1.3 var(--ui); margin-bottom:6px}
+.steps p{margin:0; color:var(--muted)}
+
+/* features */
+.band{background:var(--sunk)}
+.feats{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px}
+@media (max-width:800px){ .feats{grid-template-columns:1fr} }
+.feat{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:28px; display:grid; gap:12px; align-content:start}
+.feat h3{font:600 21px/1.3 var(--ui)}
+.feat p{margin:0; color:var(--muted)}
+.feat .go{justify-self:start; font-weight:600; text-decoration:none; display:inline-flex; gap:6px; align-items:center; min-height:44px}
+.feat .go:hover{text-decoration:underline}
+.feat .vis{height:84px; border-radius:10px; background:var(--sunk); display:flex; align-items:center; padding:0 16px; gap:8px; overflow:hidden}
+.scale{display:flex; width:100%; height:44px; border-radius:8px; overflow:hidden}
+.scale i{flex:1}
+.vis .ag{font-family:var(--d); font-size:44px; line-height:1}
+.vis .ag2{font-family:var(--b); font-size:44px; line-height:1; color:var(--muted)}
+.vis .sty{flex:1; height:52px; border-radius:8px; display:grid; place-items:center; font:600 12px/1 var(--ui)}
+.vis code{font:13px/1.5 var(--mono); color:var(--muted); white-space:pre}
+
+/* proof */
+.proof{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:40px; align-items:start}
+@media (max-width:860px){ .proof{grid-template-columns:1fr} }
+.legend{display:grid; gap:10px; margin:0; padding:0; list-style:none}
+.legend li{display:grid; grid-template-columns:120px 1fr; gap:14px; align-items:center; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px 16px}
+.legend li span:last-child{color:var(--muted); font-size:15px}
+.sw-grid{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px}
+.sw{border-radius:10px; padding:12px 10px; min-height:96px; display:grid; align-content:space-between; font:500 12px/1.3 var(--mono)}
+.sw b{font:700 22px/1 var(--ui)}
+.sw .g{font:600 12px/1 var(--ui)}
+@media (max-width:520px){ .sw-grid{grid-template-columns:repeat(3,minmax(0,1fr))} }
+
+/* pricing */
+.tiers{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; align-items:stretch}
+@media (max-width:900px){ .tiers{grid-template-columns:1fr} }
+.tier{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:28px; display:flex; flex-direction:column; gap:14px}
+.tier.hot{border:2px solid var(--brand)}
+.tier h3{font:600 19px/1.2 var(--ui); display:flex; justify-content:space-between; align-items:center; gap:8px}
+.amt{font:600 36px/1 var(--ui)} .amt small{font:400 15px/1 var(--ui); color:var(--muted); margin-left:4px}
+.tier ul{margin:0; padding:0; list-style:none; display:grid; gap:8px; flex:1}
+.tier li{padding-left:26px; position:relative}
+.tier li::before{content:''; position:absolute; left:2px; top:.45em; width:12px; height:7px; border-left:2px solid var(--ok); border-bottom:2px solid var(--ok); transform:rotate(-45deg)}
+.tier li.soon::before{border:0; width:8px; height:8px; border-radius:50%; background:var(--line); left:4px; top:.55em; transform:none}
+.tier li.soon{color:var(--muted)}
+.tier .btn{width:100%}
+.note{font-size:14px; color:var(--muted); margin:0}
+.wl{display:grid; gap:8px}
+.wl[hidden]{display:none}
+
+/* faq */
+.faq{max-width:760px; display:grid; gap:10px}
+.faq details{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:0 20px}
+.faq summary{cursor:pointer; list-style:none; padding:18px 0; font:600 17px/1.4 var(--ui); display:flex; justify-content:space-between; gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+'; font:400 22px/1 var(--ui); color:var(--muted)}
+.faq details[open] summary::after{content:'–'}
+.faq details p{margin:0 0 18px; color:var(--muted)}
+
+/* footer */
+.fcta{background:var(--fg); color:var(--bg); border-radius:24px; padding:56px 40px; display:grid; gap:18px; justify-items:start}
+@media (max-width:600px){ .fcta{padding:40px 24px} }
+.fcta h2{font-family:var(--d); font-weight:600; font-size:clamp(30px,4.6vw,48px)}
+.fcta p{margin:0; opacity:.8; font-size:18px}
+.fcta .btn.fill{background:var(--bg); color:var(--fg); border-color:var(--bg)}
+footer{padding:32px 0 48px; color:var(--muted); font-size:14px}
+footer .wrap{display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px}
+footer a{color:var(--muted)}
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="./" aria-label="Kernhue home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><g transform="translate(16 28)"><rect x="-3.5" y="-24" width="7" height="24" rx="3.5" fill="#0f9d76" transform="rotate(-42)"/><rect x="-3.5" y="-24" width="7" height="24" rx="3.5" fill="#f5c518" transform="rotate(-14)"/><rect x="-3.5" y="-24" width="7" height="24" rx="3.5" fill="#e4572e" transform="rotate(14)"/><rect x="-3.5" y="-24" width="7" height="24" rx="3.5" fill="#2b63f0" transform="rotate(42)"/><circle r="3" fill="currentColor"/></g></svg>
+      Kernhue
+    </a>
+    <nav aria-label="Primary"><ul>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul></nav>
+    <div class="end"><a class="btn fill" href="app/">Open the lab</a></div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" id="hero" aria-labelledby="hero-h">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Type · color · UI style</p>
+        <h1 id="hero-h">Type and color, paired and proven.</h1>
+        <p class="sub">Generate a font pairing and an accessible color scale, see them on real screens in 15 UI styles, and export tokens your engineers can ship.</p>
+        <div class="cta-row">
+          <a class="btn fill lg" href="app/">Open the lab</a>
+          <button type="button" class="btn lg" id="shuffle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Shuffle this page's type</button>
+        </div>
+        <p class="fine">Free to start. No account needed. Press <span class="kbd">G</span> in the lab to generate.</p>
+      </div>
+      <aside class="spec" aria-label="Current pairing on this page">
+        <div class="spec-h"><span class="pair" id="pair-name">Fraunces / Figtree</span><span class="chip ok" id="pair-grade">Body AAA</span></div>
+        <div class="roles">
+          <div class="role"><span class="k">Display</span><span class="v dn" id="r-d">Fraunces</span></div>
+          <div class="role"><span class="k">Body</span><span class="v bn" id="r-b">Figtree reads cleanly at 16px and holds up in long paragraphs.</span></div>
+          <div class="role"><span class="k">Why</span><span class="v" id="r-why">A soft serif over a humanist sans. Clear contrast in category, so the roles never compete.</span></div>
+        </div>
+        <p class="note" aria-live="polite" id="pair-live"></p>
+      </aside>
+    </div>
+  </section>
+
+  <section id="how" aria-labelledby="how-h">
+    <div class="wrap">
+      <div class="shd"><p class="eyebrow">How it works</p><h2 id="how-h">From blank page to handoff in three steps</h2></div>
+      <ol class="steps">
+        <li><h3>Pick fonts</h3><p>Generate pairings from Google Fonts or your own Adobe Fonts web project. Lock any role you already like.</p></li>
+        <li><h3>Set color</h3><p>Enter a brand hex. Kernhue builds an 11-step OKLCH scale, neutrals and status colors, and grades every step for contrast.</p></li>
+        <li><h3>Export</h3><p>Copy CSS variables, Tailwind v3 or v4, W3C design tokens, or a Markdown spec your team can review.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band" id="features" aria-labelledby="feat-h">
+    <div class="wrap">
+      <div class="shd"><p class="eyebrow">Features</p><h2 id="feat-h">See decisions on a finished product, not a swatch sheet</h2></div>
+      <div class="feats">
+        <article class="feat">
+          <div class="vis" aria-hidden="true"><span class="ag">Aa</span><span class="ag2">Aa</span></div>
+          <h3>Pairings with reasons</h3>
+          <p>Every suggestion explains why the fonts work together, with a full type scale and weights checked against the roles you need.</p>
+          <a class="go" href="app/#type">Try type pairing <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="feat">
+          <div class="vis" aria-hidden="true"><div class="scale" id="f-scale"></div></div>
+          <h3>Accessible color scales</h3>
+          <p>Perceptually even OKLCH scales with a second brand color, hue shift and live contrast grades on white and black text.</p>
+          <a class="go" href="app/#color">Build a color scale <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="feat">
+          <div class="vis" aria-hidden="true">
+            <span class="sty" style="background:var(--surface); border:1px solid var(--line)">Swiss</span>
+            <span class="sty" style="background:#111; color:#fff; box-shadow:3px 3px 0 var(--brand)">Brutal</span>
+            <span class="sty" style="background:linear-gradient(135deg,var(--brand),#7c3aed); color:#fff">Aurora</span>
+            <span class="sty" style="background:var(--brand-soft); color:var(--brand-ink); border-radius:999px">Material</span>
+          </div>
+          <h3>15 UI styles, your brand</h3>
+          <p>Preview a full website and 43 components in Swiss, Neo-Brutalism, Glass, Material 3 and more. Every style keeps your brand color.</p>
+          <a class="go" href="app/#style">Compare UI styles <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="feat">
+          <div class="vis" aria-hidden="true"><code>--brand-600: #2b63f0;
+--font-display: "Fraunces";</code></div>
+          <h3>Handoff that matches the preview</h3>
+          <p>Tokens, Tailwind themes and a Markdown spec come from the same values you see. Share the exact setup with a link.</p>
+          <a class="go" href="app/">Open the lab <span aria-hidden="true">→</span></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="proof" aria-labelledby="proof-h">
+    <div class="wrap proof">
+      <div class="shd" style="margin:0">
+        <p class="eyebrow">Proof, not vibes</p>
+        <h2 id="proof-h">Every color is graded against WCAG 2.2</h2>
+        <p class="lead">Kernhue measures the contrast of every step against white and black text and labels it the same way everywhere in the lab, the preview and the exports.</p>
+        <ul class="legend" aria-label="Contrast grades">
+          <li><span class="chip ok">Passes AAA</span><span>7:1 or more. Safe for body text.</span></li>
+          <li><span class="chip info">Passes AA</span><span>4.5:1 or more. Fine for UI text and links.</span></li>
+          <li><span class="chip warn">AA large only</span><span>3:1 or more. Headings 24px and up, or icons.</span></li>
+          <li><span class="chip bad">Fails AA</span><span>Under 3:1. Decorative use only.</span></li>
+        </ul>
+      </div>
+      <div>
+        <div class="sw-grid" id="sw-grid" role="list" aria-label="Sample brand scale with measured contrast"></div>
+        <p class="note" style="margin-top:12px">Measured live in your browser for #2b63f0. Text color is whichever of white or black scores higher.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="pricing" aria-labelledby="price-h">
+    <div class="wrap">
+      <div class="shd"><p class="eyebrow">Pricing</p><h2 id="price-h">Start without signing up</h2><p class="lead">Everything in the lab works today, free, with nothing to install. Accounts and Pro are on the way.</p></div>
+      <div class="tiers">
+        <article class="tier">
+          <h3>Guest</h3>
+          <div class="amt">$0</div>
+          <ul>
+            <li>Every font pairing, color scale and UI style</li>
+            <li>All exports: CSS, Tailwind, W3C tokens, Markdown</li>
+            <li>Share links that carry your exact setup</li>
+            <li>Saves stay in this browser</li>
+          </ul>
+          <a class="btn fill" href="app/">Open the lab</a>
+        </article>
+        <article class="tier hot">
+          <h3>Free account <span class="chip info">Coming soon</span></h3>
+          <div class="amt">$0</div>
+          <ul>
+            <li>Everything in Guest</li>
+            <li class="soon">Saved pairings sync across devices</li>
+            <li class="soon">Adobe Fonts project remembered</li>
+          </ul>
+          <a class="btn" href="app/">Use as a guest for now</a>
+        </article>
+        <article class="tier">
+          <h3>Pro <span class="chip warn">Planned</span></h3>
+          <div class="amt">TBD</div>
+          <ul>
+            <li class="soon">Unlimited brand kits and folders</li>
+            <li class="soon">Team sharing and comments</li>
+            <li class="soon">Figma variables export</li>
+          </ul>
+          <button type="button" class="btn" id="wl-btn" aria-expanded="false" aria-controls="wl">Join the waitlist</button>
+          <div class="wl" id="wl" hidden>
+            <p class="note">The waitlist isn't open yet. We haven't built sign-up, so there's nowhere for your email to go. Nothing to buy today, and nothing in the lab is locked.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" aria-labelledby="faq-h">
+    <div class="wrap">
+      <div class="shd"><p class="eyebrow">FAQ</p><h2 id="faq-h">Questions</h2></div>
+      <div class="faq">
+        <details><summary>Can I use these fonts commercially?</summary><p>Google Fonts are open source (OFL or Apache) and free for commercial use. Adobe Fonts are licensed through your Adobe subscription and only load from your own web project. Kernhue doesn't host or redistribute any font files.</p></details>
+        <details><summary>What happens to my data?</summary><p>Nothing leaves your browser. Saved pairings, your Adobe project ID and panel settings live in local storage on this device. Share links carry your settings in the URL itself, not on a server.</p></details>
+        <details><summary>How do I cancel?</summary><p>There's nothing to cancel. Kernhue has no accounts or payments today. When paid plans launch, you'll be able to cancel any time from your account and keep your exports.</p></details>
+        <details><summary>Do I need an Adobe account?</summary><p>No. Google Fonts work out of the box. Connect an Adobe Fonts web project only if you want to pair fonts you already license there.</p></details>
+        <details><summary>Which contrast standard does Kernhue use?</summary><p>WCAG 2.2 contrast ratios: 4.5:1 for normal text (AA), 7:1 for enhanced (AAA) and 3:1 for large text and UI graphics.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0" aria-labelledby="fcta-h">
+    <div class="wrap">
+      <div class="fcta">
+        <h2 id="fcta-h">Pick a pairing you can defend.</h2>
+        <p>Open the lab, press G, and see it on a real product in seconds.</p>
+        <a class="btn fill lg" href="app/">Open the lab</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Kernhue</span>
+    <span><a href="app/">Lab</a> · <a href="#pricing">Pricing</a> · <a href="#faq">FAQ</a></span>
+  </div>
+</footer>
+
+<script>
+// Links from before the lab moved to /app/ still carry lab state in the hash
+const toLab = () => { if(/^#(s=|type$|color$|style$)/.test(location.hash)) location.replace('app/' + location.hash); };
+toLab(); window.addEventListener('hashchange', toLab);
+const $ = id => document.getElementById(id);
+// Curated Google pairings for the hero. The lab generates many more.
+const PAIRS = [
+  {d:'Fraunces', dq:'Fraunces:opsz,wght@9..144,600', b:'Figtree', bq:'Figtree:wght@400;500', why:'A soft serif over a humanist sans. Clear contrast in category, so the roles never compete.'},
+  {d:'Syne', dq:'Syne:wght@700', b:'Inter', bq:'Inter:wght@400;500', why:'A wide, expressive grotesque for headlines over a neutral workhorse built for screens.'},
+  {d:'Playfair Display', dq:'Playfair+Display:wght@600', b:'Source Sans 3', bq:'Source+Sans+3:wght@400;500', why:'High-contrast didone for editorial moments, with a sturdy sans that stays readable small.'},
+  {d:'Space Grotesk', dq:'Space+Grotesk:wght@600', b:'IBM Plex Sans', bq:'IBM+Plex+Sans:wght@400;500', why:'Two technical sans with shared DNA. The quirky display carries personality, Plex carries the load.'},
+  {d:'DM Serif Display', dq:'DM+Serif+Display', b:'DM Sans', bq:'DM+Sans:wght@400;500', why:'A superfamily pair. Matched proportions make the serif and sans feel designed together.'},
+  {d:'Instrument Serif', dq:'Instrument+Serif', b:'Manrope', bq:'Manrope:wght@400;500', why:'A narrow, elegant serif against a geometric sans with open counters.'},
+  {d:'Bricolage Grotesque', dq:'Bricolage+Grotesque:opsz,wght@12..96,700', b:'Lora', bq:'Lora:wght@400;500', why:'Reversed roles: a bold grotesque headline over a calm serif body for long reads.'},
+];
+let pi = 0;
+const loaded = new Set(['Fraunces','Figtree']);
+function loadPair(p){
+  const fam = [p,p].map((x,i)=>i?x.bq:x.dq).filter((q,i)=>!loaded.has(i?p.b:p.d));
+  if(fam.length){
+    const l = document.createElement('link'); l.rel = 'stylesheet';
+    l.href = `https://fonts.googleapis.com/css2?${fam.map(q=>'family='+q).join('&')}&display=swap`;
+    document.head.appendChild(l); loaded.add(p.d); loaded.add(p.b);
+  }
+  const ready = document.fonts ? Promise.all([document.fonts.load(`600 40px "${p.d}"`), document.fonts.load(`400 16px "${p.b}"`)]) : Promise.resolve();
+  return Promise.race([ready, new Promise(r=>setTimeout(r,1200))]).catch(()=>{});
+}
+function applyPair(p){
+  const r = document.documentElement.style;
+  r.setProperty('--d', `'${p.d}', Georgia, serif`); r.setProperty('--b', `'${p.b}', system-ui, sans-serif`);
+  $('pair-name').textContent = `${p.d} / ${p.b}`;
+  $('r-d').textContent = p.d;
+  $('r-b').textContent = `${p.b} reads cleanly at 16px and holds up in long paragraphs.`;
+  $('r-why').textContent = p.why;
+  $('pair-live').textContent = `Page set in ${p.d} and ${p.b}.`;
+}
+$('shuffle').addEventListener('click', async ()=>{
+  pi = (pi+1) % PAIRS.length; const p = PAIRS[pi];
+  const hero = $('hero'); hero.classList.add('swap');
+  await loadPair(p); applyPair(p); hero.classList.remove('swap');
+});
+document.addEventListener('keydown', e=>{
+  if((e.key!=='g' && e.key!=='G') || e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+  if(e.target.closest('input,select,textarea,[contenteditable]')) return;
+  $('shuffle').click();
+});
+
+// Contrast proof: a fixed sample scale, measured here so the grades are real
+const SCALE = [['50','#eef3ff'],['100','#dbe5ff'],['200','#bccdff'],['300','#91aeff'],['400','#6189ff'],['500','#3d6cf7'],['600','#2b63f0'],['700','#1f4cc4'],['800','#1d3f9a'],['900','#1c367a']];
+const lum = h => { const c = [1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(v=>v<=.03928?v/12.92:((v+.055)/1.055)**2.4); return .2126*c[0]+.7152*c[1]+.0722*c[2]; };
+const ratio = (a,b) => { const x = lum(a), y = lum(b); return (Math.max(x,y)+.05)/(Math.min(x,y)+.05); };
+const grade = r => r>=7 ? ['ok','AAA'] : r>=4.5 ? ['info','AA'] : r>=3 ? ['warn','AA large'] : ['bad','Fails'];
+$('sw-grid').innerHTML = SCALE.map(([st,hex])=>{
+  const w = ratio(hex,'#ffffff'), k = ratio(hex,'#000000'), useW = w>=k, r = Math.max(w,k), [cls,g] = grade(r);
+  return `<div class="sw" role="listitem" style="background:${hex}; color:${useW?'#fff':'#000'}"><span>${st}</span><b>${(Math.floor(r*10)/10).toFixed(1)}</b><span class="chip ${cls}">${g}</span></div>`;
+}).join('');
+$('f-scale').innerHTML = SCALE.map(([,h])=>`<i style="background:${h}"></i>`).join('');
+
+$('wl-btn').addEventListener('click', e=>{
+  const open = e.currentTarget.getAttribute('aria-expanded')!=='true';
+  e.currentTarget.setAttribute('aria-expanded', open); $('wl').hidden = !open;
+});
+</script>

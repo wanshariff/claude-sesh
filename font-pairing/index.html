@@ -3534,10 +3534,14 @@ function syncStateUI(){
   if(has2){ $('sec-hex').value = COLOR.sec; $('sec-pick').value = COLOR.sec; }
   setPressed('harmony','rule', COLOR.secRule || ''); $('sty-sig').checked = state.sig;
 }
-let urlTimer = null;
+let urlTimer = null, URL_BASE = null;   // state at load; the URL stays clean until something changes
 function syncURL(){
   clearTimeout(urlTimer);
-  urlTimer = setTimeout(()=>{ try{ history.replaceState(null, '', location.pathname + location.search + '#s=' + encodeState()); }catch(e){} }, 250);
+  urlTimer = setTimeout(()=>{
+    const enc = encodeState();
+    if(URL_BASE===null || (enc===URL_BASE && !location.hash.startsWith('#s='))) return;
+    try{ history.replaceState(null, '', location.pathname + location.search + '#s=' + enc); }catch(e){}
+  }, 250);
 }
 $('cb-share').addEventListener('click', ()=>{
   clearTimeout(urlTimer);
@@ -3831,5 +3835,6 @@ const restored = INITIAL_HASH.startsWith('#s=') && applyState(decodeState(INITIA
 if(!restored){ try{ const k = localStorage.getItem(KIT_KEY); if(k){ $('kit').value = k; connectKit(k); } }catch(e){} }
 const openTabFromHash = h => { const tab = {'#type':'tab-type', '#color':'tab-color', '#style':'tab-style'}[h]; if(tab) $(tab).click(); };
 openTabFromHash(INITIAL_HASH);
+setTimeout(()=>{ URL_BASE = encodeState(); }, 300);
 window.addEventListener('hashchange', ()=>{ if(location.hash.startsWith('#s=')) applyState(decodeState(location.hash.slice(3))); else openTabFromHash(location.hash); });
 </script>

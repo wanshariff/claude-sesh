@@ -766,6 +766,232 @@ input[aria-invalid="true"]{border-color:var(--bad)}
 [data-style="cyber"] .pv .tag,[data-style="cyber"] .pv .navl,[data-style="cyber"] .pv .tabsx [role=tab]{font-family:var(--f-mono); text-transform:uppercase; letter-spacing:.06em}
 [data-style="material"] .pv .snack{border-radius:4px}
 [data-style="spatial"] .pv .pbtn.danger{background:var(--pv-danger); color:var(--pv-on-danger)}
+
+/* ---------- Bootstrap-set additions ---------- */
+/* contextual keys: --bc is the fill, --bon the text that sits on it */
+.pv .k-primary{--bc:var(--pv-accent); --bon:var(--pv-on-accent)}
+.pv .k-accent2{--bc:var(--pv-accent2); --bon:var(--pv-on-accent2)}
+.pv .k-neutral{--bc:var(--pv-muted); --bon:var(--pv-bg)}
+.pv .k-success{--bc:var(--pv-success); --bon:var(--pv-on-success)}
+.pv .k-danger{--bc:var(--pv-danger); --bon:var(--pv-on-danger)}
+.pv .k-warning{--bc:var(--pv-warning); --bon:var(--pv-on-warning)}
+.pv .k-info{--bc:var(--pv-info); --bon:var(--pv-on-info)}
+.pv .k-light{--bc:var(--pv-card); --bon:var(--pv-fg)}
+.pv .k-dark{--bc:var(--pv-fg); --bon:var(--pv-bg)}
+.pv .pbtn.ctx{background:var(--bc); border-color:var(--bc); color:var(--bon)}
+.pv .pbtn.ctx.k-light{border-color:var(--pv-line)}
+.pv .pbtn.ctx.outline{background:transparent; color:var(--bc)}
+.pv .pbtn.ctx.outline:hover{background:var(--bc); color:var(--bon)}
+.pv .pbtn.link{background:transparent; border-color:transparent; color:var(--pv-accent-text); text-decoration:underline; text-underline-offset:.2em; box-shadow:none}
+.pv .tag.solid[class*="k-"]{background:var(--bc); color:var(--bon)}
+.pv .tag.sq{border-radius:4px}
+.pv .bdg{display:inline-grid; place-items:center; min-width:1.5em; height:1.5em; padding:0 .4em; border-radius:999px; background:var(--pv-on-accent); color:var(--pv-accent); font-size:.75em; font-weight:700}
+
+/* cards */
+.pv .cards2 + .lbl-s{display:block; margin:1.4em 0 .7em}
+.pv .cards4{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,11em),1fr)); gap:1em}
+.pv .ccard-h{padding:.65em 1em; border-bottom:1px solid var(--pv-line); background:var(--pv-card); font-weight:var(--bw); font-size:.88em}
+.pv .ccard.solid{background:var(--bc); color:var(--bon); border-color:var(--bc)}
+.pv .ccard.edge{border-color:var(--bc); border-width:2px}
+.pv .ccard.edge .small{color:var(--bc)}
+
+/* list group */
+.pv .lgrp{display:flex; flex-direction:column; overflow:hidden; padding:0}
+.pv .lg-i{display:flex; justify-content:space-between; align-items:center; gap:.6em; padding:.65em .9em; border:0; border-bottom:1px solid var(--pv-line); background:transparent; color:inherit; font:inherit; font-size:.93em; text-align:left; width:100%}
+.pv .lg-i:last-child{border-bottom:0}
+.pv button.lg-i{cursor:pointer}
+.pv button.lg-i:hover:not(:disabled):not(.on){background:var(--pv-card)}
+.pv .lg-i.on{background:var(--pv-accent); color:var(--pv-on-accent); font-weight:var(--bw)}
+.pv .lg-i.on .tag{background:var(--pv-on-accent); color:var(--pv-accent); border-color:transparent}
+.pv .lg-i:disabled{opacity:.45; cursor:not-allowed}
+.pv .lg-i[class*="k-"]{background:color-mix(in srgb, var(--bc) 12%, var(--pv-bg)); color:var(--bc); font-weight:var(--bw)}
+
+/* navs: pills, vertical */
+.pv .pills{display:flex; gap:.35em; flex-wrap:wrap}
+.pv .pills.vert{flex-direction:column; align-items:stretch; max-width:16em}
+.pv .pn{border:0; background:transparent; color:var(--pv-accent-text); font:inherit; font-size:.92em; padding:.5em .95em; border-radius:999px; cursor:pointer; display:inline-flex; gap:.45em; align-items:center; text-align:left}
+.pv .pills.vert .pn{border-radius:8px}
+.pv .pn:hover:not(:disabled):not([aria-current]){background:var(--pv-accent-soft)}
+.pv .pn[aria-current]{background:var(--pv-accent); color:var(--pv-on-accent); font-weight:var(--bw)}
+.pv .pn[aria-current] .cntb{color:var(--pv-fg)}
+.pv .pn:disabled{color:var(--pv-muted); opacity:.6; cursor:not-allowed}
+
+/* navbar: collapses behind a toggler when its container is narrow */
+.pv .nb-ctl{display:flex; justify-content:space-between; align-items:center; gap:1em; flex-wrap:wrap; padding:.7em 1.2em; border-bottom:1px solid var(--pv-line)}
+.pv .nbw{container-type:inline-size}
+.pv .nbw.narrow{max-width:380px; border-right:1px dashed var(--pv-line)}
+.pv .nb-tog{display:none}
+@container (max-width:640px){
+  .pv .appbar:not(.compact){gap:.6em}
+  .pv .appbar .nb-tog{display:inline-flex; order:3}
+  .pv .appbar .ab-end{order:2; margin-left:auto}
+  .pv .appbar .ab-search{order:4; max-width:none; min-width:100%; margin-left:0}
+  .pv .appbar .ab-nav{display:none; order:5; width:100%; flex-direction:column}
+  .pv .appbar .ab-nav.open{display:flex}
+  .pv .appbar .navl{text-align:left}
+  .pv .appbar .navl[aria-current]::after{display:none}
+  .pv .appbar .navl[aria-current]{background:var(--pv-accent-soft)}
+}
+
+/* offcanvas */
+.pv .oc-vp{min-height:24em}
+.pv .oc-back{position:absolute; inset:0; background:rgba(8,10,14,.45); opacity:0; pointer-events:none; transition:opacity .2s; z-index:3}
+.pv .oc-vp.has-open .oc-back{opacity:1; pointer-events:auto}
+.pv .oc{position:absolute; z-index:4; display:flex; flex-direction:column; border-radius:0; outline:none; visibility:hidden; transition:transform .25s ease, visibility 0s linear .25s}
+.pv .oc.open{visibility:visible; transform:none; transition:transform .25s ease}
+.pv .oc-left{left:0; top:0; bottom:0; width:min(18em,85%); transform:translateX(-105%)}
+.pv .oc-right{right:0; top:0; bottom:0; width:min(18em,85%); transform:translateX(105%)}
+.pv .oc-top{left:0; right:0; top:0; max-height:75%; transform:translateY(-105%)}
+.pv .oc-bottom{left:0; right:0; bottom:0; max-height:75%; transform:translateY(105%)}
+.pv .oc-h{padding:.9em 1.1em; border-bottom:1px solid var(--pv-line)}
+.pv .oc-b{padding:1.1em; overflow:auto}
+
+/* scrollspy */
+.pv.spy{display:grid; grid-template-columns:11em minmax(0,1fr); gap:1.4em}
+.pv .spy-nav{display:flex; flex-direction:column; border-left:2px solid var(--pv-line); align-self:start}
+.pv .spy-nav a{color:var(--pv-muted); text-decoration:none; padding:.42em .9em; margin-left:-2px; border-left:2px solid transparent; font-size:.92em}
+.pv .spy-nav a:hover{color:var(--pv-fg)}
+.pv .spy-nav a.on{color:var(--pv-accent-text); border-left-color:var(--pv-accent); font-weight:var(--bw)}
+.pv .spy-nav a:focus-visible{outline:2px solid var(--pv-accent); outline-offset:2px}
+.pv .spy-body{height:17em; overflow-y:auto; padding:1.2em 1.4em}
+.pv .spy-body section{padding-bottom:1.6em; display:flex; flex-direction:column; gap:.6em}
+.pv .spy-body section:last-child{padding-bottom:10em}
+@media (max-width:640px){ .pv.spy{grid-template-columns:minmax(0,1fr)} .pv .spy-nav{flex-direction:row; flex-wrap:wrap; border-left:0; border-bottom:2px solid var(--pv-line)} .pv .spy-nav a{margin:0 0 -2px; border-left:0; border-bottom:2px solid transparent} .pv .spy-nav a.on{border-bottom-color:var(--pv-accent)} }
+
+/* table variants */
+.pv .tblx-wrap{overflow-x:auto}
+.pv .tblx{width:100%; border-collapse:collapse; font-size:calc(var(--base)*.92); font-variant-numeric:tabular-nums; --tbg:var(--pv-bg); --tfg:var(--pv-fg); --tline:var(--pv-line); --tstripe:var(--pv-card); background:var(--tbg); color:var(--tfg)}
+.pv .tblx caption{caption-side:top; text-align:left; color:var(--pv-muted); font-size:.85em; padding-bottom:.6em; background:var(--pv-bg)}
+.pv .tblx th,.pv .tblx td{padding:.65em .8em; border-bottom:1px solid var(--tline); text-align:left; white-space:nowrap}
+.pv .tblx thead th{font-weight:var(--bw); border-bottom-width:2px}
+.pv .tblx tbody th,.pv .tblx tfoot > tr > *{font-weight:var(--bw)}
+.pv .tblx tfoot > tr > *{border-bottom:0}
+.pv .tblx .num{text-align:right; font-family:var(--f-mono)}
+.pv .tblx.striped tbody tr:nth-child(odd) > *{background:var(--tstripe)}
+.pv .tblx.hover tbody tr:hover > *{background:color-mix(in srgb, var(--pv-accent) 12%, var(--tbg))}
+.pv .tblx tbody tr.row-warn > *{background:color-mix(in srgb, var(--pv-warning) 16%, var(--tbg))!important}
+.pv .tblx.bordered th,.pv .tblx.bordered td{border:1px solid var(--tline)}
+.pv .tblx.small th,.pv .tblx.small td{padding:.3em .5em}
+.pv .tblx.dark{--tbg:var(--pv-fg); --tfg:var(--pv-bg); --tline:color-mix(in srgb, var(--pv-bg) 22%, var(--pv-fg)); --tstripe:color-mix(in srgb, var(--pv-bg) 8%, var(--pv-fg))}
+
+/* button group */
+.pv .bgrp{display:inline-flex; align-self:flex-start}
+.pv .bgrp > .pbtn{border-radius:0; margin-left:-1px; box-shadow:none}
+.pv .bgrp > .pbtn:first-child{border-radius:8px 0 0 8px; margin-left:0}
+.pv .bgrp > .pbtn:last-child{border-radius:0 8px 8px 0}
+.pv .bgrp > .pbtn:only-child{border-radius:8px}
+.pv .bgrp.vert{flex-direction:column}
+.pv .bgrp.vert > .pbtn{margin:-1px 0 0; justify-content:flex-start}
+.pv .bgrp.vert > .pbtn:first-child{border-radius:8px 8px 0 0; margin-top:0}
+.pv .bgrp.vert > .pbtn:last-child{border-radius:0 0 8px 8px}
+.pv .bgrp > .pbtn[aria-pressed="true"]{background:var(--pv-accent); color:var(--pv-on-accent); border-color:var(--pv-accent); position:relative}
+.pv .bgrp > .pbtn.fill + .pbtn.fill{border-left-color:color-mix(in srgb, var(--pv-on-accent) 35%, var(--pv-accent))}
+
+/* close button */
+.pv .xbtn{width:2em; height:2em; border:0; border-radius:6px; background:transparent; color:var(--pv-fg); opacity:.6; display:inline-grid; place-items:center; cursor:pointer; flex:none; padding:0}
+.pv .xbtn:hover{opacity:1; background:color-mix(in srgb, currentColor 10%, transparent)}
+.pv .xbtn:disabled{opacity:.2; cursor:not-allowed; background:transparent}
+.pv .xbtn.sm{width:1.6em; height:1.6em}
+.pv .xbtn.inv{color:var(--pv-bg)}
+.pv .dark-chip{display:inline-flex; padding:.35em; border-radius:8px; background:var(--pv-fg); align-self:flex-start}
+.pv .xdemo{display:flex; justify-content:space-between; align-items:center; gap:1em; padding:.8em 1em}
+.pv .alert.dismiss{grid-template-columns:1.4em minmax(0,1fr) auto; align-items:start}
+.pv .alert .xbtn{color:inherit; margin:-.3em -.4em 0 0}
+.pv .alink{border:0; background:transparent; padding:0; font:inherit; color:inherit; font-weight:var(--bw); text-decoration:underline; text-underline-offset:.2em; cursor:pointer}
+
+/* form controls extras */
+.pv .c-input.tx.lg{padding:.8em 1em; font-size:calc(var(--base)*1.15); width:auto}
+.pv .c-input.plain{border-color:transparent; background:transparent; padding-left:0; box-shadow:none}
+.pv .colorin{width:3.4em; height:2.6em; padding:.2em; cursor:pointer}
+.pv select.multi{padding:.3em}
+.pv select.multi option{padding:.35em .5em; border-radius:4px}
+
+/* input group */
+.pv .igrp{display:flex; align-items:stretch; padding:0; overflow:hidden; min-width:0}
+.pv .igrp:focus-within{outline:2px solid var(--pv-accent); outline-offset:1px}
+.pv .igrp > .bare{padding:.6em .75em}
+.pv .iadd{display:flex; align-items:center; gap:.5em; padding:0 .8em; background:var(--pv-card); color:var(--pv-muted); border-right:1px solid var(--pv-line); white-space:nowrap; font-size:.9em; flex:none}
+.pv .iadd.end{border-right:0; border-left:1px solid var(--pv-line)}
+.pv .iadd.chk{cursor:pointer; color:var(--pv-fg)}
+.pv .iadd .cbx.c-input{margin-top:0}
+.pv .igrp > .pbtn{border-radius:0; border:0; box-shadow:none; margin:0}
+.pv .igrp > .iselect{flex:none; width:5.2em; border-right:1px solid var(--pv-line); background:var(--pv-card); padding:.6em .5em; cursor:pointer}
+.pv .row-wrap > .c-input.tx{width:7em}
+.pv .igrp.sm{font-size:.85em; flex:1; min-width:10em}
+.pv .igrp.lg{font-size:1.1em; flex:1; min-width:10em}
+
+/* floating labels */
+.pv .fl{position:relative; padding:0}
+.pv .fl > .bare{width:100%; padding:1.55em .8em .45em; display:block}
+.pv .fl > textarea.bare{resize:vertical; min-height:5.5em; line-height:1.45}
+.pv .fl > label{position:absolute; left:.8em; top:1.05em; color:var(--pv-muted); pointer-events:none; transform-origin:left top; transition:transform .15s, color .15s}
+.pv .fl > .bare:focus + label,.pv .fl > .bare:not(:placeholder-shown) + label,.pv .fl > select.bare + label{transform:translateY(-.6em) scale(.75)}
+.pv .fl > .bare:focus + label{color:var(--pv-accent-text)}
+.pv .fl:focus-within{outline:2px solid var(--pv-accent); outline-offset:1px}
+.pv .fld.err .fl{border-color:var(--pv-danger)}
+.pv .fld.err .fl > label{color:var(--pv-danger)}
+
+/* spinners */
+.pv .spinner{color:var(--bc, var(--pv-accent)); border-top-color:currentColor}
+.pv .spinner.sm{width:1.2em; height:1.2em; border-width:2px}
+.pv .spinner.lg{width:3.4em; height:3.4em; border-width:4px}
+.pv .growsp{display:inline-block; width:2.2em; height:2.2em; border-radius:50%; background:var(--bc, var(--pv-accent)); animation:growsp .9s ease-in-out infinite; opacity:0; flex:none}
+.pv .growsp.sm{width:1em; height:1em; background:currentColor}
+@keyframes growsp{0%{transform:scale(0)} 50%{opacity:1; transform:none}}
+.pv .spin-row{padding:.7em 1em; gap:.7em}
+
+/* collapse */
+.pv .clp{display:grid; grid-template-rows:0fr; transition:grid-template-rows .25s ease}
+.pv .clp.show{grid-template-rows:1fr}
+.pv .clp > div,.pv .clp-h > div{overflow:hidden; min-height:0; min-width:0}
+.pv .clp-in{padding:.9em 1em}
+.pv .clp-h{display:grid; grid-template-columns:0fr; transition:grid-template-columns .25s ease}
+.pv .clp-h.show{grid-template-columns:1fr}
+.pv .clp-in.wide-in{width:14em; display:flex; flex-direction:column}
+
+/* progress extras */
+.pv .prog.tall{height:1.3em}
+.pv .prog.tall i{display:flex; align-items:center; justify-content:center; color:var(--pv-on-accent); font-size:.72em; font-weight:700; font-style:normal; white-space:nowrap; overflow:hidden}
+.pv .prog.striped i{background-image:linear-gradient(45deg, rgba(255,255,255,.2) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.2) 50%, rgba(255,255,255,.2) 75%, transparent 75%); background-size:1rem 1rem}
+.pv .prog.anim i{animation:stripes 1s linear infinite}
+@keyframes stripes{from{background-position:1rem 0} to{background-position:0 0}}
+.pv .prog[class*="k-"] i,.pv .prog.stacked i[class*="k-"]{background-color:var(--bc); color:var(--bon)}
+.pv .prog.stacked{display:flex}
+.pv .prog.stacked i{border-radius:0}
+
+/* placeholders: glow variant */
+.pv .glow .sk{background:var(--pv-line); animation:glowsk 1.8s ease-in-out infinite}
+@keyframes glowsk{50%{opacity:.35}}
+
+/* popover + tooltip placement */
+.pv .pp-row{display:flex; flex-wrap:wrap; gap:1.2em; justify-content:center; padding:3.4em 7.5em}
+.pv .ppw{position:relative; display:inline-flex}
+.pv .pp{position:absolute; z-index:6; padding:.6em .8em; font-size:.85em; white-space:nowrap}
+.pv .pp.top{bottom:calc(100% + .5em); left:50%; transform:translateX(-50%)}
+.pv .pp.bottom{top:calc(100% + .5em); left:50%; transform:translateX(-50%)}
+.pv .pp.right{left:calc(100% + .5em); top:50%; transform:translateY(-50%)}
+.pv .pp.left{right:calc(100% + .5em); top:50%; transform:translateY(-50%)}
+.pv .tt-place{justify-content:center; padding:2.4em 7em}
+.pv .tt.right{bottom:auto; left:calc(100% + .55em); top:50%; transform:translateY(-50%)}
+.pv .tt.right::after{top:50%; left:auto; right:100%; margin:-.35em 0 0; border-top-color:transparent; border-right-color:var(--pv-fg)}
+.pv .tt.bottom{bottom:auto; top:calc(100% + .55em)}
+.pv .tt.bottom::after{top:auto; bottom:100%; border-top-color:transparent; border-bottom-color:var(--pv-fg)}
+.pv .tt.left{bottom:auto; left:auto; right:calc(100% + .55em); top:50%; transform:translateY(-50%)}
+.pv .tt.left::after{top:50%; left:100%; margin:-.35em 0 0; border-top-color:transparent; border-left-color:var(--pv-fg)}
+@media (max-width:640px){ .pv .pp-row,.pv .tt-place{padding:3.4em 1em} }
+
+/* toasts */
+.pv .toastvp{min-height:19em}
+.pv .toastvp .vp-bg{max-width:min(100%, 24em)}
+.pv .btoasts{position:absolute; top:1em; right:1em; display:flex; flex-direction:column; gap:.5em; z-index:4; width:min(19em, calc(100% - 2em))}
+.pv .btoast{overflow:hidden}
+.pv .bt-h{display:flex; align-items:center; gap:.5em; padding:.4em .45em .4em .8em; border-bottom:1px solid var(--pv-line); font-size:.85em}
+.pv .bt-h .sub{margin-left:auto}
+.pv .bt-mark{width:.9em; height:.9em; border-radius:3px; background:var(--pv-accent); flex:none}
+.pv .bt-b{padding:.7em .8em; font-size:.9em}
+@media (prefers-reduced-motion:no-preference){ .pv .btoast,.pv .snack{animation:toastin .2s ease-out} }
+@keyframes toastin{from{transform:translateY(-.4em); opacity:0}}
+@media (prefers-reduced-motion:reduce){ .pv .growsp,.pv .prog.anim i,.pv .glow .sk{animation:none; opacity:1} .pv .clp,.pv .clp-h,.pv .oc,.pv .oc-back{transition:none} }
 </style>
 
 <div class="app">
@@ -937,10 +1163,10 @@ input[aria-invalid="true"]{border-color:var(--bad)}
         <button data-v="components" aria-pressed="false">Components</button>
       </div>
       <div class="chips" role="group" aria-label="Component group" id="cfilters" hidden>
-        <button class="chip" data-g="all" aria-pressed="true">All 34</button>
-        <button class="chip" data-g="inputs" aria-pressed="false">Inputs &amp; controls</button>
-        <button class="chip" data-g="nav" aria-pressed="false">Navigation &amp; layout</button>
-        <button class="chip" data-g="data" aria-pressed="false">Data display</button>
+        <button class="chip" data-g="all" aria-pressed="true">All 43</button>
+        <button class="chip" data-g="layout" aria-pressed="false">Layout &amp; navigation</button>
+        <button class="chip" data-g="content" aria-pressed="false">Content &amp; data</button>
+        <button class="chip" data-g="actions" aria-pressed="false">Actions &amp; forms</button>
         <button class="chip" data-g="feedback" aria-pressed="false">Feedback &amp; overlays</button>
       </div>
       <div class="chips" role="group" aria-label="Use case filter" id="filters">
@@ -1102,162 +1328,18 @@ input[aria-invalid="true"]{border-color:var(--bad)}
         </div>
       </section>
 
-      <!-- ===== Component library: shown in the Components view ===== -->
+      <!-- ===== Component library: Bootstrap taxonomy, plus extras Bootstrap lacks ===== -->
 
-      <!-- Inputs & controls -->
-      <section class="frame comp" data-grp="inputs" hidden>
-        <header><span>Button</span><span>Inputs &amp; controls</span></header>
-        <div class="pv stack-m">
-          <span class="lbl-s">Hierarchy</span>
-          <div class="row-wrap">
-            <button class="pbtn fill">Primary</button>
-            <button class="pbtn sec">Secondary</button>
-            <button class="pbtn">Tertiary</button>
-            <button class="pbtn ghost">Ghost</button>
-            <button class="pbtn danger">Delete</button>
-          </div>
-          <span class="lbl-s">Sizes and states</span>
-          <div class="row-wrap">
-            <button class="pbtn fill sm">Small</button>
-            <button class="pbtn fill">Default</button>
-            <button class="pbtn fill lg">Large</button>
-            <button class="pbtn fill" disabled>Disabled</button>
-            <button class="pbtn fill" aria-busy="true"><span class="spin" aria-hidden="true"></span>Saving</button>
-          </div>
-          <span class="lbl-s">With icons</span>
-          <div class="row-wrap">
-            <button class="pbtn fill"><span data-i="upload"></span>Upload receipt</button>
-            <button class="pbtn">Next<span data-i="chevR"></span></button>
-            <button class="pbtn icon" aria-label="Add expense"><span data-i="plus"></span></button>
-            <button class="pbtn ghost icon" aria-label="More actions"><span data-i="more"></span></button>
-          </div>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="inputs" hidden>
-        <header><span>Text field &amp; textarea</span><span>Inputs &amp; controls</span></header>
-        <div class="pv stack-m">
-          <div class="grid2">
-            <div class="fld"><label for="c-tf1">Merchant</label><input id="c-tf1" class="c-input tx" value="Blue Bottle Coffee"><span class="help">As it appears on the statement.</span></div>
-            <div class="fld"><label for="c-tf2">Amount</label><div class="affix c-input"><span class="muted">$</span><input id="c-tf2" class="bare" value="18.75" inputmode="decimal"><span class="muted mono">USD</span></div><span class="help">Converted at the card rate.</span></div>
-            <div class="fld err"><label for="c-tf3">Work email</label><input id="c-tf3" class="c-input tx" value="sam@northwind" aria-invalid="true" aria-describedby="c-tf3h"><span class="help" id="c-tf3h">Enter a full address, like sam@northwind.com.</span></div>
-            <div class="fld"><label for="c-tf4">Cost center</label><input id="c-tf4" class="c-input tx" value="Platform · 4100" disabled><span class="help">Set by your admin.</span></div>
-          </div>
-          <div class="fld"><label for="c-ta">Business purpose</label><textarea id="c-ta" class="c-input tx" rows="3" maxlength="200">Coffee with Northwind's finance lead to scope the Q4 rollout.</textarea><span class="help row-between"><span>Required for anything over $75.</span><span class="mono" id="c-ta-n"></span></span></div>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="inputs" hidden>
-        <header><span>Checkbox</span><span>Inputs &amp; controls</span></header>
-        <div class="pv">
-          <fieldset class="fs"><legend>Email me about</legend>
-            <label class="opt"><input type="checkbox" class="sr" id="c-cb-all"><span class="cbx c-input"></span><span class="b">All activity</span></label>
-            <div class="indent stack-s" id="c-cb-kids">
-              <label class="opt"><input type="checkbox" class="sr" checked><span class="cbx c-input"></span>Receipts that need a photo</label>
-              <label class="opt"><input type="checkbox" class="sr" checked><span class="cbx c-input"></span>Reports waiting for my approval</label>
-              <label class="opt"><input type="checkbox" class="sr"><span class="cbx c-input"></span>Weekly spend summary</label>
-            </div>
-            <label class="opt dis"><input type="checkbox" class="sr" checked disabled><span class="cbx c-input"></span>Card declines (required by your admin)</label>
-          </fieldset>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="inputs" hidden>
-        <header><span>Radio button</span><span>Inputs &amp; controls</span></header>
-        <div class="pv">
-          <fieldset class="fs"><legend>Reimburse me by</legend>
-            <label class="opt"><input type="radio" name="c-r" class="sr" checked><span class="rad c-input"></span><span><span class="b">Direct deposit</span><span class="sub">1–2 business days to Chase ••4021</span></span></label>
-            <label class="opt"><input type="radio" name="c-r" class="sr"><span class="rad c-input"></span><span><span class="b">Payroll</span><span class="sub">Added to your next paycheck</span></span></label>
-            <label class="opt dis"><input type="radio" name="c-r" class="sr" disabled><span class="rad c-input"></span><span><span class="b">Paper check</span><span class="sub">Not available in Portugal</span></span></label>
-          </fieldset>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="inputs" hidden>
-        <header><span>Switch / toggle</span><span>Inputs &amp; controls</span></header>
-        <div class="pv stack-m">
-          <label class="opt between"><span><span class="b">Auto-match receipts</span><span class="sub">Match new receipts to card charges as they arrive.</span></span><input type="checkbox" role="switch" class="sr" checked><span class="swt"><i></i></span></label>
-          <hr class="dv">
-          <label class="opt between"><span><span class="b">Block out-of-policy charges</span><span class="sub">Decline card charges that break a policy rule.</span></span><input type="checkbox" role="switch" class="sr"><span class="swt"><i></i></span></label>
-          <hr class="dv">
-          <label class="opt between dis"><span><span class="b">Require SSO</span><span class="sub">Managed in Okta.</span></span><input type="checkbox" role="switch" class="sr" checked disabled><span class="swt"><i></i></span></label>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="inputs" hidden>
-        <header><span>Select / dropdown</span><span>Inputs &amp; controls</span></header>
-        <div class="pv stack-m">
-          <div class="grid2">
-            <div class="fld"><label for="c-sel1">Category</label><div class="selw"><select id="c-sel1" class="c-input tx"><option>Travel · Airfare</option><option>Travel · Lodging</option><option selected>Meals · Client</option><option>Meals · Team</option><option>Software</option><option>Office supplies</option></select></div></div>
-            <div class="fld"><label for="c-sel2">Currency</label><div class="selw"><select id="c-sel2" class="c-input tx"><option>USD · US dollar</option><option>EUR · Euro</option><option>GBP · British pound</option><option>JPY · Japanese yen</option></select></div></div>
-          </div>
-          <div class="fld"><span class="lblx" id="c-sel3l">Approver</span>
-            <button type="button" class="c-input tx selbtn" id="c-sel3" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="c-sel3l c-sel3"><span class="v">Maya Okafor</span><span data-i="chevD" class="muted"></span></button>
-            <ul class="c-surface float menu" id="c-sel3-list" role="listbox" aria-labelledby="c-sel3l">
-              <li role="option" aria-selected="false" data-v="Rafael Silva">Rafael Silva</li>
-              <li role="option" aria-selected="true" class="on" data-v="Maya Okafor">Maya Okafor<span data-i="check"></span></li>
-              <li role="option" aria-selected="false" data-v="Priya Raman">Priya Raman</li>
-              <li role="option" aria-selected="false" data-v="Any finance admin">Any finance admin</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="inputs" hidden>
-        <header><span>Slider</span><span>Inputs &amp; controls</span></header>
-        <div class="pv stack-m">
-          <div class="fld"><div class="row-between"><label for="c-rng">Auto-approve expenses under</label><output class="mono b" id="c-rng-o" for="c-rng"></output></div>
-            <input type="range" id="c-rng" class="rng" min="0" max="250" step="5" value="75">
-            <div class="row-between mono ticks"><span>$0</span><span>$125</span><span>$250</span></div></div>
-          <div class="fld"><div class="row-between"><span class="lblx" id="c-dual-l">Amount range</span><output class="mono b" id="c-dual-o"></output></div>
-            <div class="dual" role="group" aria-labelledby="c-dual-l"><input type="range" class="rng" id="c-d1" min="0" max="5000" step="50" value="250" aria-label="Minimum amount"><input type="range" class="rng" id="c-d2" min="0" max="5000" step="50" value="2000" aria-label="Maximum amount"></div></div>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="inputs" hidden>
-        <header><span>Date / time picker</span><span>Inputs &amp; controls</span></header>
-        <div class="pv dp">
-          <div class="stack-m">
-            <div class="fld"><label for="c-date">Transaction date</label><div class="affix c-input"><span data-i="cal" class="muted"></span><input id="c-date" class="bare" value="Oct 14, 2026" readonly></div></div>
-            <div class="fld"><span class="lblx">Time</span><div class="row-wrap" id="c-times" role="group" aria-label="Time">
-              <button type="button" class="chip-s" aria-pressed="false">9:00</button><button type="button" class="chip-s" aria-pressed="false">9:30</button><button type="button" class="chip-s" aria-pressed="true">10:00</button><button type="button" class="chip-s" aria-pressed="false">10:30</button><button type="button" class="chip-s" aria-pressed="false">11:00</button></div></div>
-          </div>
-          <div class="cal c-surface float" role="group" aria-label="Choose a date">
-            <div class="cal-h"><button type="button" class="pbtn ghost icon sm" id="c-cal-prev" aria-label="Previous month"><span data-i="chevL"></span></button><span class="b" id="c-cal-m" aria-live="polite"></span><button type="button" class="pbtn ghost icon sm" id="c-cal-next" aria-label="Next month"><span data-i="chevR"></span></button></div>
-            <div class="cal-g" id="c-cal-g"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="inputs" hidden>
-        <header><span>File upload / dropzone</span><span>Inputs &amp; controls</span></header>
-        <div class="pv stack-m">
-          <label class="drop" id="c-drop"><input type="file" class="sr" id="c-file" multiple accept="image/*,.pdf"><span data-i="upload" class="drop-i"></span><span class="b">Drop receipts here or <u>browse</u></span><span class="sub">PDF, JPG or PNG, up to 10 MB each</span></label>
-          <ul class="files" id="c-files">
-            <li class="c-surface"><span data-i="file" class="muted"></span><span class="grow"><span class="b">hilton-folio.jpg</span><span class="bar"><i style="width:62%"></i></span></span><span class="sub mono">1.4 MB</span><button type="button" class="pbtn ghost icon sm" aria-label="Cancel upload"><span data-i="x"></span></button></li>
-            <li class="c-surface"><span data-i="file" class="muted"></span><span class="grow"><span class="b">delta-lisbon.pdf</span><span class="bar"><i style="width:100%"></i></span></span><span class="sub mono">212 KB</span><span class="ok-t">Done</span></li>
-          </ul>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="inputs" hidden>
-        <header><span>Combobox / autocomplete</span><span>Inputs &amp; controls</span></header>
-        <div class="pv">
-          <div class="fld"><label for="c-cb">Merchant</label>
-            <div class="affix c-input"><span data-i="search" class="muted"></span><input id="c-cb" class="bare" role="combobox" aria-expanded="true" aria-controls="c-cblist" aria-autocomplete="list" value="Del" autocomplete="off" spellcheck="false"></div>
-            <ul class="c-surface float menu" id="c-cblist" role="listbox" aria-label="Matching merchants"></ul>
-            <span class="help">Type to filter. Arrow keys move, Enter picks. Try "air", "hot" or "co".</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Navigation & layout -->
-      <section class="frame comp wide" data-grp="nav" hidden>
-        <header><span>App bar / navbar</span><span>Navigation &amp; layout</span></header>
+      <!-- Layout &amp; navigation -->
+      <section class="frame comp wide" data-grp="layout" hidden>
+        <header><span>Navbar</span><span>Layout &amp; navigation</span></header>
         <div class="pv flush">
+          <div class="nb-ctl"><span class="sub">Collapses behind a menu button when space runs out.</span><button type="button" class="pbtn sm" id="c-nb-narrow" aria-pressed="false">Preview at phone width</button></div>
+          <div class="nbw" id="c-nbw">
           <div class="appbar" id="c-appbar">
             <span class="d brandmark">Harbor</span>
-            <nav class="ab-nav" aria-label="Primary"><button type="button" class="navl" aria-current="page">Expenses</button><button type="button" class="navl">Cards</button><button type="button" class="navl">Reimbursements</button><button type="button" class="navl">Reports</button></nav>
+            <button type="button" class="pbtn ghost icon nb-tog" id="c-nb-tog" aria-expanded="false" aria-controls="c-nbnav" aria-label="Open navigation"><span data-i="menu"></span></button>
+            <nav class="ab-nav" id="c-nbnav" aria-label="Primary"><button type="button" class="navl" aria-current="page">Expenses</button><button type="button" class="navl">Cards</button><button type="button" class="navl">Reimbursements</button><button type="button" class="navl">Reports</button></nav>
             <div class="affix c-input sm ab-search"><span data-i="search" class="muted"></span><input class="bare" placeholder="Search expenses, people, merchants" aria-label="Search"><kbd>⌘K</kbd></div>
             <div class="ab-end">
               <span class="cnt-wrap"><button type="button" class="pbtn ghost icon" aria-label="Notifications, 3 unread"><span data-i="bell"></span></button><span class="cnt-b" aria-hidden="true">3</span></span>
@@ -1271,11 +1353,87 @@ input[aria-invalid="true"]{border-color:var(--bad)}
             <button type="button" class="pbtn ghost icon" aria-label="More actions"><span data-i="more"></span></button>
           </div>
           <div class="ab-body"><span class="ph w60"></span><span class="ph w80"></span><span class="ph w40"></span></div>
+          </div>
         </div>
       </section>
-
-      <section class="frame comp wide" data-grp="nav" hidden>
-        <header><span>Drawer / sidebar</span><span>Navigation &amp; layout</span></header>
+      <section class="frame comp" data-grp="layout" hidden>
+        <header><span>Navs &amp; tabs</span><span>Layout &amp; navigation</span></header>
+        <div class="pv stack-m">
+          <div>
+            <div class="tabsx" role="tablist" aria-label="Report sections">
+              <button type="button" role="tab" aria-selected="true" aria-controls="c-tp1" id="c-t1">Overview</button>
+              <button type="button" role="tab" aria-selected="false" aria-controls="c-tp2" id="c-t2" tabindex="-1">Transactions <span class="cntb">48</span></button>
+              <button type="button" role="tab" aria-selected="false" aria-controls="c-tp3" id="c-t3" tabindex="-1">Approvals <span class="cntb">3</span></button>
+            </div>
+            <div class="tpanel" role="tabpanel" id="c-tp1" aria-labelledby="c-t1"><p>September closed in 3.5 days with 96% of receipts matched automatically.</p></div>
+            <div class="tpanel" role="tabpanel" id="c-tp2" aria-labelledby="c-t2" hidden><p>48 transactions across 12 cardholders, totaling $184,320.</p></div>
+            <div class="tpanel" role="tabpanel" id="c-tp3" aria-labelledby="c-t3" hidden><p>3 reports are waiting on Maya Okafor. The oldest is 2 days old.</p></div>
+          </div>
+          <span class="lbl-s">Pills</span>
+          <nav class="pills" aria-label="Report filter"><button type="button" class="pn" aria-current="page">All</button><button type="button" class="pn">Pending <span class="cntb">3</span></button><button type="button" class="pn">Approved</button><button type="button" class="pn" disabled>Archived</button></nav>
+          <span class="lbl-s">Vertical</span>
+          <nav class="pills vert" aria-label="Settings sections"><button type="button" class="pn" aria-current="page">Profile</button><button type="button" class="pn">Cards and banks</button><button type="button" class="pn">Notifications</button></nav>
+          <div class="row-between"><span class="lbl-s">Segmented</span><div class="segx" role="group" aria-label="Period"><button type="button" aria-pressed="false">Day</button><button type="button" aria-pressed="true">Week</button><button type="button" aria-pressed="false">Month</button></div></div>
+        </div>
+      </section>
+      <section class="frame comp wide" data-grp="layout" hidden>
+        <header><span>Offcanvas</span><span>Layout &amp; navigation</span></header>
+        <div class="pv flush">
+          <div class="vp oc-vp" id="c-oc-vp">
+            <div class="vp-bg"><div class="row-between wrap"><h3>Expenses</h3><div class="row-wrap" role="group" aria-label="Open panel from">
+              <button type="button" class="pbtn sm" data-oc="left" aria-controls="c-oc">Filters (left)</button>
+              <button type="button" class="pbtn sm" data-oc="right" aria-controls="c-oc">Settings (right)</button>
+              <button type="button" class="pbtn sm" data-oc="top" aria-controls="c-oc">Top</button>
+              <button type="button" class="pbtn sm" data-oc="bottom" aria-controls="c-oc">Bottom</button></div></div>
+              <span class="ph w80"></span><span class="ph w60"></span><span class="ph w80"></span><span class="ph w40"></span></div>
+            <div class="oc-back" id="c-oc-back"></div>
+            <aside class="oc c-surface float oc-left open" id="c-oc" role="dialog" aria-modal="true" aria-labelledby="c-oc-t" tabindex="-1">
+              <div class="row-between oc-h"><span class="b" id="c-oc-t">Filters</span><button type="button" class="xbtn" aria-label="Close panel" data-oc-close><span data-i="x"></span></button></div>
+              <div class="oc-b stack-m">
+                <fieldset class="fs"><legend>Status</legend>
+                  <label class="opt"><input type="checkbox" class="sr" checked><span class="cbx c-input"></span>Pending</label>
+                  <label class="opt"><input type="checkbox" class="sr" checked><span class="cbx c-input"></span>Over policy</label>
+                  <label class="opt"><input type="checkbox" class="sr"><span class="cbx c-input"></span>Approved</label>
+                </fieldset>
+                <div class="row-wrap"><button type="button" class="pbtn fill sm" data-oc-close>Show 14 expenses</button><button type="button" class="pbtn ghost sm">Reset</button></div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="layout" hidden>
+        <header><span>Breadcrumb</span><span>Layout &amp; navigation</span></header>
+        <div class="pv stack-m">
+          <nav aria-label="Breadcrumb"><ol class="crumbs"><li><button type="button">Home</button></li><li><button type="button">Reports</button></li><li><button type="button">2026</button></li><li aria-current="page">September close</li></ol></nav>
+          <span class="lbl-s">Collapsed for deep paths</span>
+          <nav aria-label="Breadcrumb, collapsed"><ol class="crumbs"><li><button type="button">Home</button></li><li><button type="button" aria-label="Show 3 more levels">…</button></li><li><button type="button">Lisbon client visit</button></li><li aria-current="page">Hotel receipt</li></ol></nav>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="layout" hidden>
+        <header><span>Pagination</span><span>Layout &amp; navigation</span></header>
+        <div class="pv stack-m">
+          <div class="pager"><span class="sub" id="c-pg-l" aria-live="polite"></span><nav class="pgs" id="c-pg" aria-label="Pagination"></nav><div class="selw"><select class="c-input tx sm" aria-label="Rows per page"><option>25 per page</option><option>50 per page</option><option>100 per page</option></select></div></div>
+          <hr class="dv">
+          <div class="row-between"><button type="button" class="pbtn sm"><span data-i="chevL"></span>Newer</button><span class="sub">Page 2 of 78</span><button type="button" class="pbtn sm">Older<span data-i="chevR"></span></button></div>
+        </div>
+      </section>
+      <section class="frame comp wide" data-grp="layout" hidden>
+        <header><span>Scrollspy</span><span>Layout &amp; navigation</span></header>
+        <div class="pv spy">
+          <nav class="spy-nav" id="c-spy-nav" aria-label="Travel policy sections">
+            <a href="#c-spy-1" class="on" aria-current="true">Overview</a><a href="#c-spy-2">Flights</a><a href="#c-spy-3">Lodging</a><a href="#c-spy-4">Meals</a><a href="#c-spy-5">Receipts</a>
+          </nav>
+          <div class="spy-body c-surface" id="c-spy" tabindex="0" aria-label="Travel policy, scrollable">
+            <section id="c-spy-1"><h4>Overview</h4><p>This policy covers travel booked on or after October 1, 2026. Book through Harbor Travel so receipts match automatically.</p><p>Managers approve trips over $2,500 before booking. Everything else is approved after the trip with the expense report.</p></section>
+            <section id="c-spy-2"><h4>Flights</h4><p>Economy for flights under 6 hours. Premium economy is allowed for overnight flights or anything longer.</p><p>Seat selection and one checked bag are covered. Upgrades paid with points are fine; cash upgrades are not.</p></section>
+            <section id="c-spy-3"><h4>Lodging</h4><p>Nightly caps depend on the city: $250 in Lisbon, $320 in Boston, $380 in London. Conference hotels are exempt when booked through the event.</p><p>Add a reason if you go over the cap. Your manager sees it on the report.</p></section>
+            <section id="c-spy-4"><h4>Meals</h4><p>Up to $75 a day while traveling, without itemizing. Client meals have no daily cap but need attendee names.</p></section>
+            <section id="c-spy-5"><h4>Receipts</h4><p>Upload receipts within 30 days. Anything without a receipt after 30 days is charged back to your next paycheck.</p><p>Lost receipt? Add a note. Your manager can approve up to $75 without one.</p></section>
+          </div>
+        </div>
+      </section>
+      <section class="frame comp wide extra" data-grp="layout" hidden>
+        <header><span>Sidebar</span><span>Layout &amp; navigation · extra</span></header>
         <div class="pv drawer-demo">
           <aside class="drawer c-surface" id="c-drawer" aria-label="Workspace">
             <div class="dr-h"><span class="d">Harbor</span><button type="button" class="pbtn ghost icon sm" id="c-dr-t" aria-label="Collapse sidebar" aria-expanded="true"><span data-i="chevL"></span></button></div>
@@ -1292,79 +1450,15 @@ input[aria-invalid="true"]{border-color:var(--bad)}
           <div class="dr-main"><h3 id="c-dr-title">Expenses</h3><span class="ph w80"></span><span class="ph w60"></span><span class="ph w80"></span><span class="ph w40"></span></div>
         </div>
       </section>
-
-      <section class="frame comp" data-grp="nav" hidden>
-        <header><span>Tabs</span><span>Navigation &amp; layout</span></header>
-        <div class="pv stack-m">
-          <div>
-            <div class="tabsx" role="tablist" aria-label="Report sections">
-              <button type="button" role="tab" aria-selected="true" aria-controls="c-tp1" id="c-t1">Overview</button>
-              <button type="button" role="tab" aria-selected="false" aria-controls="c-tp2" id="c-t2" tabindex="-1">Transactions <span class="cntb">48</span></button>
-              <button type="button" role="tab" aria-selected="false" aria-controls="c-tp3" id="c-t3" tabindex="-1">Approvals <span class="cntb">3</span></button>
-            </div>
-            <div class="tpanel" role="tabpanel" id="c-tp1" aria-labelledby="c-t1"><p>September closed in 3.5 days with 96% of receipts matched automatically.</p></div>
-            <div class="tpanel" role="tabpanel" id="c-tp2" aria-labelledby="c-t2" hidden><p>48 transactions across 12 cardholders, totaling $184,320.</p></div>
-            <div class="tpanel" role="tabpanel" id="c-tp3" aria-labelledby="c-t3" hidden><p>3 reports are waiting on Maya Okafor. The oldest is 2 days old.</p></div>
-          </div>
-          <div class="row-between"><span class="lbl-s">Segmented</span><div class="segx" role="group" aria-label="Period"><button type="button" aria-pressed="false">Day</button><button type="button" aria-pressed="true">Week</button><button type="button" aria-pressed="false">Month</button></div></div>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="nav" hidden>
-        <header><span>Breadcrumbs</span><span>Navigation &amp; layout</span></header>
-        <div class="pv stack-m">
-          <nav aria-label="Breadcrumb"><ol class="crumbs"><li><button type="button">Home</button></li><li><button type="button">Reports</button></li><li><button type="button">2026</button></li><li aria-current="page">September close</li></ol></nav>
-          <span class="lbl-s">Collapsed for deep paths</span>
-          <nav aria-label="Breadcrumb, collapsed"><ol class="crumbs"><li><button type="button">Home</button></li><li><button type="button" aria-label="Show 3 more levels">…</button></li><li><button type="button">Lisbon client visit</button></li><li aria-current="page">Hotel receipt</li></ol></nav>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="nav" hidden>
-        <header><span>Pagination</span><span>Navigation &amp; layout</span></header>
-        <div class="pv stack-m">
-          <div class="pager"><span class="sub" id="c-pg-l" aria-live="polite"></span><nav class="pgs" id="c-pg" aria-label="Pagination"></nav><div class="selw"><select class="c-input tx sm" aria-label="Rows per page"><option>25 per page</option><option>50 per page</option><option>100 per page</option></select></div></div>
-          <hr class="dv">
-          <div class="row-between"><button type="button" class="pbtn sm"><span data-i="chevL"></span>Newer</button><span class="sub">Page 2 of 78</span><button type="button" class="pbtn sm">Older<span data-i="chevR"></span></button></div>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="nav" hidden>
-        <header><span>Accordion</span><span>Navigation &amp; layout</span></header>
-        <div class="pv">
-          <div class="acc">
-            <details class="acc-i" open><summary>What counts as a business expense?<span data-i="chevD"></span></summary><div class="acc-b">Anything you spend to do your job: travel, client meals, software and supplies. Personal items, fines and gifts over $25 aren't covered.</div></details>
-            <details class="acc-i"><summary>When do I get reimbursed?<span data-i="chevD"></span></summary><div class="acc-b">Approved reports are paid every Tuesday and Friday by direct deposit.</div></details>
-            <details class="acc-i"><summary>What if I lost a receipt?<span data-i="chevD"></span></summary><div class="acc-b">Add a missing-receipt note. Your manager can approve up to $75 without one.</div></details>
-          </div>
-        </div>
-      </section>
-
-      <section class="frame comp wide" data-grp="nav" hidden>
-        <header><span>Stepper</span><span>Navigation &amp; layout</span></header>
+      <section class="frame comp wide extra" data-grp="layout" hidden>
+        <header><span>Stepper</span><span>Layout &amp; navigation · extra</span></header>
         <div class="pv stack-m cq">
           <ol class="stepper" id="c-steps" aria-label="Workspace setup"></ol>
           <div class="row-wrap end"><button type="button" class="pbtn" id="c-st-back">Back</button><button type="button" class="pbtn fill" id="c-st-next">Continue</button></div>
         </div>
       </section>
-
-      <section class="frame comp wide" data-grp="nav" hidden>
-        <header><span>Carousel</span><span>Navigation &amp; layout</span></header>
-        <div class="pv stack-m">
-          <div class="row-between"><span class="b">Recent receipts</span><span class="row-wrap"><button type="button" class="pbtn icon sm" id="c-car-p" aria-label="Previous receipts"><span data-i="chevL"></span></button><button type="button" class="pbtn icon sm" id="c-car-n" aria-label="Next receipts"><span data-i="chevR"></span></button></span></div>
-          <div class="car-t" id="c-car" tabindex="0" role="region" aria-label="Recent receipts, scrolls sideways">
-            <article class="slide c-surface"><div class="slide-m"><span data-i="receipt"></span></div><span class="b">Delta Air Lines</span><span class="sub">Oct 2 · Lisbon to Boston</span><span class="mono b">$1,284.60</span></article>
-            <article class="slide c-surface"><div class="slide-m"><span data-i="receipt"></span></div><span class="b">Hilton Lisbon</span><span class="sub">Oct 1 · 3 nights</span><span class="mono b">$912.00</span></article>
-            <article class="slide c-surface"><div class="slide-m"><span data-i="receipt"></span></div><span class="b">Uber</span><span class="sub">Sep 29 · Airport</span><span class="mono b">$24.30</span></article>
-            <article class="slide c-surface"><div class="slide-m"><span data-i="receipt"></span></div><span class="b">Blue Bottle Coffee</span><span class="sub">Sep 29 · Client meeting</span><span class="mono b">$18.75</span></article>
-            <article class="slide c-surface"><div class="slide-m"><span data-i="receipt"></span></div><span class="b">Figma</span><span class="sub">Sep 27 · Annual seats</span><span class="mono b">$1,350.00</span></article>
-            <article class="slide c-surface"><div class="slide-m"><span data-i="receipt"></span></div><span class="b">Sweetgreen</span><span class="sub">Sep 26 · Team lunch</span><span class="mono b">$16.85</span></article>
-          </div>
-          <div class="dots" id="c-car-d"></div>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="nav" hidden>
-        <header><span>Divider</span><span>Navigation &amp; layout</span></header>
+      <section class="frame comp extra" data-grp="layout" hidden>
+        <header><span>Divider</span><span>Layout &amp; navigation · extra</span></header>
         <div class="pv stack-m">
           <span class="lbl-s">Full width</span>
           <div class="stack-s"><span>Personal card spend</span><hr class="dv"><span>Company card spend</span></div>
@@ -1377,9 +1471,9 @@ input[aria-invalid="true"]{border-color:var(--bad)}
         </div>
       </section>
 
-      <!-- Data display -->
-      <section class="frame comp wide" data-grp="data" hidden>
-        <header><span>Card</span><span>Data display</span></header>
+      <!-- Content &amp; data -->
+      <section class="frame comp wide" data-grp="content" hidden>
+        <header><span>Card</span><span>Content &amp; data</span></header>
         <div class="pv">
           <div class="cards2">
             <article class="c-surface ccard">
@@ -1396,11 +1490,95 @@ input[aria-invalid="true"]{border-color:var(--bad)}
               <div class="ccard-f row-between"><button type="button" class="pbtn ghost sm">Message</button><button type="button" class="pbtn sm">View spend</button></div>
             </article>
           </div>
+          <span class="lbl-s">Header, footer and contextual</span>
+          <div class="cards4">
+            <article class="c-surface ccard"><div class="ccard-h">Travel policy</div><div class="ccard-b"><span class="b">Lodging caps updated</span><p class="small muted">Lisbon is now $250 a night.</p></div><div class="ccard-f sub">Updated 2 days ago</div></article>
+            <article class="c-surface ccard solid k-primary"><div class="ccard-b"><span class="small">Spend this month</span><span class="d" style="font-size:var(--s3)">$184k</span></div></article>
+            <article class="c-surface ccard solid k-success"><div class="ccard-b"><span class="small">Auto-matched</span><span class="d" style="font-size:var(--s3)">96%</span></div></article>
+            <article class="c-surface ccard edge k-warning"><div class="ccard-b"><span class="small b">Needs attention</span><span class="d" style="font-size:var(--s3)">3 reports</span></div></article>
+          </div>
         </div>
       </section>
+      <section class="frame comp" data-grp="content" hidden>
+        <header><span>Accordion</span><span>Content &amp; data</span></header>
+        <div class="pv">
+          <div class="acc">
+            <details class="acc-i" open><summary>What counts as a business expense?<span data-i="chevD"></span></summary><div class="acc-b">Anything you spend to do your job: travel, client meals, software and supplies. Personal items, fines and gifts over $25 aren't covered.</div></details>
+            <details class="acc-i"><summary>When do I get reimbursed?<span data-i="chevD"></span></summary><div class="acc-b">Approved reports are paid every Tuesday and Friday by direct deposit.</div></details>
+            <details class="acc-i"><summary>What if I lost a receipt?<span data-i="chevD"></span></summary><div class="acc-b">Add a missing-receipt note. Your manager can approve up to $75 without one.</div></details>
+          </div>
+        </div>
+      </section>
+      <section class="frame comp wide" data-grp="content" hidden>
+        <header><span>List group</span><span>Content &amp; data</span></header>
+        <div class="pv grid2">
+          <div class="stack-s">
+            <span class="lbl-s">Active, disabled, badges</span>
+            <div class="lgrp c-surface" id="c-lgrp">
+              <button type="button" class="lg-i on" aria-current="true">Lisbon client visit<span class="tag solid">6</span></button>
+              <button type="button" class="lg-i">September close<span class="tag">48</span></button>
+              <button type="button" class="lg-i">Team offsite<span class="tag">12</span></button>
+              <button type="button" class="lg-i" disabled>Archived 2025<span class="tag">210</span></button>
+            </div>
+            <span class="lbl-s">Contextual</span>
+            <div class="lgrp c-surface"><span class="lg-i k-success">Paid out Friday</span><span class="lg-i k-warning">Waiting on 2 receipts</span><span class="lg-i k-danger">Card declined</span><span class="lg-i k-info">Syncing with Xero</span></div>
+          </div>
+          <div class="stack-s">
+            <span class="lbl-s">Unordered</span>
+            <ul class="ul"><li>Receipts match within 15 minutes</li><li>Out-of-policy items are flagged, not blocked</li><li>Approvers get one digest a day</li></ul>
+            <span class="lbl-s">Ordered</span>
+            <ol class="ol"><li>Snap or forward the receipt</li><li>Harbor matches it to the charge</li><li>Your manager approves the report</li></ol>
 
-      <section class="frame comp wide" data-grp="data" hidden>
-        <header><span>Data table</span><span>Data display</span></header>
+            <span class="lbl-s">Interactive</span>
+            <ul class="ilist c-surface">
+              <li><button type="button" class="irow"><span class="av sm" style="--av:var(--tone-1)">MO</span><span class="grow"><span class="b">Maya Okafor</span><span class="sub">3 reports to approve</span></span><span class="mono">$4,210</span><span data-i="chevR" class="muted"></span></button></li>
+              <li><button type="button" class="irow"><span class="av sm" style="--av:var(--tone-2)">RT</span><span class="grow"><span class="b">Rafael Tanaka</span><span class="sub">1 missing receipt</span></span><span class="mono">$18.75</span><span data-i="chevR" class="muted"></span></button></li>
+              <li><button type="button" class="irow"><span class="av sm" style="--av:var(--tone-3)">AS</span><span class="grow"><span class="b">Ana Silva</span><span class="sub">Over policy</span></span><span class="mono">$912.00</span><span data-i="chevR" class="muted"></span></button></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <section class="frame comp wide" data-grp="content" hidden>
+        <header><span>Carousel</span><span>Content &amp; data</span></header>
+        <div class="pv stack-m">
+          <div class="row-between"><span class="b">Recent receipts</span><span class="row-wrap"><button type="button" class="pbtn icon sm" id="c-car-p" aria-label="Previous receipts"><span data-i="chevL"></span></button><button type="button" class="pbtn icon sm" id="c-car-n" aria-label="Next receipts"><span data-i="chevR"></span></button></span></div>
+          <div class="car-t" id="c-car" tabindex="0" role="region" aria-label="Recent receipts, scrolls sideways">
+            <article class="slide c-surface"><div class="slide-m"><span data-i="receipt"></span></div><span class="b">Delta Air Lines</span><span class="sub">Oct 2 · Lisbon to Boston</span><span class="mono b">$1,284.60</span></article>
+            <article class="slide c-surface"><div class="slide-m"><span data-i="receipt"></span></div><span class="b">Hilton Lisbon</span><span class="sub">Oct 1 · 3 nights</span><span class="mono b">$912.00</span></article>
+            <article class="slide c-surface"><div class="slide-m"><span data-i="receipt"></span></div><span class="b">Uber</span><span class="sub">Sep 29 · Airport</span><span class="mono b">$24.30</span></article>
+            <article class="slide c-surface"><div class="slide-m"><span data-i="receipt"></span></div><span class="b">Blue Bottle Coffee</span><span class="sub">Sep 29 · Client meeting</span><span class="mono b">$18.75</span></article>
+            <article class="slide c-surface"><div class="slide-m"><span data-i="receipt"></span></div><span class="b">Figma</span><span class="sub">Sep 27 · Annual seats</span><span class="mono b">$1,350.00</span></article>
+            <article class="slide c-surface"><div class="slide-m"><span data-i="receipt"></span></div><span class="b">Sweetgreen</span><span class="sub">Sep 26 · Team lunch</span><span class="mono b">$16.85</span></article>
+          </div>
+          <div class="dots" id="c-car-d"></div>
+        </div>
+      </section>
+      <section class="frame comp wide" data-grp="content" hidden>
+        <header><span>Table</span><span>Content &amp; data</span></header>
+        <div class="pv stack-m">
+          <div class="row-wrap" role="group" aria-label="Table options" id="c-tv-opts">
+            <label class="opt"><input type="checkbox" class="sr" value="striped" checked><span class="cbx c-input"></span>Striped</label>
+            <label class="opt"><input type="checkbox" class="sr" value="bordered"><span class="cbx c-input"></span>Bordered</label>
+            <label class="opt"><input type="checkbox" class="sr" value="hover" checked><span class="cbx c-input"></span>Hover</label>
+            <label class="opt"><input type="checkbox" class="sr" value="dark"><span class="cbx c-input"></span>Dark</label>
+            <label class="opt"><input type="checkbox" class="sr" value="small"><span class="cbx c-input"></span>Small</label>
+          </div>
+          <div class="tblx-wrap"><table class="tblx striped hover" id="c-tv">
+            <caption>Spend by category, September 2026</caption>
+            <thead><tr><th scope="col">Category</th><th scope="col">Reports</th><th scope="col" class="num">Spend</th><th scope="col" class="num">vs Aug</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Travel · Airfare</th><td>14</td><td class="num">$48,210</td><td class="num up">+18%</td></tr>
+              <tr><th scope="row">Travel · Lodging</th><td>11</td><td class="num">$31,940</td><td class="num up">+9%</td></tr>
+              <tr class="row-warn"><th scope="row">Meals · Client</th><td>23</td><td class="num">$12,305</td><td class="num up">+31%</td></tr>
+              <tr><th scope="row">Software</th><td>8</td><td class="num">$84,120</td><td class="num">−2%</td></tr>
+              <tr><th scope="row">Office supplies</th><td>5</td><td class="num">$7,745</td><td class="num">−6%</td></tr>
+            </tbody>
+            <tfoot><tr><th scope="row">Total</th><td>61</td><td class="num">$184,320</td><td class="num up">+12%</td></tr></tfoot>
+          </table></div>
+        </div>
+      </section>
+      <section class="frame comp wide extra" data-grp="content" hidden>
+        <header><span>Data table (sort, filter, bulk)</span><span>Content &amp; data · extra</span></header>
         <div class="pv dt">
           <div class="row-between wrap">
             <div class="row-wrap"><div class="affix c-input sm"><span data-i="search" class="muted"></span><input class="bare" id="c-dt-q" placeholder="Filter merchant or person" aria-label="Filter expenses"></div><button type="button" class="pbtn sec sm"><span data-i="plus"></span>Status: Any</button></div>
@@ -1417,9 +1595,8 @@ input[aria-invalid="true"]{border-color:var(--bad)}
           <span class="sub" id="c-dt-c"></span>
         </div>
       </section>
-
-      <section class="frame comp" data-grp="data" hidden>
-        <header><span>Avatar</span><span>Data display</span></header>
+      <section class="frame comp extra" data-grp="content" hidden>
+        <header><span>Avatar</span><span>Content &amp; data · extra</span></header>
         <div class="pv stack-m">
           <span class="lbl-s">Sizes</span>
           <div class="row-wrap end-al"><span class="av xs" style="--av:var(--tone-1)">MO</span><span class="av sm" style="--av:var(--tone-2)">RT</span><span class="av" style="--av:var(--tone-3)">PR</span><span class="av lg" style="--av:var(--tone-1)">AS</span><span class="av xl" style="--av:var(--tone-2)">SR</span></div>
@@ -1429,47 +1606,8 @@ input[aria-invalid="true"]{border-color:var(--bad)}
           <div class="avg" aria-label="7 approvers"><span class="av" style="--av:var(--tone-1)">MO</span><span class="av" style="--av:var(--tone-2)">RT</span><span class="av" style="--av:var(--tone-3)">PR</span><span class="av" style="--av:var(--tone-1)">AS</span><span class="av more">+3</span></div>
         </div>
       </section>
-
-      <section class="frame comp" data-grp="data" hidden>
-        <header><span>Badge / tag</span><span>Data display</span></header>
-        <div class="pv stack-m">
-          <span class="lbl-s">Status</span>
-          <div class="row-wrap"><span class="tag ok">Approved</span><span class="tag warn">Pending</span><span class="tag bad">Rejected</span><span class="tag info">In review</span><span class="tag">Draft</span></div>
-          <span class="lbl-s">Emphasis</span>
-          <div class="row-wrap"><span class="tag solid">New</span><span class="tag solid ok">Paid</span><span class="tag solid bad">Overdue</span></div>
-          <span class="lbl-s">Removable</span>
-          <div class="row-wrap" id="c-tags"><span class="tag chip">Travel<button type="button" aria-label="Remove Travel">×</button></span><span class="tag chip">Client: Northwind<button type="button" aria-label="Remove Client: Northwind">×</button></span><span class="tag chip">Q4<button type="button" aria-label="Remove Q4">×</button></span></div>
-          <span class="lbl-s">Counts</span>
-          <div class="row-wrap gap-l">
-            <span class="cnt-wrap"><button type="button" class="pbtn ghost icon" aria-label="Notifications, 3 unread"><span data-i="bell"></span></button><span class="cnt-b" aria-hidden="true">3</span></span>
-            <span class="cnt-wrap"><button type="button" class="pbtn ghost icon" aria-label="Receipts, over 99 waiting"><span data-i="receipt"></span></button><span class="cnt-b" aria-hidden="true">99+</span></span>
-            <span class="cnt-wrap"><span class="av sm" style="--av:var(--tone-2)">SR</span><span class="cnt-b dot" aria-label="New activity"></span></span>
-          </div>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="data" hidden>
-        <header><span>List</span><span>Data display</span></header>
-        <div class="pv grid2">
-          <div class="stack-s">
-            <span class="lbl-s">Unordered</span>
-            <ul class="ul"><li>Receipts match within 15 minutes</li><li>Out-of-policy items are flagged, not blocked</li><li>Approvers get one digest a day</li></ul>
-            <span class="lbl-s">Ordered</span>
-            <ol class="ol"><li>Snap or forward the receipt</li><li>Harbor matches it to the charge</li><li>Your manager approves the report</li></ol>
-          </div>
-          <div class="stack-s">
-            <span class="lbl-s">Interactive</span>
-            <ul class="ilist c-surface">
-              <li><button type="button" class="irow"><span class="av sm" style="--av:var(--tone-1)">MO</span><span class="grow"><span class="b">Maya Okafor</span><span class="sub">3 reports to approve</span></span><span class="mono">$4,210</span><span data-i="chevR" class="muted"></span></button></li>
-              <li><button type="button" class="irow"><span class="av sm" style="--av:var(--tone-2)">RT</span><span class="grow"><span class="b">Rafael Tanaka</span><span class="sub">1 missing receipt</span></span><span class="mono">$18.75</span><span data-i="chevR" class="muted"></span></button></li>
-              <li><button type="button" class="irow"><span class="av sm" style="--av:var(--tone-3)">AS</span><span class="grow"><span class="b">Ana Silva</span><span class="sub">Over policy</span></span><span class="mono">$912.00</span><span data-i="chevR" class="muted"></span></button></li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="data" hidden>
-        <header><span>Timeline</span><span>Data display</span></header>
+      <section class="frame comp extra" data-grp="content" hidden>
+        <header><span>Timeline</span><span>Content &amp; data · extra</span></header>
         <div class="pv">
           <ol class="tl" aria-label="Report history">
             <li><span class="tl-d"></span><div><span class="sub mono">Oct 2 · 09:14</span><span class="b">Report submitted</span><span class="sub">Sam Rivera submitted "Lisbon client visit" with 6 expenses.</span></div></li>
@@ -1480,9 +1618,8 @@ input[aria-invalid="true"]{border-color:var(--bad)}
           </ol>
         </div>
       </section>
-
-      <section class="frame comp" data-grp="data" hidden>
-        <header><span>Tree view</span><span>Data display</span></header>
+      <section class="frame comp extra" data-grp="content" hidden>
+        <header><span>Tree view</span><span>Content &amp; data · extra</span></header>
         <div class="pv">
           <ul class="tree" id="c-tree" aria-label="Receipt library">
             <li><details open><summary><span class="chev" data-i="chevR"></span><span class="fold" data-i="folder"></span>Receipts<span class="sub">48</span></summary>
@@ -1505,21 +1642,232 @@ input[aria-invalid="true"]{border-color:var(--bad)}
         </div>
       </section>
 
-      <section class="frame comp" data-grp="data" hidden>
-        <header><span>Tooltip</span><span>Data display</span></header>
-        <div class="pv stack-m tt-pv">
-          <div class="row-wrap gap-l">
-            <span class="tt-wrap"><button type="button" class="pbtn icon" aria-describedby="c-tt1"><span data-i="copy"></span></button><span role="tooltip" id="c-tt1" class="tt">Copy expense ID</span></span>
-            <span class="tt-wrap"><button type="button" class="pbtn icon" aria-describedby="c-tt2"><span data-i="download"></span></button><span role="tooltip" id="c-tt2" class="tt">Download receipt <kbd>D</kbd></span></span>
-            <span class="tt-wrap show"><span class="tag warn" tabindex="0" aria-describedby="c-tt3">Over policy</span><span role="tooltip" id="c-tt3" class="tt">$62 over the $250 nightly cap</span></span>
+      <!-- Actions &amp; forms -->
+      <section class="frame comp" data-grp="actions" hidden>
+        <header><span>Buttons</span><span>Actions &amp; forms</span></header>
+        <div class="pv stack-m">
+          <span class="lbl-s">Hierarchy</span>
+          <div class="row-wrap">
+            <button class="pbtn fill">Primary</button>
+            <button class="pbtn sec">Secondary</button>
+            <button class="pbtn">Tertiary</button>
+            <button class="pbtn ghost">Ghost</button>
+            <button class="pbtn danger">Delete</button>
           </div>
-          <p class="sub">Hover or focus the icons. The last tooltip is pinned open for preview.</p>
+          <span class="lbl-s">Contextual</span>
+          <div class="row-wrap">
+            <button class="pbtn ctx k-primary">Primary</button><button class="pbtn ctx k-accent2">Accent 2</button><button class="pbtn ctx k-neutral">Neutral</button><button class="pbtn ctx k-success">Success</button><button class="pbtn ctx k-danger">Danger</button><button class="pbtn ctx k-warning">Warning</button><button class="pbtn ctx k-info">Info</button><button class="pbtn ctx k-light">Light</button><button class="pbtn ctx k-dark">Dark</button><button class="pbtn link">Link</button>
+          </div>
+          <span class="lbl-s">Outline</span>
+          <div class="row-wrap">
+            <button class="pbtn ctx outline k-primary">Primary</button><button class="pbtn ctx outline k-accent2">Accent 2</button><button class="pbtn ctx outline k-neutral">Neutral</button><button class="pbtn ctx outline k-success">Success</button><button class="pbtn ctx outline k-danger">Danger</button><button class="pbtn ctx outline k-warning">Warning</button><button class="pbtn ctx outline k-info">Info</button><button class="pbtn ctx outline k-dark">Dark</button>
+          </div>
+          <p class="sub">Bootstrap's gray "secondary" is <b>Neutral</b> here; your second color is <b>Accent 2</b>.</p>
+          <span class="lbl-s">Sizes and states</span>
+          <div class="row-wrap">
+            <button class="pbtn fill sm">Small</button>
+            <button class="pbtn fill">Default</button>
+            <button class="pbtn fill lg">Large</button>
+            <button class="pbtn fill" disabled>Disabled</button>
+            <button class="pbtn fill" aria-busy="true"><span class="spin" aria-hidden="true"></span>Saving</button>
+          </div>
+          <span class="lbl-s">With icons</span>
+          <div class="row-wrap">
+            <button class="pbtn fill"><span data-i="upload"></span>Upload receipt</button>
+            <button class="pbtn">Next<span data-i="chevR"></span></button>
+            <button class="pbtn icon" aria-label="Add expense"><span data-i="plus"></span></button>
+            <button class="pbtn ghost icon" aria-label="More actions"><span data-i="more"></span></button>
+          </div>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="actions" hidden>
+        <header><span>Button group</span><span>Actions &amp; forms</span></header>
+        <div class="pv stack-m">
+          <span class="lbl-s">Toggle group</span>
+          <div class="bgrp" role="group" aria-label="Report period" data-toggle>
+            <button type="button" class="pbtn" aria-pressed="false">Day</button><button type="button" class="pbtn" aria-pressed="true">Week</button><button type="button" class="pbtn" aria-pressed="false">Month</button><button type="button" class="pbtn" aria-pressed="false">Quarter</button>
+          </div>
+          <span class="lbl-s">Actions</span>
+          <div class="bgrp" role="group" aria-label="Report actions">
+            <button type="button" class="pbtn fill">Approve</button><button type="button" class="pbtn fill">Approve all</button><button type="button" class="pbtn fill icon" aria-label="More approval options"><span data-i="chevD"></span></button>
+          </div>
+          <span class="lbl-s">Toolbar</span>
+          <div class="row-wrap" role="toolbar" aria-label="Receipt tools">
+            <div class="bgrp" role="group" aria-label="Edit"><button type="button" class="pbtn icon" aria-label="Edit"><span data-i="edit"></span></button><button type="button" class="pbtn icon" aria-label="Duplicate"><span data-i="copy"></span></button><button type="button" class="pbtn icon" aria-label="Download"><span data-i="download"></span></button></div>
+            <div class="bgrp" role="group" aria-label="Delete"><button type="button" class="pbtn icon" aria-label="Delete"><span data-i="trash"></span></button></div>
+          </div>
+          <span class="lbl-s">Vertical</span>
+          <div class="bgrp vert" role="group" aria-label="Export as"><button type="button" class="pbtn">Export CSV</button><button type="button" class="pbtn">Export PDF</button><button type="button" class="pbtn">Export to NetSuite</button></div>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="actions" hidden>
+        <header><span>Close button</span><span>Actions &amp; forms</span></header>
+        <div class="pv stack-m">
+          <div class="row-wrap gap-l">
+            <span class="stack-s"><span class="lbl-s">Default</span><button type="button" class="xbtn" aria-label="Close"><span data-i="x"></span></button></span>
+            <span class="stack-s"><span class="lbl-s">Disabled</span><button type="button" class="xbtn" aria-label="Close" disabled><span data-i="x"></span></button></span>
+            <span class="stack-s"><span class="lbl-s">On dark</span><span class="dark-chip"><button type="button" class="xbtn inv" aria-label="Close"><span data-i="x"></span></button></span></span>
+          </div>
+          <span class="lbl-s">In context</span>
+          <div class="c-surface xdemo" id="c-xdemo"><span><span class="b">Receipt matched</span><span class="sub">Delta Air Lines · $1,284.60</span></span><button type="button" class="xbtn" aria-label="Dismiss notification" id="c-x1"><span data-i="x"></span></button></div>
+          <button type="button" class="pbtn sm" id="c-x1r" hidden>Show it again</button>
+          <p class="sub">Every close button needs a label that names what it closes, like "Dismiss notification".</p>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="actions" hidden>
+        <header><span>Form controls</span><span>Actions &amp; forms</span></header>
+        <div class="pv stack-m">
+          <div class="grid2">
+            <div class="fld"><label for="c-tf1">Merchant</label><input id="c-tf1" class="c-input tx" value="Blue Bottle Coffee"><span class="help">As it appears on the statement.</span></div>
+            <div class="fld"><label for="c-tf2">Amount</label><div class="affix c-input"><span class="muted">$</span><input id="c-tf2" class="bare" value="18.75" inputmode="decimal"><span class="muted mono">USD</span></div><span class="help">Converted at the card rate.</span></div>
+            <div class="fld err"><label for="c-tf3">Work email</label><input id="c-tf3" class="c-input tx" value="sam@northwind" aria-invalid="true" aria-describedby="c-tf3h"><span class="help" id="c-tf3h">Enter a full address, like sam@northwind.com.</span></div>
+            <div class="fld"><label for="c-tf4">Cost center</label><input id="c-tf4" class="c-input tx" value="Platform · 4100" disabled><span class="help">Set by your admin.</span></div>
+          </div>
+          <span class="lbl-s">Sizes, read-only, plain text, color</span>
+          <div class="row-wrap"><input class="c-input tx sm" value="Small" aria-label="Small input"><input class="c-input tx" value="Default" aria-label="Default input" style="width:auto"><input class="c-input tx lg" value="Large" aria-label="Large input"></div>
+          <div class="grid2">
+            <div class="fld"><label for="c-ro">Report ID (read-only)</label><input id="c-ro" class="c-input tx" value="RPT-2026-0914" readonly></div>
+            <div class="fld"><label for="c-pt">Submitted by</label><input id="c-pt" class="c-input tx plain" value="Sam Rivera" readonly></div>
+            <div class="fld"><label for="c-col">Category color</label><input id="c-col" type="color" class="c-input colorin" value="#2f6bff"></div>
+          </div>
+          <div class="fld"><label for="c-ta">Business purpose</label><textarea id="c-ta" class="c-input tx" rows="3" maxlength="200">Coffee with Northwind's finance lead to scope the Q4 rollout.</textarea><span class="help row-between"><span>Required for anything over $75.</span><span class="mono" id="c-ta-n"></span></span></div>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="actions" hidden>
+        <header><span>Select</span><span>Actions &amp; forms</span></header>
+        <div class="pv stack-m">
+          <div class="grid2">
+            <div class="fld"><label for="c-sel1">Category</label><div class="selw"><select id="c-sel1" class="c-input tx"><option>Travel · Airfare</option><option>Travel · Lodging</option><option selected>Meals · Client</option><option>Meals · Team</option><option>Software</option><option>Office supplies</option></select></div></div>
+            <div class="fld"><label for="c-sel2">Currency</label><div class="selw"><select id="c-sel2" class="c-input tx"><option>USD · US dollar</option><option>EUR · Euro</option><option>GBP · British pound</option><option>JPY · Japanese yen</option></select></div></div>
+          </div>
+          <div class="grid2">
+            <div class="fld"><label for="c-sels">Small</label><div class="selw"><select id="c-sels" class="c-input tx sm"><option>Last 30 days</option><option>This quarter</option></select></div></div>
+            <div class="fld"><label for="c-selm">Cardholders (multiple)</label><select id="c-selm" class="c-input tx multi" multiple size="3"><option selected>Maya Okafor</option><option>Rafael Tanaka</option><option selected>Ana Silva</option><option>Priya Raman</option></select></div>
+          </div>
+          <div class="fld"><span class="lblx" id="c-sel3l">Approver</span>
+            <button type="button" class="c-input tx selbtn" id="c-sel3" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="c-sel3l c-sel3"><span class="v">Maya Okafor</span><span data-i="chevD" class="muted"></span></button>
+            <ul class="c-surface float menu" id="c-sel3-list" role="listbox" aria-labelledby="c-sel3l">
+              <li role="option" aria-selected="false" data-v="Rafael Silva">Rafael Silva</li>
+              <li role="option" aria-selected="true" class="on" data-v="Maya Okafor">Maya Okafor<span data-i="check"></span></li>
+              <li role="option" aria-selected="false" data-v="Priya Raman">Priya Raman</li>
+              <li role="option" aria-selected="false" data-v="Any finance admin">Any finance admin</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="actions" hidden>
+        <header><span>Checks &amp; radios: checkbox</span><span>Actions &amp; forms</span></header>
+        <div class="pv">
+          <fieldset class="fs"><legend>Email me about</legend>
+            <label class="opt"><input type="checkbox" class="sr" id="c-cb-all"><span class="cbx c-input"></span><span class="b">All activity</span></label>
+            <div class="indent stack-s" id="c-cb-kids">
+              <label class="opt"><input type="checkbox" class="sr" checked><span class="cbx c-input"></span>Receipts that need a photo</label>
+              <label class="opt"><input type="checkbox" class="sr" checked><span class="cbx c-input"></span>Reports waiting for my approval</label>
+              <label class="opt"><input type="checkbox" class="sr"><span class="cbx c-input"></span>Weekly spend summary</label>
+            </div>
+            <label class="opt dis"><input type="checkbox" class="sr" checked disabled><span class="cbx c-input"></span>Card declines (required by your admin)</label>
+          </fieldset>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="actions" hidden>
+        <header><span>Checks &amp; radios: radio</span><span>Actions &amp; forms</span></header>
+        <div class="pv stack-m">
+          <fieldset class="fs"><legend>Reimburse me by</legend>
+            <label class="opt"><input type="radio" name="c-r" class="sr" checked><span class="rad c-input"></span><span><span class="b">Direct deposit</span><span class="sub">1–2 business days to Chase ••4021</span></span></label>
+            <label class="opt"><input type="radio" name="c-r" class="sr"><span class="rad c-input"></span><span><span class="b">Payroll</span><span class="sub">Added to your next paycheck</span></span></label>
+            <label class="opt dis"><input type="radio" name="c-r" class="sr" disabled><span class="rad c-input"></span><span><span class="b">Paper check</span><span class="sub">Not available in Portugal</span></span></label>
+          </fieldset>
+          <fieldset class="fs inline-fs"><legend>Expense type (inline)</legend>
+            <div class="row-wrap gap-l">
+              <label class="opt"><input type="radio" name="c-r2" class="sr" checked><span class="rad c-input"></span>Card</label>
+              <label class="opt"><input type="radio" name="c-r2" class="sr"><span class="rad c-input"></span>Cash</label>
+              <label class="opt"><input type="radio" name="c-r2" class="sr"><span class="rad c-input"></span>Mileage</label>
+            </div>
+          </fieldset>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="actions" hidden>
+        <header><span>Checks &amp; radios: switch</span><span>Actions &amp; forms</span></header>
+        <div class="pv stack-m">
+          <label class="opt between"><span><span class="b">Auto-match receipts</span><span class="sub">Match new receipts to card charges as they arrive.</span></span><input type="checkbox" role="switch" class="sr" checked><span class="swt"><i></i></span></label>
+          <hr class="dv">
+          <label class="opt between"><span><span class="b">Block out-of-policy charges</span><span class="sub">Decline card charges that break a policy rule.</span></span><input type="checkbox" role="switch" class="sr"><span class="swt"><i></i></span></label>
+          <hr class="dv">
+          <label class="opt between dis"><span><span class="b">Require SSO</span><span class="sub">Managed in Okta.</span></span><input type="checkbox" role="switch" class="sr" checked disabled><span class="swt"><i></i></span></label>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="actions" hidden>
+        <header><span>Range</span><span>Actions &amp; forms</span></header>
+        <div class="pv stack-m">
+          <div class="fld"><div class="row-between"><label for="c-rng">Auto-approve expenses under</label><output class="mono b" id="c-rng-o" for="c-rng"></output></div>
+            <input type="range" id="c-rng" class="rng" min="0" max="250" step="5" value="75">
+            <div class="row-between mono ticks"><span>$0</span><span>$125</span><span>$250</span></div></div>
+          <div class="fld"><div class="row-between"><span class="lblx" id="c-dual-l">Amount range</span><output class="mono b" id="c-dual-o"></output></div>
+            <div class="dual" role="group" aria-labelledby="c-dual-l"><input type="range" class="rng" id="c-d1" min="0" max="5000" step="50" value="250" aria-label="Minimum amount"><input type="range" class="rng" id="c-d2" min="0" max="5000" step="50" value="2000" aria-label="Maximum amount"></div></div>
+          <div class="fld"><div class="row-between"><label for="c-rng3">Receipt reminder (disabled by admin)</label><output class="mono b">7 days</output></div>
+            <input type="range" id="c-rng3" class="rng" min="1" max="30" value="7" disabled style="--p:20.7%"></div>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="actions" hidden>
+        <header><span>Input group</span><span>Actions &amp; forms</span></header>
+        <div class="pv stack-m">
+          <div class="fld"><label for="c-ig1">Amount</label><div class="igrp c-input"><span class="iadd">$</span><input id="c-ig1" class="bare" value="1,284.60" inputmode="decimal"><span class="iadd end">USD</span></div></div>
+          <div class="fld"><label for="c-ig2">Work email</label><div class="igrp c-input"><input id="c-ig2" class="bare" value="sam.rivera"><span class="iadd end">@northwind.com</span></div></div>
+          <div class="fld"><label for="c-ig3">Promo code</label><div class="igrp c-input"><input id="c-ig3" class="bare" placeholder="e.g. HARBOR2026"><button type="button" class="pbtn fill">Apply</button></div></div>
+          <div class="fld"><label for="c-ig4">Per diem</label><div class="igrp c-input"><select class="bare iselect" aria-label="Currency"><option>EUR</option><option>USD</option><option>GBP</option></select><input id="c-ig4" class="bare" value="75.00" inputmode="decimal"><span class="iadd end">/ day</span></div></div>
+          <div class="fld"><span class="lblx" id="c-ig5l">Mileage</span><div class="igrp c-input" role="group" aria-labelledby="c-ig5l"><label class="iadd chk"><input type="checkbox" class="sr" checked aria-label="Round trip"><span class="cbx c-input"></span>Round trip</label><input class="bare" value="42" aria-label="Miles" inputmode="numeric"><span class="iadd end">mi</span></div></div>
+          <div class="row-wrap"><div class="igrp c-input sm"><span class="iadd">Small</span><input class="bare" aria-label="Small input"></div><div class="igrp c-input lg"><span class="iadd">Large</span><input class="bare" aria-label="Large input"></div></div>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="actions" hidden>
+        <header><span>Floating labels</span><span>Actions &amp; forms</span></header>
+        <div class="pv stack-m">
+          <div class="fl c-input"><input id="c-fl1" class="bare" placeholder=" " autocomplete="off"><label for="c-fl1">Merchant name</label></div>
+          <div class="fl c-input"><input id="c-fl2" class="bare" placeholder=" " value="Blue Bottle Coffee"><label for="c-fl2">Merchant name (filled)</label></div>
+          <div class="fl c-input"><select id="c-fl3" class="bare"><option>Meals · Client</option><option>Travel · Lodging</option><option>Software</option></select><label for="c-fl3">Category</label></div>
+          <div class="fl c-input"><textarea id="c-fl4" class="bare" placeholder=" " rows="3"></textarea><label for="c-fl4">Business purpose</label></div>
+          <div class="fld err"><div class="fl c-input"><input id="c-fl5" class="bare" placeholder=" " value="sam@northwind" aria-invalid="true" aria-describedby="c-fl5h"><label for="c-fl5">Work email</label></div><span class="help" id="c-fl5h">Enter a full address, like sam@northwind.com.</span></div>
+          <p class="sub">Click into the first field: the label floats up as you focus or type.</p>
+        </div>
+      </section>
+      <section class="frame comp extra" data-grp="actions" hidden>
+        <header><span>Date / time picker</span><span>Actions &amp; forms · extra</span></header>
+        <div class="pv dp">
+          <div class="stack-m">
+            <div class="fld"><label for="c-date">Transaction date</label><div class="affix c-input"><span data-i="cal" class="muted"></span><input id="c-date" class="bare" value="Oct 14, 2026" readonly></div></div>
+            <div class="fld"><span class="lblx">Time</span><div class="row-wrap" id="c-times" role="group" aria-label="Time">
+              <button type="button" class="chip-s" aria-pressed="false">9:00</button><button type="button" class="chip-s" aria-pressed="false">9:30</button><button type="button" class="chip-s" aria-pressed="true">10:00</button><button type="button" class="chip-s" aria-pressed="false">10:30</button><button type="button" class="chip-s" aria-pressed="false">11:00</button></div></div>
+          </div>
+          <div class="cal c-surface float" role="group" aria-label="Choose a date">
+            <div class="cal-h"><button type="button" class="pbtn ghost icon sm" id="c-cal-prev" aria-label="Previous month"><span data-i="chevL"></span></button><span class="b" id="c-cal-m" aria-live="polite"></span><button type="button" class="pbtn ghost icon sm" id="c-cal-next" aria-label="Next month"><span data-i="chevR"></span></button></div>
+            <div class="cal-g" id="c-cal-g"></div>
+          </div>
+        </div>
+      </section>
+      <section class="frame comp extra" data-grp="actions" hidden>
+        <header><span>File upload / dropzone</span><span>Actions &amp; forms · extra</span></header>
+        <div class="pv stack-m">
+          <label class="drop" id="c-drop"><input type="file" class="sr" id="c-file" multiple accept="image/*,.pdf"><span data-i="upload" class="drop-i"></span><span class="b">Drop receipts here or <u>browse</u></span><span class="sub">PDF, JPG or PNG, up to 10 MB each</span></label>
+          <ul class="files" id="c-files">
+            <li class="c-surface"><span data-i="file" class="muted"></span><span class="grow"><span class="b">hilton-folio.jpg</span><span class="bar"><i style="width:62%"></i></span></span><span class="sub mono">1.4 MB</span><button type="button" class="pbtn ghost icon sm" aria-label="Cancel upload"><span data-i="x"></span></button></li>
+            <li class="c-surface"><span data-i="file" class="muted"></span><span class="grow"><span class="b">delta-lisbon.pdf</span><span class="bar"><i style="width:100%"></i></span></span><span class="sub mono">212 KB</span><span class="ok-t">Done</span></li>
+          </ul>
+        </div>
+      </section>
+      <section class="frame comp extra" data-grp="actions" hidden>
+        <header><span>Combobox / autocomplete</span><span>Actions &amp; forms · extra</span></header>
+        <div class="pv">
+          <div class="fld"><label for="c-cb">Merchant</label>
+            <div class="affix c-input"><span data-i="search" class="muted"></span><input id="c-cb" class="bare" role="combobox" aria-expanded="true" aria-controls="c-cblist" aria-autocomplete="list" value="Del" autocomplete="off" spellcheck="false"></div>
+            <ul class="c-surface float menu" id="c-cblist" role="listbox" aria-label="Matching merchants"></ul>
+            <span class="help">Type to filter. Arrow keys move, Enter picks. Try "air", "hot" or "co".</span>
+          </div>
         </div>
       </section>
 
-      <!-- Feedback & overlays -->
+      <!-- Feedback &amp; overlays -->
       <section class="frame comp wide" data-grp="feedback" hidden>
-        <header><span>Dialog / modal</span><span>Feedback &amp; overlays</span></header>
+        <header><span>Modal</span><span>Feedback &amp; overlays</span></header>
         <div class="pv flush">
           <div class="vp">
             <div class="vp-bg"><div class="row-between"><h3>Lisbon client visit</h3><button type="button" class="pbtn danger sm" id="c-dlg-open"><span data-i="trash"></span>Delete report</button></div><span class="ph w80"></span><span class="ph w60"></span><span class="ph w80"></span><span class="ph w40"></span></div>
@@ -1534,63 +1882,42 @@ input[aria-invalid="true"]{border-color:var(--bad)}
           </div>
         </div>
       </section>
-
       <section class="frame comp" data-grp="feedback" hidden>
-        <header><span>Snackbar / toast</span><span>Feedback &amp; overlays</span></header>
-        <div class="pv flush">
-          <div class="vp short">
-            <div class="vp-bg"><span class="lbl-s">Approvals</span><div class="row-between"><span><span class="b">Uber</span> <span class="muted">· $24.30</span></span><button type="button" class="pbtn fill sm" id="c-snk-btn">Approve</button></div><span class="sub">Approve to trigger a toast. It dismisses itself after 4 seconds, or stays while you hover it.</span></div>
-            <div class="snacks" id="c-snacks" aria-live="polite">
-              <div class="snack"><span>Report sent to Maya Okafor</span><button type="button" class="pbtn ghost sm">Undo</button><button type="button" class="pbtn ghost icon sm" aria-label="Dismiss"><span data-i="x"></span></button></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="feedback" hidden>
-        <header><span>Alert / banner</span><span>Feedback &amp; overlays</span></header>
+        <header><span>Alerts</span><span>Feedback &amp; overlays</span></header>
         <div class="pv stack-m">
           <div class="alert banner" data-k="info" id="c-banner" role="status"><span class="ic" aria-hidden="true">i</span><span><span class="b">Xero sync paused.</span> Exports resume in about 10 minutes.</span><span class="row-wrap"><button type="button" class="pbtn ghost sm">View status</button><button type="button" class="pbtn ghost icon sm" aria-label="Dismiss" id="c-banner-x"><span data-i="x"></span></button></span></div>
           <button type="button" class="pbtn sm" id="c-banner-r" hidden>Show the banner again</button>
+          <div class="alert dismiss" data-k="info" id="c-al-d"><span class="ic" aria-hidden="true">i</span><div><span class="b">Mileage rates change Jan 1</span><p>The new rate is $0.70 a mile. <button type="button" class="alink">Read the update</button></p></div><button type="button" class="xbtn" aria-label="Dismiss alert" id="c-al-x"><span data-i="x"></span></button></div>
           <div class="alert" data-k="warning"><span class="ic" aria-hidden="true">!</span><div><span class="b">2 receipts are due Friday</span><p>Expenses without receipts after Friday go to finance for review.</p></div></div>
           <div class="alert" data-k="success"><span class="ic" aria-hidden="true">✓</span><div><span class="b">Policy saved</span><p>New lodging caps apply to trips booked from today.</p></div></div>
           <div class="alert" data-k="error"><span class="ic" aria-hidden="true">×</span><div><span class="b">Card declined</span><p>Chase ••4021 hit its monthly limit. Raise the limit or use another card.</p></div></div>
         </div>
       </section>
-
       <section class="frame comp" data-grp="feedback" hidden>
-        <header><span>Progress indicator</span><span>Feedback &amp; overlays</span></header>
+        <header><span>Badge</span><span>Feedback &amp; overlays</span></header>
         <div class="pv stack-m">
-          <div class="stack-s"><div class="row-between"><span class="b">Uploading receipts</span><span class="mono sub">5 of 8</span></div><div class="prog" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" aria-label="Uploading receipts"><i style="width:62%"></i></div></div>
-          <div class="stack-s"><span class="b">Syncing card feed</span><div class="prog ind" role="progressbar" aria-label="Syncing card feed"><i></i></div></div>
-          <div class="stack-s"><div class="row-between"><span class="b">Setup</span><span class="sub">Step 3 of 4</span></div><div class="segbar" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
+          <span class="lbl-s">Status</span>
+          <div class="row-wrap"><span class="tag ok">Approved</span><span class="tag warn">Pending</span><span class="tag bad">Rejected</span><span class="tag info">In review</span><span class="tag">Draft</span></div>
+          <span class="lbl-s">Emphasis</span>
+          <div class="row-wrap"><span class="tag solid">New</span><span class="tag solid ok">Paid</span><span class="tag solid bad">Overdue</span></div>
+          <span class="lbl-s">Pill and square, contextual</span>
+          <div class="row-wrap"><span class="tag solid k-primary">Primary</span><span class="tag solid k-success">Success</span><span class="tag solid k-danger">Danger</span><span class="tag solid k-warning">Warning</span><span class="tag solid k-info">Info</span><span class="tag solid k-dark">Dark</span></div>
+          <div class="row-wrap"><span class="tag solid sq k-primary">Primary</span><span class="tag solid sq k-success">Success</span><span class="tag solid sq k-danger">Danger</span><span class="tag solid sq k-neutral">Neutral</span></div>
+          <span class="lbl-s">In headings and buttons</span>
+          <div class="row-wrap gap-l"><h4>Approvals <span class="tag solid">New</span></h4><button type="button" class="pbtn fill">Inbox <span class="bdg">4</span></button></div>
+          <span class="lbl-s">Removable</span>
+          <div class="row-wrap" id="c-tags"><span class="tag chip">Travel<button type="button" aria-label="Remove Travel">×</button></span><span class="tag chip">Client: Northwind<button type="button" aria-label="Remove Client: Northwind">×</button></span><span class="tag chip">Q4<button type="button" aria-label="Remove Q4">×</button></span></div>
+          <span class="lbl-s">Counts</span>
           <div class="row-wrap gap-l">
-            <svg class="ring" viewBox="0 0 44 44" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100" aria-label="September 72% closed"><circle class="trk" cx="22" cy="22" r="18"/><circle class="val" cx="22" cy="22" r="18" pathLength="100" stroke-dasharray="72 100"/><text x="22" y="25.5" text-anchor="middle">72%</text></svg>
-            <span class="spinner" role="status" aria-label="Loading"></span>
-            <button type="button" class="pbtn fill" aria-busy="true"><span class="spin" aria-hidden="true"></span>Exporting</button>
+            <span class="cnt-wrap"><button type="button" class="pbtn ghost icon" aria-label="Notifications, 3 unread"><span data-i="bell"></span></button><span class="cnt-b" aria-hidden="true">3</span></span>
+            <span class="cnt-wrap"><button type="button" class="pbtn ghost icon" aria-label="Receipts, over 99 waiting"><span data-i="receipt"></span></button><span class="cnt-b" aria-hidden="true">99+</span></span>
+            <span class="cnt-wrap"><span class="av sm" style="--av:var(--tone-2)">SR</span><span class="cnt-b dot" aria-label="New activity"></span></span>
           </div>
         </div>
       </section>
-
       <section class="frame comp" data-grp="feedback" hidden>
-        <header><span>Skeleton loader</span><span>Feedback &amp; overlays</span></header>
+        <header><span>Popovers</span><span>Feedback &amp; overlays</span></header>
         <div class="pv stack-m">
-          <div class="grid2">
-            <div class="c-surface sk-card loading" aria-busy="true" aria-label="Loading expense">
-              <div class="skm"><div class="row-wrap"><span class="sk circle"></span><span class="grow"><span class="sk line w60"></span><span class="sk line w40"></span></span></div><span class="sk block"></span><span class="sk line"></span><span class="sk line w80"></span></div>
-            </div>
-            <div class="c-surface sk-card" id="c-sk-live">
-              <div class="skm"><div class="row-wrap"><span class="sk circle"></span><span class="grow"><span class="sk line w60"></span><span class="sk line w40"></span></span></div><span class="sk block"></span><span class="sk line"></span><span class="sk line w80"></span></div>
-              <div class="real"><div class="row-wrap"><span class="av" style="--av:var(--tone-1)">MO</span><span class="grow"><span class="b">Maya Okafor</span><span class="sub">Approver · Finance</span></span></div><div class="slide-m"><span data-i="receipt"></span></div><span>Hilton Lisbon · 3 nights</span><span class="mono b">$912.00</span></div>
-            </div>
-          </div>
-          <div class="row-between"><span class="sub">Left: loading. Right: loaded.</span><button type="button" class="pbtn sm" id="c-sk-r">Replay loading</button></div>
-        </div>
-      </section>
-
-      <section class="frame comp" data-grp="feedback" hidden>
-        <header><span>Popover</span><span>Feedback &amp; overlays</span></header>
-        <div class="pv">
           <div class="pop-demo">
             <div class="row-wrap"><span><span class="b">Hilton Lisbon</span> <span class="muted">· $312.00</span></span><button type="button" class="pbtn sec sm" id="c-pop-b" aria-expanded="true" aria-controls="c-pop"><span data-i="info"></span>Why flagged?</button></div>
             <div class="popover c-surface float" id="c-pop" role="dialog" aria-labelledby="c-pop-t">
@@ -1601,11 +1928,109 @@ input[aria-invalid="true"]{border-color:var(--bad)}
               <div class="row-wrap end"><button type="button" class="pbtn ghost sm" data-close>Split charge</button><button type="button" class="pbtn fill sm" data-close>Add reason</button></div>
             </div>
           </div>
+          <span class="lbl-s">Placement</span>
+          <div class="pp-row">
+            <span class="ppw"><button type="button" class="pbtn sm" aria-expanded="false">Top</button><span class="pp top c-surface float" hidden>Opens above the trigger.</span></span>
+            <span class="ppw"><button type="button" class="pbtn sm" aria-expanded="false">Right</button><span class="pp right c-surface float" hidden>Opens to the right.</span></span>
+            <span class="ppw"><button type="button" class="pbtn sm" aria-expanded="false">Bottom</button><span class="pp bottom c-surface float" hidden>Opens below.</span></span>
+            <span class="ppw"><button type="button" class="pbtn sm" aria-expanded="false">Left</button><span class="pp left c-surface float" hidden>Opens to the left.</span></span>
+          </div>
         </div>
       </section>
-
       <section class="frame comp" data-grp="feedback" hidden>
-        <header><span>Context menu</span><span>Feedback &amp; overlays</span></header>
+        <header><span>Tooltips</span><span>Feedback &amp; overlays</span></header>
+        <div class="pv stack-m tt-pv">
+          <div class="row-wrap gap-l">
+            <span class="tt-wrap"><button type="button" class="pbtn icon" aria-describedby="c-tt1"><span data-i="copy"></span></button><span role="tooltip" id="c-tt1" class="tt">Copy expense ID</span></span>
+            <span class="tt-wrap"><button type="button" class="pbtn icon" aria-describedby="c-tt2"><span data-i="download"></span></button><span role="tooltip" id="c-tt2" class="tt">Download receipt <kbd>D</kbd></span></span>
+            <span class="tt-wrap show"><span class="tag warn" tabindex="0" aria-describedby="c-tt3">Over policy</span><span role="tooltip" id="c-tt3" class="tt">$62 over the $250 nightly cap</span></span>
+          </div>
+          <p class="sub">Hover or focus the icons. The last tooltip is pinned open for preview.</p>
+          <span class="lbl-s">Placement</span>
+          <div class="row-wrap gap-l tt-place">
+            <span class="tt-wrap"><button type="button" class="pbtn sm" aria-describedby="c-ttp1">Top</button><span role="tooltip" id="c-ttp1" class="tt">Tooltip on top</span></span>
+            <span class="tt-wrap"><button type="button" class="pbtn sm" aria-describedby="c-ttp2">Right</button><span role="tooltip" id="c-ttp2" class="tt right">Tooltip on right</span></span>
+            <span class="tt-wrap"><button type="button" class="pbtn sm" aria-describedby="c-ttp3">Bottom</button><span role="tooltip" id="c-ttp3" class="tt bottom">Tooltip on bottom</span></span>
+            <span class="tt-wrap"><button type="button" class="pbtn sm" aria-describedby="c-ttp4">Left</button><span role="tooltip" id="c-ttp4" class="tt left">Tooltip on left</span></span>
+          </div>
+        </div>
+      </section>
+      <section class="frame comp wide" data-grp="feedback" hidden>
+        <header><span>Toasts</span><span>Feedback &amp; overlays</span></header>
+        <div class="pv flush">
+          <div class="vp toastvp">
+            <div class="vp-bg"><span class="lbl-s">Approvals</span><div class="row-between"><span><span class="b">Uber</span> <span class="muted">· $24.30</span></span><span class="row-wrap"><button type="button" class="pbtn sm" id="c-bt-btn">Push toast</button><button type="button" class="pbtn fill sm" id="c-snk-btn">Approve</button></span></div><span class="sub">"Push toast" stacks a notification at the top right. "Approve" shows a snackbar at the bottom. Both dismiss themselves after a few seconds, or stay while you hover them.</span></div>
+            <div class="btoasts" id="c-btoasts" aria-live="polite">
+              <div class="btoast c-surface float"><div class="bt-h"><span class="bt-mark"></span><span class="b">Harbor</span><span class="sub">2 min ago</span><button type="button" class="xbtn sm" aria-label="Dismiss notification"><span data-i="x"></span></button></div><div class="bt-b">Maya Okafor approved "Lisbon client visit".</div></div>
+            </div>
+            <div class="snacks" id="c-snacks" aria-live="polite">
+              <div class="snack"><span>Report sent to Maya Okafor</span><button type="button" class="pbtn ghost sm">Undo</button><button type="button" class="pbtn ghost icon sm" aria-label="Dismiss"><span data-i="x"></span></button></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="feedback" hidden>
+        <header><span>Progress</span><span>Feedback &amp; overlays</span></header>
+        <div class="pv stack-m">
+          <div class="stack-s"><div class="row-between"><span class="b">Uploading receipts</span><span class="mono sub">5 of 8</span></div><div class="prog" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" aria-label="Uploading receipts"><i style="width:62%"></i></div></div>
+          <div class="stack-s"><span class="b">Syncing card feed</span><div class="prog ind" role="progressbar" aria-label="Syncing card feed"><i></i></div></div>
+          <div class="stack-s"><div class="row-between"><span class="b">Setup</span><span class="sub">Step 3 of 4</span></div><div class="segbar" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
+          <div class="stack-s"><span class="b">Labels, stripes and stacking</span>
+            <div class="prog tall" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" aria-label="Receipts matched"><i style="width:75%">75%</i></div>
+            <div class="prog tall striped anim k-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Export"><i style="width:40%">Exporting</i></div>
+            <div class="prog tall stacked" aria-label="September spend by category"><i style="width:45%" title="Software 45%">Software</i><i class="k-accent2" style="width:30%" title="Travel 30%">Travel</i><i class="k-info" style="width:15%" title="Meals 15%">Meals</i></div>
+          </div>
+          <div class="row-wrap gap-l">
+            <svg class="ring" viewBox="0 0 44 44" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100" aria-label="September 72% closed"><circle class="trk" cx="22" cy="22" r="18"/><circle class="val" cx="22" cy="22" r="18" pathLength="100" stroke-dasharray="72 100"/><text x="22" y="25.5" text-anchor="middle">72%</text></svg>
+          </div>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="feedback" hidden>
+        <header><span>Spinners</span><span>Feedback &amp; overlays</span></header>
+        <div class="pv stack-m">
+          <span class="lbl-s">Border</span>
+          <div class="row-wrap gap-l"><span class="spinner" role="status" aria-label="Loading"></span><span class="spinner k-success" role="status" aria-label="Loading"></span><span class="spinner k-danger" role="status" aria-label="Loading"></span><span class="spinner k-warning" role="status" aria-label="Loading"></span><span class="spinner k-info" role="status" aria-label="Loading"></span><span class="spinner k-dark" role="status" aria-label="Loading"></span></div>
+          <span class="lbl-s">Grow</span>
+          <div class="row-wrap gap-l"><span class="growsp" role="status" aria-label="Loading"></span><span class="growsp k-success" role="status" aria-label="Loading"></span><span class="growsp k-danger" role="status" aria-label="Loading"></span><span class="growsp k-warning" role="status" aria-label="Loading"></span><span class="growsp k-info" role="status" aria-label="Loading"></span><span class="growsp k-dark" role="status" aria-label="Loading"></span></div>
+          <span class="lbl-s">Sizes and in buttons</span>
+          <div class="row-wrap gap-l"><span class="spinner sm" role="status" aria-label="Loading"></span><span class="spinner" role="status" aria-label="Loading"></span><span class="spinner lg" role="status" aria-label="Loading"></span>
+            <button type="button" class="pbtn fill" disabled aria-busy="true"><span class="spin" aria-hidden="true"></span>Exporting</button>
+            <button type="button" class="pbtn" disabled aria-busy="true"><span class="growsp sm" aria-hidden="true"></span>Syncing</button></div>
+          <div class="row-wrap c-surface spin-row" role="status"><span class="spinner sm" aria-hidden="true"></span>Loading 48 receipts…</div>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="feedback" hidden>
+        <header><span>Placeholders</span><span>Feedback &amp; overlays</span></header>
+        <div class="pv stack-m" id="c-sk-pv">
+          <div class="grid2">
+            <div class="c-surface sk-card loading" aria-busy="true" aria-label="Loading expense">
+              <div class="skm"><div class="row-wrap"><span class="sk circle"></span><span class="grow"><span class="sk line w60"></span><span class="sk line w40"></span></span></div><span class="sk block"></span><span class="sk line"></span><span class="sk line w80"></span></div>
+            </div>
+            <div class="c-surface sk-card" id="c-sk-live">
+              <div class="skm"><div class="row-wrap"><span class="sk circle"></span><span class="grow"><span class="sk line w60"></span><span class="sk line w40"></span></span></div><span class="sk block"></span><span class="sk line"></span><span class="sk line w80"></span></div>
+              <div class="real"><div class="row-wrap"><span class="av" style="--av:var(--tone-1)">MO</span><span class="grow"><span class="b">Maya Okafor</span><span class="sub">Approver · Finance</span></span></div><div class="slide-m"><span data-i="receipt"></span></div><span>Hilton Lisbon · 3 nights</span><span class="mono b">$912.00</span></div>
+            </div>
+          </div>
+          <div class="row-between wrap"><span class="sub">Left: loading. Right: loaded.</span><span class="row-wrap"><div class="segx" role="group" aria-label="Animation" id="c-sk-anim"><button type="button" aria-pressed="true" data-a="wave">Wave</button><button type="button" aria-pressed="false" data-a="glow">Glow</button></div><button type="button" class="pbtn sm" id="c-sk-r">Replay loading</button></span></div>
+        </div>
+      </section>
+      <section class="frame comp" data-grp="feedback" hidden>
+        <header><span>Collapse</span><span>Feedback &amp; overlays</span></header>
+        <div class="pv stack-m">
+          <div class="row-wrap">
+            <button type="button" class="pbtn fill sm" data-clp="c-clp1" aria-controls="c-clp1" aria-expanded="true">Policy details</button>
+            <button type="button" class="pbtn sm" data-clp="c-clp2" aria-controls="c-clp2" aria-expanded="false">Approval chain</button>
+            <button type="button" class="pbtn ghost sm" data-clp="c-clp1 c-clp2" aria-controls="c-clp1 c-clp2">Toggle both</button>
+          </div>
+          <div class="clp show" id="c-clp1"><div><div class="c-surface clp-in">Lodging is capped at $250 a night in Lisbon. Go over and you'll need a reason your manager can see.</div></div></div>
+          <div class="clp" id="c-clp2"><div><div class="c-surface clp-in">Sam Rivera submits, Maya Okafor approves, finance exports to NetSuite on Fridays.</div></div></div>
+          <span class="lbl-s">Horizontal</span>
+          <div class="row-wrap"><button type="button" class="pbtn sm" data-clp="c-clp3" aria-controls="c-clp3" aria-expanded="false">Show receipt</button>
+            <div class="clp-h" id="c-clp3"><div><div class="c-surface clp-in wide-in"><span class="b">Hilton Lisbon</span><span class="sub">3 nights · $912.00</span></div></div></div></div>
+        </div>
+      </section>
+      <section class="frame comp extra" data-grp="feedback" hidden>
+        <header><span>Context menu</span><span>Feedback &amp; overlays · extra</span></header>
         <div class="pv">
           <div class="cm-area" id="c-cm-area">
             <p class="sub">Right-click a file, long-press on touch, or focus one and press Shift+F10.</p>
@@ -2174,6 +2599,8 @@ function renderColor(){
   st.setProperty('--pv-on-accent2', onColor(t.accent2));
   st.setProperty('--pv-on-danger', onColor(t.error));
   st.setProperty('--pv-on-success', onColor(t.success));
+  st.setProperty('--pv-on-warning', onColor(t.warning));
+  st.setProperty('--pv-on-info', onColor(t.info));
   ['--canvas','--hdr','--aurora','--glow','--neu-d','--neu-l','--clay-d','--clay-in-d','--clay-in-l','--el1','--el2'].forEach(k=>st.removeProperty(k));
   Object.entries(v).forEach(([k,val])=>st.setProperty(k,val));
   document.querySelectorAll('#surfaces button').forEach(b=>{ b.disabled = !!sty.force; b.title = sty.force ? `${sty.name} sets its own surface` : ''; });
@@ -2241,6 +2668,90 @@ function renderColor(){
   COLOR_CHECKS = checks;
   $('color-checks').innerHTML = checks.map(([k,txt])=>`<li><span class="dot ${k}" aria-label="${k}"></span><span>${txt}</span></li>`).join('');
   renderExport();
+}
+
+// ---- Bootstrap-set component behaviour ----
+function initBootstrapSet(){
+  const q = id => document.getElementById(id);
+
+  // navbar: phone-width preview and the toggler that appears when it is narrow
+  const nbw = q('c-nbw'), nbN = q('c-nb-narrow'), nbT = q('c-nb-tog'), nbNav = q('c-nbnav');
+  nbN.addEventListener('click', ()=>{ const on = nbw.classList.toggle('narrow'); nbN.setAttribute('aria-pressed', on); nbN.textContent = on ? 'Back to full width' : 'Preview at phone width'; });
+  nbT.addEventListener('click', ()=>{ const open = nbNav.classList.toggle('open'); nbT.setAttribute('aria-expanded', open); nbT.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation'); nbT.innerHTML = `<span class="ico">${icon(open?'x':'menu')}</span>`; });
+
+  // pills / vertical navs
+  document.querySelectorAll('.comp .pills').forEach(n=>n.addEventListener('click', e=>{ const b = e.target.closest('.pn'); if(!b || b.disabled) return; n.querySelectorAll('.pn').forEach(x=>x===b ? x.setAttribute('aria-current','page') : x.removeAttribute('aria-current')); }));
+
+  // offcanvas from any side; Escape and the backdrop close it
+  const ocVp = q('c-oc-vp'), oc = q('c-oc'); let ocFrom = null;
+  const setOc = (side, open, opener) => {
+    if(side) oc.className = `oc c-surface float oc-${side}${open?' open':''}`; else oc.classList.toggle('open', open);
+    ocVp.classList.toggle('has-open', open);
+    if(side) q('c-oc-t').textContent = {left:'Filters', right:'Settings', top:'Quick filters', bottom:'Filters'}[side];
+    if(open){ ocFrom = opener || null; if(opener) oc.focus({preventScroll:true}); } else if(ocFrom) ocFrom.focus({preventScroll:true});
+  };
+  ocVp.addEventListener('click', e=>{
+    const b = e.target.closest('[data-oc]');
+    if(b){ setOc(b.dataset.oc, false); requestAnimationFrame(()=>requestAnimationFrame(()=>setOc(null, true, b))); return; }
+    if(e.target.id==='c-oc-back' || e.target.closest('[data-oc-close]')) setOc(null, false);
+  });
+  oc.addEventListener('keydown', e=>{ if(e.key==='Escape') setOc(null, false); });
+  setOc('left', true);
+
+  // scrollspy: the link for the section nearest the top of the scroll area is active
+  const spy = q('c-spy'), spyNav = q('c-spy-nav'), links = [...spyNav.querySelectorAll('a')];
+  const secs = links.map(a=>q(a.getAttribute('href').slice(1)));
+  const mark = id => links.forEach(a=>{ const on = a.getAttribute('href')==='#'+id; a.classList.toggle('on', on); on ? a.setAttribute('aria-current','true') : a.removeAttribute('aria-current'); });
+  const onSpy = () => { const top = spy.getBoundingClientRect().top + 24; let cur = secs[0]; secs.forEach(s=>{ if(s.getBoundingClientRect().top <= top) cur = s; }); mark(cur.id); };
+  spy.addEventListener('scroll', ()=>requestAnimationFrame(onSpy));
+  spyNav.addEventListener('click', e=>{ const a = e.target.closest('a'); if(!a) return; e.preventDefault(); const t = q(a.getAttribute('href').slice(1));
+    spy.scrollTo({top: t.offsetTop - spy.firstElementChild.offsetTop, behavior: reduceMotion() ? 'auto' : 'smooth'}); });
+
+  // table variant switches
+  q('c-tv-opts').addEventListener('change', e=>{ const i = e.target; if(i.value) q('c-tv').classList.toggle(i.value, i.checked); });
+
+  // list group selection
+  q('c-lgrp').addEventListener('click', e=>{ const b = e.target.closest('.lg-i'); if(!b || b.disabled) return; q('c-lgrp').querySelectorAll('.lg-i').forEach(x=>{ const on = x===b; x.classList.toggle('on', on); on ? x.setAttribute('aria-current','true') : x.removeAttribute('aria-current'); }); });
+
+  // toggle button groups behave like a single choice
+  document.querySelectorAll('.comp .bgrp[data-toggle]').forEach(g=>g.addEventListener('click', e=>{ const b = e.target.closest('.pbtn'); if(!b) return; g.querySelectorAll('.pbtn').forEach(x=>x.setAttribute('aria-pressed', x===b)); }));
+
+  // close buttons
+  q('c-x1').addEventListener('click', ()=>{ q('c-xdemo').hidden = true; q('c-x1r').hidden = false; q('c-x1r').focus({preventScroll:true}); });
+  q('c-x1r').addEventListener('click', ()=>{ q('c-xdemo').hidden = false; q('c-x1r').hidden = true; });
+  q('c-al-x').addEventListener('click', ()=>{ q('c-al-d').hidden = true; q('c-banner-r').hidden = false; });
+  q('c-banner-r').addEventListener('click', ()=>{ q('c-al-d').hidden = false; });
+
+  // popover placements
+  const pps = [...document.querySelectorAll('.comp .ppw')];
+  pps.forEach(w=>{ const b = w.querySelector('button'), p = w.querySelector('.pp');
+    b.addEventListener('click', ()=>{ const open = p.hidden; pps.forEach(o=>{ o.querySelector('.pp').hidden = true; o.querySelector('button').setAttribute('aria-expanded','false'); }); p.hidden = !open; b.setAttribute('aria-expanded', open); }); });
+  document.addEventListener('click', e=>{ if(!e.target.closest('#grid') || e.target.closest('.ppw')) return; pps.forEach(o=>{ o.querySelector('.pp').hidden = true; o.querySelector('button').setAttribute('aria-expanded','false'); }); });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') pps.forEach(o=>{ o.querySelector('.pp').hidden = true; }); });
+
+  // toasts: stacked notifications, auto-hide after 5 s unless hovered
+  const bts = q('c-btoasts');
+  const wireToast = (el, ms) => { let t = ms ? setTimeout(()=>el.remove(), ms) : null;
+    el.addEventListener('mouseenter', ()=>clearTimeout(t)); el.addEventListener('mouseleave', ()=>{ if(ms) t = setTimeout(()=>el.remove(), 2500); });
+    el.querySelector('.xbtn').addEventListener('click', ()=>el.remove()); };
+  [...bts.children].forEach(el=>wireToast(el, 0));
+  const MSGS = ['Receipt matched to Delta Air Lines.', 'Rafael Tanaka added a missing receipt.', 'Xero export finished: 48 expenses.', 'Ana Silva submitted "Team offsite".'];
+  let mi = 0;
+  q('c-bt-btn').addEventListener('click', ()=>{
+    const el = document.createElement('div'); el.className = 'btoast c-surface float';
+    el.innerHTML = `<div class="bt-h"><span class="bt-mark"></span><span class="b">Harbor</span><span class="sub">just now</span><button type="button" class="xbtn sm" aria-label="Dismiss notification"><span class="ico">${icon('x')}</span></button></div><div class="bt-b"></div>`;
+    el.querySelector('.bt-b').textContent = MSGS[mi++ % MSGS.length];
+    bts.prepend(el); while(bts.children.length>3) bts.lastElementChild.remove(); wireToast(el, 5000);
+  });
+
+  // placeholder animation style
+  q('c-sk-anim').addEventListener('click', e=>{ const b = e.target.closest('button'); if(b) q('c-sk-pv').classList.toggle('glow', b.dataset.a==='glow'); });
+
+  // collapse: a trigger can control several panels; every trigger reflects its panels' state
+  const clpBtns = [...document.querySelectorAll('.comp [data-clp]')];
+  const syncClp = () => clpBtns.forEach(b=>{ const ids = b.dataset.clp.split(' '); if(ids.length===1) b.setAttribute('aria-expanded', q(ids[0]).classList.contains('show')); });
+  clpBtns.forEach(b=>b.addEventListener('click', ()=>{ b.dataset.clp.split(' ').forEach(id=>q(id).classList.toggle('show')); syncClp(); }));
+  syncClp();
 }
 
 // ---- markdown spec ----
@@ -2868,6 +3379,7 @@ syncControls();
 render();
 renderColor();
 initComponents();
+initBootstrapSet();
 setFilter('all');
 renderSaved();
 try{ const k = localStorage.getItem(KIT_KEY); if(k){ $('kit').value = k; connectKit(k); } }catch(e){}

@@ -166,6 +166,7 @@ input[aria-invalid="true"]{border-color:var(--bad)}
 .note{font-size:12.5px; color:var(--muted); margin:0}
 .toggle{display:flex; gap:8px; align-items:center; font-size:12.5px}
 .toggle input{accent-color:var(--accent)}
+.use-added-n{color:var(--muted)}
 .second{display:flex; flex-direction:column; gap:10px; border-top:1px solid var(--line); padding-top:12px}
 .head2{display:flex; justify-content:space-between; align-items:center}
 .seg button{min-width:0}
@@ -1330,6 +1331,7 @@ input[aria-invalid="true"]{border-color:var(--bad)}
         <button data-pool="google" aria-pressed="false">Google</button>
         <button data-pool="adobe" aria-pressed="false" disabled>Adobe</button>
       </div>
+      <label class="toggle" id="use-added-wrap" hidden><input type="checkbox" id="use-added" checked> <span>Include fonts I added <span class="use-added-n" id="use-added-n"></span></span></label>
       <div class="seg" role="group" aria-label="Pairing strategy" id="modes">
         <button data-mode="contrast" aria-pressed="true">Contrast</button>
         <button data-mode="harmony" aria-pressed="false">Harmony</button>
@@ -2652,7 +2654,7 @@ const MODES = {
   ]
 };
 
-const state = {display:'Fraunces', body:'Figtree', mono:'JetBrains Mono', mode:'contrast', pool:'all', kit:null, base:16, ratio:1.25, hw:600, track:-0.01, lh:1.55, surface:'paper', style:'base', sig:false, pname:'Kernhue', filter:'all', view:'screens', cgroup:'all', locks:{display:false, body:false, mono:false}};
+const state = {display:'Fraunces', body:'Figtree', mono:'JetBrains Mono', mode:'contrast', pool:'all', useAdded:true, kit:null, base:16, ratio:1.25, hw:600, track:-0.01, lh:1.55, surface:'paper', style:'base', sig:false, pname:'Kernhue', filter:'all', view:'screens', cgroup:'all', locks:{display:false, body:false, mono:false}};
 const loaded = new Set();
 const $ = id => document.getElementById(id);
 const pick = arr => arr[Math.floor(Math.random()*arr.length)];
@@ -2691,13 +2693,15 @@ function buildRoles(){
 }
 const defaultWeight = f => closest(f.w, f.c==='display' ? 800 : f.c==='serif' ? 500 : 700);
 
-const inPool = f => state.pool==='all' || f.src===state.pool;
+// fonts added from the Google catalog join Generate unless the toggle is off; locked and hand-picked roles are unaffected
+const addedOk = f => state.useAdded || !f.added;
+const inPool = f => (state.pool==='all' || f.src===state.pool) && addedOk(f);
 function generate(){
   const rules = MODES[state.mode];
   for(let tries=0; tries<60; tries++){
     const [dOk, bOk] = pick(rules);
     // after 30 misses, widen to all libraries (a small Adobe kit may not cover every strategy)
-    const ok = tries<30 ? inPool : () => true;
+    const ok = tries<30 ? inPool : addedOk;
     let d = state.locks.display ? BY[state.display] : null;
     let b = state.locks.body ? BY[state.body] : null;
     if(!d){ const p = FONTS.filter(f=>ok(f) && dOk(f) && (!b || f.n!==b.n)); if(!p.length) continue; d = pick(p); }
@@ -2705,7 +2709,7 @@ function generate(){
     if(d.n===b.n) continue;
     if(!state.locks.display){ state.display = d.n; state.hw = defaultWeight(d); }
     if(!state.locks.body) state.body = b.n;
-    if(!state.locks.mono){ const monos = FONTS.filter(f=>f.c==='mono'); state.mono = pick(monos.filter(inPool).length ? monos.filter(inPool) : monos).n; }
+    if(!state.locks.mono){ const monos = FONTS.filter(f=>f.c==='mono' && addedOk(f)); state.mono = pick(monos.filter(inPool).length ? monos.filter(inPool) : monos).n; }
     return render();
   }
   render();
@@ -3655,7 +3659,7 @@ function initComponents(){
 }
 
 // ---- shareable state: #s=<base64url JSON> reproduces the pairing, color and style (spec A4) ----
-const SHARE_KEYS = ['display','body','mono','mode','pool','base','ratio','hw','track','lh','surface','style','sig','pname'];
+const SHARE_KEYS = ['display','body','mono','mode','pool','base','ratio','hw','track','lh','surface','style','sig','pname','useAdded'];
 let PENDING_STATE = null;
 const b64u = str => btoa(unescape(encodeURIComponent(str))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const unb64u = str => { const b = str.replace(/-/g,'+').replace(/_/g,'/'); return decodeURIComponent(escape(atob(b + '==='.slice((b.length+3)%4)))); };
@@ -3686,6 +3690,7 @@ function applyState(o){
   if(['paper','ink','brand'].includes(o.surface)) state.surface = o.surface;
   if(STYLE_BY[o.style]) state.style = o.style;
   state.sig = !!o.sig;
+  if(typeof o.useAdded==='boolean') state.useAdded = o.useAdded;
   if(typeof o.pname==='string'){ $('pv-name').value = o.pname.slice(0,40); setProductName(o.pname); }
   const c = o.c || {};
   if(normHex(c.hex||'')) COLOR.hex = normHex(c.hex);
@@ -3706,7 +3711,7 @@ function syncStateUI(){
   $('hshift').value = COLOR.hueShift; $('ntint').value = COLOR.tint; $('harm').value = COLOR.harm;
   const has2 = !!COLOR.sec; $('add2').hidden = has2; $('second').hidden = !has2;
   if(has2){ $('sec-hex').value = COLOR.sec; $('sec-pick').value = COLOR.sec; }
-  setPressed('harmony','rule', COLOR.secRule || ''); $('sty-sig').checked = state.sig;
+  setPressed('harmony','rule', COLOR.secRule || ''); $('sty-sig').checked = state.sig; $('use-added').checked = state.useAdded;
 }
 let urlTimer = null, URL_BASE = null;   // state at load; the URL stays clean until something changes
 function syncURL(){
@@ -3955,6 +3960,7 @@ function useGoogle(name, role){
 function renderAdded(){
   const box = $('gadded'), fams = FONTS.filter(f=>f.added);
   box.hidden = !fams.length;
+  $('use-added-wrap').hidden = !fams.length; $('use-added-n').textContent = `(${fams.length})`;
   if(!fams.length){ box.innerHTML = ''; return; }
   box.innerHTML = `<div class="head"><span>Added from Google · ${fams.length}</span><button class="linkbtn" type="button" id="gadded-clear">Remove all</button></div>` + fams.map((f,i)=>`<div class="afam g">
     <span class="nm" style="font-family:${stack(f).replace(/"/g,'&quot;')}" title="${escH(f.n)} · weights ${f.w.join(', ')}">${escH(f.n)}</span>
@@ -3971,6 +3977,7 @@ function removeAdded(list){
   if(!BY[state.mono]){ state.mono = 'JetBrains Mono'; state.locks.mono = false; }
   buildRoles(); syncLocks(); renderAdded(); render(); searchGoogle();
 }
+$('use-added').addEventListener('change', e=>{ state.useAdded = e.target.checked; syncURL(); });
 $('gq').addEventListener('input', searchGoogle);
 $('gq-cat').addEventListener('change', searchGoogle);
 $('gq').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('gq-list').querySelector('button')?.focus(); } });

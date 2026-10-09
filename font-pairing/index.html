@@ -75,6 +75,14 @@ kbd{font-family:var(--ui-mono); font-size:12px; border:1px solid var(--line); bo
 .afam select{padding:4px 6px; font-size:12px}
 .afams .head{display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--muted)}
 .linkbtn{all:unset; cursor:pointer; color:var(--accent); font-size:12px}
+.xcolor{display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--line); padding-top:10px}
+.balbar{display:grid; grid-template-columns:6fr 3fr 1fr; height:40px; border-radius:8px; overflow:hidden; border:1px solid var(--line)}
+.balbar i{display:grid; place-items:center; font:600 12px/1 var(--ui-mono); font-style:normal}
+.balbar i + i{border-left:1px solid rgba(0,0,0,.08)}
+.bal{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:8px 10px; align-items:center; font-size:12.5px}
+.bal label{display:block; line-height:1.35}
+.bal label b{font-family:var(--ui-mono); font-size:12px; color:var(--muted); font-weight:500; margin-right:4px; display:inline}
+.bal small{display:block; color:var(--muted); font-size:12px}
 .gadd{display:flex; flex-direction:column; gap:6px; font-size:12.5px; border-top:1px solid var(--line); padding-top:10px}
 .gq-row{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:6px}
 .gq-row select{width:auto}
@@ -242,7 +250,7 @@ input[aria-invalid="true"]{border-color:var(--bad)}
 /* mobile + toast */
 .mobile{display:flex; gap:1.2em; flex-wrap:wrap; align-items:flex-start}
 .phone{width:min(260px,100%); border:1px solid var(--pv-line); border-radius:22px; padding:1.1em; display:flex; flex-direction:column; gap:.9em; background:var(--pv-card)}
-.phone .bar{display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:11px; color:var(--pv-muted)}
+.pv .phone .bar{display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:11px; color:var(--pv-muted); height:auto; margin:0; border-radius:0; background:none; overflow:visible}
 .list{display:flex; flex-direction:column}
 .list div{display:flex; justify-content:space-between; gap:.6em; padding-block:.6em; border-bottom:1px solid var(--pv-line); font-size:calc(var(--base)*.9)}
 .toasts{display:flex; flex-direction:column; gap:.7em; flex:1; min-width:220px}
@@ -271,12 +279,12 @@ input[aria-invalid="true"]{border-color:var(--bad)}
 /* Swiss: grid, flush-left, no ornament */
 [data-style="swiss"] .pv{border:0; border-radius:0; border-top:4px solid var(--pv-fg)}
 [data-style="swiss"] .pv h1,[data-style="swiss"] .pv h2{letter-spacing:-0.035em; line-height:.98}
-[data-style="swiss"] .pv .eyebrow{color:var(--pv-accent); text-transform:none; letter-spacing:0; font-family:var(--f-body); font-weight:var(--bw)}
+[data-style="swiss"] .pv .eyebrow{color:var(--pv-accent-text); text-transform:none; letter-spacing:0; font-family:var(--f-body); font-weight:var(--bw)}
 [data-style="swiss"] .pbtn,[data-style="swiss"] .kpi,[data-style="swiss"] .field .in,[data-style="swiss"] .toast,[data-style="swiss"] .alert,[data-style="swiss"] .code,[data-style="swiss"] .phone,[data-style="swiss"] .gcard,[data-style="swiss"] .pill,[data-style="swiss"] .badges span,[data-style="swiss"] .check i,[data-style="swiss"] .article .avatar,[data-style="swiss"] .c-input,[data-style="swiss"] .c-surface,[data-style="swiss"] .tag{border-radius:0}
 [data-style="swiss"] .pbtn.fill{background:var(--pv-accent); border-color:var(--pv-accent); color:var(--pv-on-accent)}
 [data-style="swiss"] .kpi{background:transparent; border-top:1px solid var(--pv-fg); padding-inline:0}
 [data-style="swiss"] .alert{border:0; border-top:2px solid var(--a-icon); background:transparent; border-radius:0}
-[data-style="swiss"] .gcard{background:var(--pv-accent)!important}
+[data-style="swiss"] .gcard{background:var(--pv-accent)!important; color:var(--pv-on-accent)!important}
 [data-style="swiss"] .article blockquote{border-left-color:var(--pv-accent); border-left-width:6px}
 
 /* Dark UI: depth from lighter elevation layers, not shadows */
@@ -293,7 +301,7 @@ input[aria-invalid="true"]{border-color:var(--bad)}
 [data-style="flat"] .kpi{background:var(--pv-accent-soft); border-radius:6px}
 [data-style="flat"] .toast,[data-style="flat"] .alert,[data-style="flat"] .c-surface{border:0; border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,.08)}
 [data-style="flat"] .field .in,[data-style="flat"] .c-input{border:0; border-bottom:2px solid var(--pv-line); border-radius:4px}
-[data-style="flat"] .gcard{background:var(--pv-accent)!important; border-radius:8px}
+[data-style="flat"] .gcard{background:var(--pv-accent)!important; color:var(--pv-on-accent)!important; border-radius:8px}
 
 /* Bauhaus: primaries, thick rules, geometry */
 [data-style="bauhaus"] .pv{border:3px solid var(--pv-fg); border-radius:0; position:relative}
@@ -1299,15 +1307,23 @@ input[aria-invalid="true"]{border-color:var(--bad)}
           <button type="button" data-rule="analogous" aria-pressed="false">Analogous</button>
         </div>
         <p class="note" id="sec-placed"></p>
-        <div class="lbl">Role</div>
-        <div class="seg" role="group" aria-label="Second color role" id="secrole">
-          <button type="button" data-role="decor" aria-pressed="true">Decorative</button>
-          <button type="button" data-role="accent" aria-pressed="false">Accent</button>
-        </div>
-        <p class="note" id="secrole-note"></p>
       </div>
+      <div id="more"></div>
+      <button class="btn" type="button" id="add-more" hidden>+ Add color</button>
       <div class="ctl"><label for="hshift">Hue shift</label><input type="range" id="hshift" min="-30" max="30" step="1" value="0"><output id="hshift-o"></output></div>
       <p class="note">Rotates hue across the scale so shades don't go muddy. Yellows default toward orange.</p>
+    </section>
+
+    <section class="box" data-tab="color" aria-labelledby="bal-l" hidden>
+      <div class="lbl" id="bal-l">Color balance · 60 / 30 / 10</div>
+      <div class="balbar" id="balbar" aria-hidden="true"><i>60</i><i>30</i><i>10</i></div>
+      <div class="bal">
+        <label for="role-d"><b>60</b> Dominant<small>Page backgrounds</small></label><select id="role-d"></select>
+        <label for="role-s"><b>30</b> Secondary<small>Cards, panels, section bands</small></label><select id="role-s"></select>
+        <label for="role-a"><b>10</b> Accent<small>Buttons, links, focus</small></label><select id="role-a"></select>
+      </div>
+      <p class="note" id="bal-note"></p>
+      <ul class="checks" id="bal-checks"></ul>
     </section>
 
     <section class="box" data-tab="color" aria-labelledby="sys-l" hidden>
@@ -1434,7 +1450,7 @@ input[aria-invalid="true"]{border-color:var(--bad)}
       <div class="seg" role="group" aria-label="Preview surface" id="surfaces">
         <button data-s="paper" aria-pressed="true">Paper</button>
         <button data-s="ink" aria-pressed="false">Ink</button>
-        <button data-s="brand" aria-pressed="false">Brand</button>
+        <button data-s="brand" aria-pressed="false" title="A deep version of your 60% color">Deep</button>
       </div>
       <label class="cb-sel cb-name"><span>Name</span><input type="text" id="pv-name" value="Kernhue" maxlength="40" autocomplete="off" spellcheck="false" aria-label="Product name shown in the preview and the export"></label>
       <button type="button" class="cbtn" id="cb-share" title="Copy a link that reproduces this pairing, color and style"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span>Copy link</span></button>
@@ -2840,16 +2856,31 @@ function buildScale(hex, {anchor500=false, hueShift=0}={}){
     : {step, hex:oklchToHex(Ls[i], cPeak*C_CURVE[i], (H0 + hueShift*(i-idx)/10 + 360)%360)});
 }
 
-const COLOR = {hex:'#2b63f0', anchor500:false, hueShift:0, tint:0.012, harm:0.35, sec:null, secRule:'complement', secAccent:false};
+// Up to five colors: the brand, a second color (sec), and up to three more. Each becomes a scale under these names.
+const SCALE_N = ['brand','secondary','tertiary','quaternary','quinary'];
+const COLOR = {hex:'#2b63f0', anchor500:false, hueShift:0, tint:0.012, harm:0.35, sec:null, secRule:'complement', more:[],
+  // 60·30·10: d = dominant (backgrounds), s = secondary (cards, panels, bands), a = accent (buttons, links, focus)
+  roles:{d:'neutral', s:'neutral', a:'brand'}};
+const DEFAULT_ROLES = {d:'neutral', s:'neutral', a:'brand'};
+const colorHexes = () => [COLOR.hex, COLOR.sec, ...(COLOR.sec ? COLOR.more : [])].filter(Boolean);
+const colorScales = () => SCALE_N.filter(n=>PAL && PAL[n]);
+// Styles defined by their own surfaces: only the 10% accent applies to them
+const OWN_SURFACE = new Set(['dark','neu','glass','aurora','spatial','cyber']);
+// The role in effect. A style's signature palette keeps the default balance.
+function roleOf(k){
+  const v = (activeSig() ? DEFAULT_ROLES : COLOR.roles)[k];
+  if(k==='a') return v!=='neutral' && PAL[v] ? v : 'brand';
+  return v==='neutral' || PAL[v] ? v : 'neutral';
+}
 // Which scale does the action job (buttons, links, focus, chart highlight) and which does the decorative job.
-// A style's signature palette keeps its own roles.
-const accScale = () => (COLOR.secAccent && PAL.secondary && !activeSig()) ? 'secondary' : 'brand';
-const decScale = () => accScale()==='secondary' ? 'brand' : (PAL.secondary ? 'secondary' : 'brand');
+const accScale = () => roleOf('a');
+const decScale = () => { const a = accScale(), sc = roleOf('s'); return sc!=='neutral' && sc!==a ? sc : (colorScales().find(n=>n!==a) || a); };
 // Hue offsets from the brand color for each suggestion; lightness and chroma match the brand so the pair feels like one system.
 const HARMONY = {complement:180, split:150, triadic:120, analogous:35};
-function suggestSecond(rule){
+function suggestSecond(rule){ return hueFromBrand(HARMONY[rule]); }
+function hueFromBrand(offset){
   const [L,C,H] = rgbToOklch(hexToRgb(COLOR.hex));
-  const H2 = (H + HARMONY[rule]) % 360;
+  const H2 = (H + offset) % 360;
   // Yellows and oranges only read as themselves when light; at a blue's lightness they turn mustard or brown.
   const floor = H2>=70 && H2<=115 ? 0.8 : H2>=40 && H2<70 ? 0.68 : 0.45;
   return oklchToHex(clamp(Math.max(L,floor),0.45,0.86), C<0.03 ? 0.15 : C, H2);
@@ -2872,6 +2903,7 @@ function buildPalette(c = COLOR){
     out[n] = buildScale(oklchToHex(st.L,C,H), {hueShift:autoShift(H)});
   });
   if(c.sec) out.secondary = buildScale(c.sec, {anchor500:c.anchor500, hueShift:autoShift(rgbToOklch(hexToRgb(c.sec))[2])});
+  if(c.sec) (c.more || []).forEach((h,i)=>{ out[SCALE_N[i+2]] = buildScale(h, {anchor500:c.anchor500, hueShift:autoShift(rgbToOklch(hexToRgb(h))[2])}); });
   out.lch = [L0,C0,H0];
   return out;
 }
@@ -2879,13 +2911,21 @@ const pget = (scale, step) => PAL[scale].find(x=>x.step===step).hex;
 const baseOf = scale => PAL[scale].find(x=>x.base);
 const onColor = bg => ratio(bg,'#ffffff') >= ratio(bg, pget('neutral',950)) ? '#ffffff' : pget('neutral',950);
 
-function surfaceTokens(surface){
-  const A = accScale();
+// The 60% color sets the page background and the 30% color sets cards, panels and bands,
+// each at a step that suits the surface: tints on Paper, near-black on Ink, deep shades on Deep.
+function surfaceTokens(surface, ignoreRoles){
+  const A = accScale(), D = ignoreRoles ? 'neutral' : roleOf('d'), R = ignoreRoles ? 'neutral' : roleOf('s');
   const S = (step) => Object.fromEntries(['success','warning','info','error'].map(k=>[k, pget(k, step)]));
-  if(surface==='ink') return {bg:pget('neutral',950), fg:pget('neutral',50), muted:pget('neutral',400), line:pget('neutral',800), card:pget('neutral',900), accent:pget(A,400), ...S(400), dark:true};
-  if(surface==='brand') return {bg:pget('brand',900), fg:pget('brand',50), muted:pget('brand',200), line:pget('brand',700), card:pget('brand',800), accent:pget(A,300), ...S(300), dark:true};
-  return {bg:'#ffffff', fg:pget('neutral',950), muted:pget('neutral',600), line:pget('neutral',200), card:pget('neutral',50), accent:baseOf(A).hex, ...S(700), error:pget('error',600), dark:false};
+  // muted text takes the first step that still passes AA on both the 60 and the 30 color
+  const tint = D!=='neutral' || R!=='neutral';
+  if(surface==='ink'){ const bg = pget(D,950), card = pget(R==='neutral' ? D : R, 900);
+    return {bg, fg:pget('neutral',50), muted:textStep('neutral',[400,300,200],[bg,card]), line:pget(D,800), card, accent:pget(A,400), ...S(tint ? 300 : 400), dark:true}; }
+  if(surface==='brand'){ const X = D==='neutral' ? 'brand' : D, bg = pget(X,900), card = pget(R==='neutral' ? X : R, 800);
+    return {bg, fg:pget(X,50), muted:textStep(X,[200,100,50],[bg,card]), line:pget(X,700), card, accent:pget(A,300), ...S(tint ? 200 : 300), dark:true}; }
+  const bg = D==='neutral' ? '#ffffff' : pget(D,50), card = R==='neutral' ? (D==='neutral' ? pget('neutral',50) : '#ffffff') : pget(R,100);
+  return {bg, fg:pget('neutral',950), muted:textStep('neutral',[600,700,800],[bg,card]), line:pget(D,200), card, accent:baseOf(A).hex, ...S(700), error:pget('error',600), dark:false};
 }
+const textStep = (sc, steps, on) => steps.map(st=>pget(sc,st)).find(c=>on.every(b=>ratio(c,b)>=4.5)) || pget(sc, steps[steps.length-1]);
 
 // Contrast across the action scale: one line for white text, one for black, with AA and AAA reference lines.
 function renderChart(t){
@@ -2927,7 +2967,7 @@ function renderLive(){
   if(TYPE){
     const {d, b:bf, m, bw, z} = TYPE, A = accScale();
     const tok = {color:{brand:Object.fromEntries([400,500,600].map(st=>[st,{$type:'color',$value:pget('brand',st)}]))}, font:{family:{display:{$type:'fontFamily',$value:d.n}, body:{$type:'fontFamily',$value:bf.n}, mono:{$type:'fontFamily',$value:m.n}}, size:{h1:{$type:'dimension',$value:(z.h1/16).toFixed(3)+'rem'}, body:{$type:'dimension',$value:(z.body/16).toFixed(3)+'rem'}}}};
-    if(A==='secondary') tok.color.accent = {600:{$type:'color',$value:`{color.secondary.600}`}};
+    if(A!=='brand') tok.color.accent = {600:{$type:'color',$value:`{color.${A}.600}`}};
     $('live-tokens').textContent = JSON.stringify(tok, null, 2);
     $('m-pair').textContent = `${d.n} / ${bf.n}`;
     $('m-mode').textContent = state.mode[0].toUpperCase() + state.mode.slice(1);
@@ -2973,12 +3013,13 @@ function styleVars(id, t){
   const v = {}, dark = t.dark, H = PAL.lch[2];
   const rot = (step, deg) => { const [l,c,h] = rgbToOklch(hexToRgb(pget('brand',step))); return oklchToHex(l, c, (h+deg+360)%360); };
   const c2 = step => PAL.secondary ? pget('secondary',step) : rot(step, 40);
-  const c3 = step => PAL.secondary ? rot(step, 40) : rot(step, -40);
+  const c3 = step => PAL.tertiary ? pget('tertiary',step) : PAL.secondary ? rot(step, 40) : rot(step, -40);
+  const userD = roleOf('d')!=='neutral', userS = roleOf('s')!=='neutral';
   const set = () => {
     v['--pv-accent-hi'] = mixHex(t.accent,'#ffffff',0.3);
     v['--pv-accent-deep'] = mixHex(t.accent,'#000000',0.25);
     v['--pv-accent-soft'] = mixHex(t.accent,t.bg,0.86);
-    v['--pv-accent-text'] = t.accentText || (dark ? pget(accScale(),300) : pget(accScale(),600));
+    v['--pv-accent-text'] = t.accentText || textStep(accScale(), dark ? [300,200,100] : [600,700,800], [t.bg, t.card]);
     v['--pv-hi'] = mixHex(t.bg,'#ffffff',dark?0.12:0.6);
     v['--pv-emboss'] = dark ? 'rgba(0,0,0,.6)' : 'rgba(255,255,255,.75)';
     v['--tone-1'] = pget('brand',dark?800:100); v['--tone-2'] = c2(dark?800:100); v['--tone-3'] = c3(dark?800:100);
@@ -3004,8 +3045,8 @@ function styleVars(id, t){
       canvas = t.bg; hdr = t.muted; break;
     }
     case 'clay': {
-      canvas = dark ? sub(950) : pget('brand',100);
-      t.bg = dark ? sub(900) : '#ffffff'; t.card = t.bg;
+      canvas = dark ? sub(950) : pget(userD ? roleOf('d') : 'brand',100);
+      if(!userD && !userS){ t.bg = dark ? sub(900) : '#ffffff'; t.card = t.bg; }
       v['--clay-d'] = hexA(dark ? '#000000' : pget('brand',800), dark?0.55:0.22);
       v['--clay-in-d'] = 'rgba(0,0,0,.08)'; v['--clay-in-l'] = dark ? 'rgba(255,255,255,.06)' : 'rgba(255,255,255,.75)';
       hdr = dark ? sub(300) : pget('brand',800); break;
@@ -3027,7 +3068,7 @@ function styleVars(id, t){
       hdr = '#ffffff'; break;
     }
     case 'brutal': {
-      t.bg = dark ? sub(900) : '#ffffff';
+      if(!userD) t.bg = dark ? sub(900) : '#ffffff';
       const base = dark ? sub(950) : ((activeSig()&&activeSig().third) ? mixHex(activeSig().third,'#ffffff',0.55) : pget('brand',100));
       const gl = hexA(dark ? '#ffffff' : '#111111', 0.1);
       canvas = `linear-gradient(${gl} 1px, transparent 1px) 0 0/28px 28px, linear-gradient(90deg, ${gl} 1px, transparent 1px) 0 0/28px 28px, ${base}`;
@@ -3042,16 +3083,17 @@ function styleVars(id, t){
       hdr = acc; break;
     }
     case 'material': {
-      if(dark){ t.bg = sub(900); t.card = sub(800); canvas = sub(950); }
+      if(userD || userS) canvas = dark ? sub(950) : mixHex(t.bg, sub(100), 0.5);
+      else if(dark){ t.bg = sub(900); t.card = sub(800); canvas = sub(950); }
       else { t.bg = mixHex(pget('brand',50),'#ffffff',0.6); t.card = mixHex(pget('brand',100),pget('brand',50),0.5); canvas = mixHex(pget('brand',50),sub(100),0.5); }
       hdr = t.muted; break;
     }
     case 'bento': {
-      canvas = t.bg; t.card = dark ? sub(900) : sub(100); hdr = t.muted; break;
+      canvas = t.bg; if(!userS) t.card = dark ? sub(900) : sub(100); hdr = t.muted; break;
     }
     case 'skeuo': {
       canvas = `repeating-linear-gradient(45deg, rgba(0,0,0,.035) 0 2px, transparent 2px 5px), repeating-linear-gradient(-45deg, rgba(255,255,255,.05) 0 2px, transparent 2px 5px), ${dark ? sub(900) : sub(200)}`;
-      t.card = dark ? sub(800) : sub(100); hdr = dark ? sub(300) : sub(700); break;
+      if(!userS) t.card = dark ? sub(800) : sub(100); hdr = dark ? sub(300) : sub(700); break;
     }
     case 'bauhaus': {
       // Bauhaus needs three distinct colors; without a second color, borrow a rotated brand hue
@@ -3059,7 +3101,7 @@ function styleVars(id, t){
       break;
     }
     case 'swiss': {
-      if(!dark) t.card = '#ffffff';
+      if(!dark && !userS) t.card = '#ffffff';
       break;
     }
   }
@@ -3080,18 +3122,43 @@ function renderStylePanel(){
   $('sty-sig-wrap').hidden = !st.sig;
   $('sty-sig').checked = state.sig;
   const notes = [];
-  if(st.force) notes.push('This style sets its own dark surface, so the Paper / Ink / Brand switch is off.');
+  if(st.force) notes.push('This style sets its own dark surface, so the Paper / Ink / Deep switch is off.');
   if(Object.values(state.locks).some(Boolean) && st.fonts) notes.push('Locked font roles keep their font.');
   $('sty-note').textContent = notes.join(' ');
 }
 
 
+const colorLabel = n => n==='neutral' ? 'Neutral (gray)' : `${n==='brand' ? 'Brand' : 'Color '+(SCALE_N.indexOf(n)+1)} · ${baseOf(n).hex}`;
+function renderBalance(t, sty){
+  const scs = colorScales(), sig = activeSig();
+  [['d',true],['s',true],['a',false]].forEach(([k,neutral])=>{
+    const sel = $('role-'+k), opts = [...(neutral ? ['neutral'] : []), ...scs];
+    sel.innerHTML = opts.map(n=>`<option value="${n}">${colorLabel(n)}</option>`).join('');
+    sel.value = roleOf(k); sel.disabled = !!sig;
+  });
+  const own = OWN_SURFACE.has(sty.id);
+  [t.bg, t.card, t.accent].forEach((c,i)=>{ const el = $('balbar').children[i]; el.style.background = c; el.style.color = onColor(c); });
+  $('bal-note').textContent = sig ? `${sty.name}'s signature colors use their own balance. Turn them off in the Style tab to assign roles.`
+    : own ? `${sty.name} sets its own surfaces, so only the 10% accent applies in this style. Exports still use your 60 and 30.`
+    : '60 sets the page, 30 sets cards, panels and bands, 10 is reserved for actions. Each uses the step of its scale that suits the surface.';
+  // checks run on Paper, where most product UI lives
+  const P = surfaceTokens('paper'), A = accScale(), ab = baseOf(A), out = [];
+  if(roleOf('s')===A) out.push(['warn', `Your 10% accent is also the 30% color, so buttons sit on cards of the same hue. Give 30 another color or Neutral.`]);
+  const rAc = ratio(ab.hex, P.card);
+  out.push([rAc>=3?'ok':'bad', `Accent on 30% cards: ${A}-${ab.step} against the card is ${fr(rAc)}:1. Buttons need 3:1 to stand out.`]);
+  const rTx = ratio(P.fg, P.bg), rMu = ratio(P.muted, P.card);
+  if(roleOf('d')!=='neutral') out.push([rTx>=4.5?'ok':'bad', `Body text on the 60% background is ${fr(rTx)}:1 (${grade(rTx)}).`]);
+  out.push([rMu>=4.5?'ok':rMu>=3?'warn':'bad', `Muted text on 30% cards is ${fr(rMu)}:1 (${grade(rMu)}).`]);
+  $('bal-checks').innerHTML = out.map(([k,txt])=>`<li><span class="dot ${k}" aria-label="${k}"></span><span>${txt}</span></li>`).join('');
+  return out;
+}
+
 function renderColor(){
   const sig = activeSig();
-  PAL = buildPalette(sig ? {...COLOR, hex:sig.brand, sec:sig.sec || null, anchor500:false, hueShift:autoShift(rgbToOklch(hexToRgb(sig.brand))[2])} : COLOR);
+  PAL = buildPalette(sig ? {...COLOR, hex:sig.brand, sec:sig.sec || null, more:[], anchor500:false, hueShift:autoShift(rgbToOklch(hexToRgb(sig.brand))[2])} : COLOR);
   const sty = STYLE_BY[state.style];
   const surf = sty.force || state.surface;
-  const t = surfaceTokens(surf);
+  const t = surfaceTokens(surf, OWN_SURFACE.has(sty.id));
   // second color: fills use the scale step that suits the surface; text uses a step that passes on it
   const s2 = decScale();
   t.accent2 = surf==='paper' ? baseOf(s2).hex : pget(s2, surf==='ink' ? 400 : 300);
@@ -3167,15 +3234,26 @@ function renderColor(){
     const clash = Cs>0.08 && [['error',27,'destructive actions'],['success',150,'confirmations']].find(([,h])=>hueGap(Hs,h)<22);
     if(clash) checks.splice(1,0,['warn', `Second color sits near ${clash[0]} ${clash[0]==='error'?'red':'green'}. Keep it away from ${clash[2]} and alerts so the meanings don't blur.`]);
     const r2 = ratio(pget('secondary',600),'#ffffff'), rb = ratio(sb.hex, onColor(sb.hex));
-    if(A==='secondary') checks.splice(2,0,['ok', `Roles: secondary drives actions, brand decorates. Keep the brand out of buttons so there is one action color.`]);
+    if(A!=='brand') checks.splice(2,0,['ok', `Roles: ${A} drives actions. Keep the other colors out of buttons so there is one action color.`]);
     else checks.splice(2,0,[r2>=4.5?'ok':r2>=3?'warn':'bad', `Second color as text: secondary-600 on white is ${fr(r2)}:1 (${grade(r2)}).`],
       [rb>=4.5?'ok':rb>=3?'warn':'bad', `Second color button: ${onColor(sb.hex)==='#ffffff'?'white':'ink'} text on secondary-${sb.step} is ${fr(rb)}:1 (${grade(rb)}).`]);
     const [Ls2,Cs2,Hs2] = rgbToOklch(hexToRgb(sb.hex));
-    $('secrole-note').textContent = A==='secondary' ? 'Buttons, links, focus and the chart highlight use this color. The brand color moves to highlights and illustration.' : 'Highlights, illustration and marketing moments. Buttons and links stay on the brand color.';
-    setPressed('secrole','role', COLOR.secAccent ? 'accent' : 'decor');
     $('sec-placed').textContent = `Sits at ${sb.step} (OKLCH ${Ls2.toFixed(2)} ${Cs2.toFixed(3)} ${Math.round(Hs2)}°), ${Math.round(hueGap(H0,Hs2))}° from the brand hue.`;
   }
-  COLOR_CHECKS = checks;
+  // colors 3–5: each must read as its own color
+  const scs = colorScales();
+  for(let i=0;i<scs.length;i++) for(let j=i+1;j<scs.length;j++){
+    if(i===0 && j===1) continue;   // brand vs second is checked above
+    const dE = deltaE(baseOf(scs[i]).hex, baseOf(scs[j]).hex)*100;
+    if(dE<12) checks.push([dE<8?'bad':'warn', `Colors ${i+1} and ${j+1} (${scs[i]}, ${scs[j]}) are only ${dE.toFixed(0)} ΔE apart. They'll read as one color.`]);
+  }
+  scs.slice(2).forEach((n,i)=>{
+    const [, Cx, Hx] = rgbToOklch(hexToRgb(baseOf(n).hex));
+    const near = Cx>0.08 && [['error','red','destructive actions',27],['success','green','confirmations',150]].find(x=>hueGap(Hx,x[3])<22);
+    if(near) checks.push(['warn', `Color ${i+3} sits near ${near[0]} ${near[1]}. Keep it away from ${near[2]} and alerts so the meanings don't blur.`]);
+  });
+  const bal = renderBalance(t, sty);
+  COLOR_CHECKS = [...checks, ...bal];
   syncURL();
   $('color-checks').innerHTML = checks.map(([k,txt])=>`<li><span class="dot ${k}" aria-label="${k}"></span><span>${txt}</span></li>`).join('');
   renderExport();
@@ -3287,7 +3365,8 @@ function buildMarkdown(cssText){
   L.push('| Decision | Choice |', '|---|---|',
     `| Display font | ${d.n} |`, `| Body font | ${b.n} |`, `| Utility font | ${m.n} |`,
     `| Brand color | \`${bb.hex}\` |`,
-    ...(PAL.secondary ? [`| Second color | \`${baseOf('secondary').hex}\` (${A==='secondary' ? 'accent' : 'decorative'}) |`] : []),
+    ...colorScales().slice(1).map((n,i)=>`| Color ${i+2} | \`${baseOf(n).hex}\` (${n}) |`),
+    `| Balance 60 / 30 / 10 | ${roleOf('d')} / ${roleOf('s')} / ${A} |`,
     `| Action color | ${A} |`, `| UI style | ${sty.name} |`, '');
   if(sig) L.push(`> Colors in this spec are the ${sty.name} signature palette, not the brand colors set in Kernhue.`, '');
 
@@ -3335,15 +3414,16 @@ function buildMarkdown(cssText){
 
 // ---- export ----
 const famArr = f => [f.n, ...FALLBACK[f.c].split(',').map(x=>x.trim().replace(/^'|'$/g,''))];
-const scaleNames = () => ['brand', ...(PAL.secondary ? ['secondary'] : []), 'neutral','success','info','warning','error'];
+const scaleNames = () => [...colorScales(), 'neutral','success','info','warning','error'];
 function renderExport(){
   if(!TYPE || !PAL) return;
   const {links, d, b, m, bw, z} = TYPE;
   const rem = px => (px/16).toFixed(3)+'rem';
   const sizes = {h1:z.h1, h2:z.h2, h3:z.h3, h4:z.h4, h5:z.h5, body:z.body, small:z.small};
   const fmt = $('fmt').value;
-  const A = accScale();
-  const accCss = `\n\n  /* Accent: buttons, links, focus */\n` + PAL[A].map(x=>`  --color-accent-${x.step}: var(--color-${A}-${x.step});`).join('\n');
+  const A = accScale(), BAL = surfaceTokens('paper');
+  const accCss = `\n\n  /* Accent: buttons, links, focus */\n` + PAL[A].map(x=>`  --color-accent-${x.step}: var(--color-${A}-${x.step});`).join('\n')
+    + `\n\n  /* 60·30·10 balance (light surface): ${roleOf('d')} / ${roleOf('s')} / ${A} */\n  --color-surface: ${BAL.bg};\n  --color-surface-alt: ${BAL.card};\n  --color-border: ${BAL.line};`;
   const sty = STYLE_BY[state.style];
   const styCss = `\n\n  /* UI style: ${sty.name} */\n  --radius-sm: ${sty.r[0]}px;\n  --radius-md: ${sty.r[1]}px;\n  --radius-lg: ${sty.r[2]}px;\n  --shadow-card: ${sty.shadow};` + (sty.border ? `\n  --border-card: ${sty.border};` : '') + (sty.blur ? `\n  --blur-surface: ${sty.blur};` : '');
   let out;
@@ -3356,7 +3436,9 @@ function renderExport(){
   if(fmt==='css') out = cssText;
   else if(isMd) out = buildMarkdown(cssText);
   else if(fmt==='tw'){
-    const colors = [...scaleNames(), 'accent'].map(n=>n==='accent' ? `        // accent = ${A} (buttons, links, focus)\n        accent: {\n${PAL[A].map(x=>`          ${x.step}: '${x.hex}',`).join('\n')}\n          DEFAULT: '${baseOf(A).hex}',\n        },` : `        ${n}: {\n${PAL[n].map(x=>`          ${x.step}: '${x.hex}',`).join('\n')}\n          DEFAULT: '${(PAL[n].find(x=>x.base)||PAL[n][5]).hex}',\n        },`).join('\n');
+    const colors = [...scaleNames(), 'accent'].map(n=>n==='accent' ? `        // accent = ${A} (buttons, links, focus)\n        accent: {\n${PAL[A].map(x=>`          ${x.step}: '${x.hex}',`).join('\n')}\n          DEFAULT: '${baseOf(A).hex}',\n        },
+        // 60·30·10: surface = 60% (${roleOf('d')}), alt = 30% (${roleOf('s')})
+        surface: { DEFAULT: '${BAL.bg}', alt: '${BAL.card}' },` : `        ${n}: {\n${PAL[n].map(x=>`          ${x.step}: '${x.hex}',`).join('\n')}\n          DEFAULT: '${(PAL[n].find(x=>x.base)||PAL[n][5]).hex}',\n        },`).join('\n');
     out = `// ${links.replace(/\n/g,'\n// ')}\n/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n${colors}\n      },\n      fontFamily: {\n        display: ${JSON.stringify(famArr(d)).replace(/"/g,"'").replace(/,/g,', ')},\n        body: ${JSON.stringify(famArr(b)).replace(/"/g,"'").replace(/,/g,', ')},\n        mono: ${JSON.stringify(famArr(m)).replace(/"/g,"'").replace(/,/g,', ')},\n      },\n      fontSize: {\n${Object.entries(sizes).map(([k,v])=>`        ${k}: '${rem(v)}',`).join('\n')}\n      },\n      // UI style: ${sty.name}\n      borderRadius: { sm: '${sty.r[0]}px', md: '${sty.r[1]}px', lg: '${sty.r[2]}px' },\n      boxShadow: { card: ${JSON.stringify(sty.shadow).replace(/"/g,"'")} },\n    },\n  },\n};`;
   } else if(fmt==='tw4'){
     out = `/* ${links.replace(/\n/g,' ')} */\n@import "tailwindcss";\n\n@theme {\n  --font-display: ${stack(d)};\n  --font-body: ${stack(b)};\n  --font-mono: ${stack(m)};\n`
@@ -3365,7 +3447,8 @@ function renderExport(){
   } else {
     const tok = {
       color: {...Object.fromEntries(scaleNames().map(n=>[n, Object.fromEntries(PAL[n].map(x=>[x.step, {$type:'color', $value:x.hex}]))])),
-        accent: Object.fromEntries(PAL[A].map(x=>[x.step, {$type:'color', $value:`{color.${A}.${x.step}}`}]))},
+        accent: Object.fromEntries(PAL[A].map(x=>[x.step, {$type:'color', $value:`{color.${A}.${x.step}}`}])),
+        surface: {$description:`60·30·10: ${roleOf('d')} / ${roleOf('s')} / ${A}`, base:{$type:'color', $value:BAL.bg}, alt:{$type:'color', $value:BAL.card}}},
       font: {
         family: {display:{$type:'fontFamily', $value:famArr(d)}, body:{$type:'fontFamily', $value:famArr(b)}, mono:{$type:'fontFamily', $value:famArr(m)}},
         weight: {display:{$type:'fontWeight', $value:state.hw}, strong:{$type:'fontWeight', $value:bw}},
@@ -3699,7 +3782,11 @@ function applyState(o){
   COLOR.tint = num(c.tint, 0, 0.04, COLOR.tint); COLOR.harm = num(c.harm, 0, 1, COLOR.harm);
   COLOR.sec = c.sec && normHex(c.sec) ? normHex(c.sec) : null;
   COLOR.secRule = HARMONY[c.secRule] ? c.secRule : null;
-  COLOR.secAccent = !!c.secAccent;
+  COLOR.more = COLOR.sec && Array.isArray(c.more) ? c.more.map(h=>normHex(String(h))).filter(Boolean).slice(0, SCALE_N.length-2) : [];
+  // links from before 60·30·10 carry secAccent instead of roles
+  const R = c.roles && typeof c.roles==='object' ? c.roles : {d:'neutral', s:'neutral', a:c.secAccent ? 'secondary' : 'brand'};
+  const okScale = n => SCALE_N.indexOf(n)>=0 && SCALE_N.indexOf(n) < colorHexes().length;
+  COLOR.roles = {d:R.d==='neutral'||okScale(R.d) ? R.d : 'neutral', s:R.s==='neutral'||okScale(R.s) ? R.s : 'neutral', a:okScale(R.a) ? R.a : 'brand'};
   syncStateUI(); render(); renderColor();
   return true;
 }
@@ -3709,8 +3796,7 @@ function syncStateUI(){
   setPressed('pools','pool',state.pool); setPressed('surfaces','s',state.surface); $('stage').dataset.surface = state.surface;
   $('brand-hex').value = COLOR.hex; $('brand-pick').value = COLOR.hex; $('anchor500').checked = COLOR.anchor500;
   $('hshift').value = COLOR.hueShift; $('ntint').value = COLOR.tint; $('harm').value = COLOR.harm;
-  const has2 = !!COLOR.sec; $('add2').hidden = has2; $('second').hidden = !has2;
-  if(has2){ $('sec-hex').value = COLOR.sec; $('sec-pick').value = COLOR.sec; }
+  syncColorUI();
   setPressed('harmony','rule', COLOR.secRule || ''); $('sty-sig').checked = state.sig; $('use-added').checked = state.useAdded;
 }
 let urlTimer = null, URL_BASE = null;   // state at load; the URL stays clean until something changes
@@ -3825,9 +3911,55 @@ function setSecond(hex, fromRule){
   renderColor();
 }
 function applyRule(rule){ COLOR.secRule = rule; setPressed('harmony','rule',rule); setSecond(suggestSecond(rule), true); }
-$('add2').addEventListener('click', ()=>{ $('add2').hidden = true; $('second').hidden = false; applyRule(COLOR.secRule || 'complement'); $('sec-hex').focus(); });
-$('rm2').addEventListener('click', ()=>{ COLOR.sec = null; $('second').hidden = true; $('add2').hidden = false; renderColor(); $('add2').focus(); });
-$('secrole').addEventListener('click', e=>{ const b = e.target.closest('button'); if(!b) return; COLOR.secAccent = b.dataset.role==='accent'; renderColor(); });
+$('add2').addEventListener('click', ()=>{ $('add2').hidden = true; $('second').hidden = false; if(COLOR.roles.s==='neutral') COLOR.roles = {...COLOR.roles, s:'secondary'}; applyRule(COLOR.secRule || 'complement'); renderMore(); $('sec-hex').focus(); });
+$('rm2').addEventListener('click', ()=>{ removeColor(1); (COLOR.sec ? $('sec-hex') : $('add2')).focus(); });
+// Colors 3–5. A suggestion picks the first hue offset that stays clear of the colors already chosen.
+function suggestNext(){
+  const H0 = rgbToOklch(hexToRgb(COLOR.hex))[2], used = colorHexes().map(h=>rgbToOklch(hexToRgb(h))[2]);
+  // stay clear of error red and success green too, so a brand color never reads as an alert
+  const clear = Hc => used.every(u=>hueGap(Hc,u)>=35) && hueGap(Hc,27)>=25 && hueGap(Hc,150)>=25;
+  const offs = Array.from({length:36}, (_,i)=>[120,240,60,300,30,330,90,270,150,210][i] ?? i*10);
+  const off = offs.find(o=>clear((H0+o)%360)) ?? offs.find(o=>used.every(u=>hueGap((H0+o)%360,u)>=25)) ?? 90;
+  return hueFromBrand(off);
+}
+function renderMore(){
+  const n = colorHexes().length;
+  $('more').innerHTML = (COLOR.sec ? COLOR.more : []).map((h,i)=>`<div class="xcolor">
+    <div class="lbl head2"><span>Color ${i+3}</span><button class="linkbtn" type="button" data-rm="${i+2}">Remove</button></div>
+    <div class="hexrow"><input type="color" data-pick="${i}" value="${h}" aria-label="Pick color ${i+3}"><input type="text" data-hex="${i}" value="${h}" spellcheck="false" autocomplete="off" aria-label="Color ${i+3} hex"></div></div>`).join('');
+  $('add-more').hidden = !COLOR.sec || n>=SCALE_N.length;
+  $('add-more').textContent = `+ Add color (${n+1} of ${SCALE_N.length})`;
+}
+function removeColor(i){
+  const list = colorHexes(); list.splice(i,1);
+  const remap = n => { const k = SCALE_N.indexOf(n); return k<0 ? n : k===i ? null : SCALE_N[k>i ? k-1 : k]; };
+  const R = COLOR.roles;
+  COLOR.roles = {d:remap(R.d) || 'neutral', s:remap(R.s) || 'neutral', a:remap(R.a) || 'brand'};
+  COLOR.sec = list[1] || null; COLOR.more = list.slice(2);
+  if(i===1) COLOR.secRule = null;
+  syncColorUI(); renderColor();
+}
+function syncColorUI(){
+  const has2 = !!COLOR.sec; $('add2').hidden = has2; $('second').hidden = !has2;
+  if(has2){ $('sec-hex').value = COLOR.sec; $('sec-pick').value = COLOR.sec; }
+  setPressed('harmony','rule', COLOR.secRule || '');
+  renderMore();
+}
+$('add-more').addEventListener('click', ()=>{
+  if(colorHexes().length>=SCALE_N.length) return;
+  COLOR.more.push(suggestNext()); renderMore(); renderColor();
+  $('more').querySelector(`[data-hex="${COLOR.more.length-1}"]`)?.focus();
+});
+$('more').addEventListener('input', e=>{
+  const i = e.target.dataset.pick ?? e.target.dataset.hex; if(i===undefined) return;
+  const h = normHex(e.target.value);
+  if(!h){ e.target.setAttribute('aria-invalid','true'); return; }
+  e.target.removeAttribute('aria-invalid'); COLOR.more[+i] = h;
+  const twin = $('more').querySelector(e.target.dataset.pick!==undefined ? `[data-hex="${i}"]` : `[data-pick="${i}"]`); if(twin) twin.value = h;
+  renderColor();
+});
+$('more').addEventListener('click', e=>{ const b = e.target.closest('[data-rm]'); if(!b) return; removeColor(+b.dataset.rm); $('add-more').hidden ? $('brand-hex').focus() : $('add-more').focus(); });
+['d','s','a'].forEach(k=>$('role-'+k).addEventListener('change', e=>{ COLOR.roles = {...COLOR.roles, [k]:e.target.value}; renderColor(); }));
 $('harmony').addEventListener('click', e=>{ const b = e.target.closest('button'); if(b) applyRule(b.dataset.rule); });
 $('sec-pick').addEventListener('input', e=>setSecond(e.target.value));
 $('sec-hex').addEventListener('input', e=>{ const h = normHex(e.target.value); if(h) setSecond(h); else e.target.setAttribute('aria-invalid','true'); });
